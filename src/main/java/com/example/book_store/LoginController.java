@@ -7,6 +7,8 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
+import java.sql.Connection;
+
 public class LoginController {
 
     @FXML
@@ -34,13 +36,15 @@ public class LoginController {
         // Xử lý đăng nhập
         if (validateLogin(username, password)) {
             showAlert(Alert.AlertType.INFORMATION, "Đăng nhập thành công", "Xin chào, " + username + "!");
+            ConnectDB connectDB = new ConnectDB();
+            Connection connection = connectDB.connectionDB();
         } else {
             showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Tên đăng nhập hoặc mật khẩu không chính xác.");
         }
     }
 
     private boolean validateLogin(String username, String password) {
-        return false;
+        return true;
     }
 
     @FXML
