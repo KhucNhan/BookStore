@@ -7,6 +7,12 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class LoginController {
 
     @FXML
@@ -34,17 +40,38 @@ public class LoginController {
         // Xử lý đăng nhập
         if (validateLogin(username, password)) {
             showAlert(Alert.AlertType.INFORMATION, "Đăng nhập thành công", "Xin chào, " + username + "!");
+            ConnectDB cdb = new ConnectDB();
+            Connection conn = cdb.connectionDB();
         } else {
             showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Tên đăng nhập hoặc mật khẩu không chính xác.");
         }
     }
 
+
+
     private boolean validateLogin(String username, String password) {
-        return false;
+//        String query = "SELECT * FROM users WHERE username = ? AND password = ?";
+//
+//        try (Connection conn = connect();
+//             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
+//
+//            preparedStatement.setString(1, username);
+//            preparedStatement.setString(2, password);
+//
+//            ResultSet resultSet = preparedStatement.executeQuery();
+//
+//            // Kiểm tra kết quả trả về
+//            return resultSet.next(); // Nếu có kết quả trả về, đăng nhập hợp lệ
+//
+//        } catch (SQLException e) {
+//            e.printStackTrace();
+//            showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể kết nối cơ sở dữ liệu.");
+//        }
+        return true;
     }
 
     @FXML
-    private void handleForgotPassword() {
+    private void handleForgotPasswordLink() {
         // Xử lý quên mật khẩu
         showAlert(Alert.AlertType.INFORMATION, "Quên mật khẩu", "Vui lòng liên hệ quản trị viên để đặt lại mật khẩu.");
     }
