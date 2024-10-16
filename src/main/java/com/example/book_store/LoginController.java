@@ -57,7 +57,7 @@ public class LoginController {
             stage.setScene(scene);
             stage.show();
         } else if (validateLogin(username, password) && !isActive(username,password)){
-            showAlert(Alert.AlertType.INFORMATION, "Đăng nhập thất bại", "Tài khoản đã bị hủy.");
+            showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Tài khoản đã bị hủy.");
         } else {
             showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Tên đăng nhập hoặc mật khẩu không chính xác.");
         }
