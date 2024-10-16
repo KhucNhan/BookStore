@@ -14,6 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class LoginController {
+    private final ConnectDB connectDB = new ConnectDB();
 
     @FXML
     private TextField usernameField;
@@ -37,18 +38,26 @@ public class LoginController {
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        if (validateLogin(username, password)) {
+        if (validateLogin(username, password) && isActive(username, password)) {
             showAlert(Alert.AlertType.INFORMATION, "Đăng nhập thành công", "Xin chào, " + username + "!");
+        } else if (validateLogin(username, password) && !isActive(username,password)){
+            showAlert(Alert.AlertType.INFORMATION, "Đăng nhập thất bại", "Tài khoản đã bị hủy.");
         } else {
             showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Tên đăng nhập hoặc mật khẩu không chính xác.");
         }
     }
 
-
+    private boolean isActive(String username, String password) {
+        String query = "SELECT * FROM users WHERE username = ? AND password = ? and status = true";
+        return login(username, password, query);
+    }
 
     private boolean validateLogin(String username, String password) {
         String query = "SELECT * FROM users WHERE username = ? AND password = ?";
-        ConnectDB connectDB = new ConnectDB();
+        return login(username, password, query);
+    }
+
+    private boolean login(String username, String password, String query) {
         try {
             Connection conn = connectDB.connectionDB();
             PreparedStatement preparedStatement = conn.prepareStatement(query);
@@ -62,8 +71,8 @@ public class LoginController {
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Lỗi", "Không thể kết nối cơ sở dữ liệu.");
+            return false;
         }
-        return true;
     }
 
     @FXML
