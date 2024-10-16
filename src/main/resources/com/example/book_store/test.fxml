@@ -9,6 +9,17 @@
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.book_store.UserController"
-            prefHeight="400.0" prefWidth="600.0">
-    <Button onAction="#deactivationUser"/>
+            prefHeight="480.0" prefWidth="720.0">
+    <VBox>
+        <TextField prefHeight="50" prefWidth="200"  fx:id="name"/>
+        <TextField prefHeight="50" prefWidth="200"  fx:id="username"/>
+        <TextField prefHeight="50" prefWidth="200"  fx:id="password"/>
+        <TextField prefHeight="50" prefWidth="200"  fx:id="reEnterPassword"/>
+        <DatePicker fx:id="dateOfBirth"/>
+        <TextField prefHeight="50" prefWidth="200"  fx:id="gender"/>
+        <TextField prefHeight="50" prefWidth="200"  fx:id="phone"/>
+        <TextField prefHeight="50" prefWidth="200"  fx:id="address"/>
+        <TextField prefHeight="50" prefWidth="200"  fx:id="email"/>
+        <Button onAction="#addUser"/>
+    </VBox>
 </AnchorPane>
