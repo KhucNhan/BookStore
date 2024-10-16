@@ -11,14 +11,12 @@ public class ConnectDB {
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(urlConnection, "root", "nhan771026");
-            System.out.println("Successful! It's Nhan.");
         } catch (SQLException e) {
 
         }
 
         try {
             connection = DriverManager.getConnection(urlConnection, "root", "1234");
-            System.out.println("Successful! It's Trang.");
         } catch (SQLException e) {
 
         }
