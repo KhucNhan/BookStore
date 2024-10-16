@@ -7,19 +7,15 @@ import javafx.scene.control.Label;
 import java.sql.*;
 
 public class BookController {
-    private final ConnectDB connectDB;
-    BookController() {
-        connectDB = new ConnectDB();
-    }
+    private final ConnectDB connectDB = new ConnectDB();
+    private final Connection connection = connectDB.connectionDB();
     @FXML
     public void getBooks(ActionEvent event) {
         String query = "select Title, Author, PublishedYear, Edition, Price, Amount, NameBookType, NamePublisher from Books " +
                 "join BookTypes on Books.BookTypeID = BookTypes.BookTypeID " +
                 "join Publishers on Books.PublisherID = Publishers.PublisherID";
-        Connection connection;
 
         try {
-            connection = connectDB.connectionDB();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery(query);
 
@@ -40,14 +36,13 @@ public class BookController {
         }
     }
 
-    public static boolean addBook(String title, String author, int publishedYear, int edition, double price, int amount, int bookTypeID, int publisherID) {
+    public boolean addBook(String title, String author, int publishedYear, int edition, double price, int amount, int bookTypeID, int publisherID) {
         ConnectDB connectDB = new ConnectDB();
         String query = "insert into Books (Title, Author, PublishedYear, Edition, Price, Amount, BookTypeID, PublisherID) " +
                 "values (?, ?, ?, ?, ?, ?, ?, ?)";
-        Connection connection;
 
         try {
-            connection = connectDB.connectionDB();
+
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1,title);
             preparedStatement.setString(2,author);
