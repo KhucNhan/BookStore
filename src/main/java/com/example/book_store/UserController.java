@@ -2,10 +2,7 @@ package com.example.book_store;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 
 import java.sql.*;
 import java.util.Optional;
@@ -68,6 +65,7 @@ public class UserController {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setInt(1, currentUser.getUserID());
                 int row = preparedStatement.executeUpdate();
+                connection.close();
                 return row != 0;
             } else {
                 showAlert(Alert.AlertType.INFORMATION, "Delete Account", "Cancel");
@@ -89,21 +87,20 @@ public class UserController {
     }
 
 
-
     @FXML
     private boolean addUser(ActionEvent event) {
         String query = "insert into users (Name, Username, Password, DateOfBirth, Gender, Phone, Address, Email)" +
                 "values (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
-            if (!password.getText().equals(reEnterPassword.getText())) {
+            if (password.getText().equals(reEnterPassword.getText())) {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Incorrect password");
                 return false;
             }
-            if (!phoneValidator(phone.getText())) {
+            if (phoneValidator(phone.getText())) {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Enter right phone number!");
                 return false;
             }
-            if (!emailValidator(email.getText())) {
+            if (emailValidator(email.getText())) {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Enter right email address!");
                 return false;
             }
@@ -118,6 +115,77 @@ public class UserController {
             preparedStatement.setString(8, email.getText());
             int row = preparedStatement.executeUpdate();
             return row != 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @FXML
+    public TextField newName;
+    @FXML
+    public TextField newPassword;
+    @FXML
+    public TextField oldPassword;
+    @FXML
+    public DatePicker newDateOfBirth;
+    @FXML
+    public TextField newGender;
+    @FXML
+    public TextField newPhone;
+    @FXML
+    public TextField newAddress;
+    @FXML
+    public TextField newEmail;
+
+    @FXML
+    private boolean updateUserInformation(ActionEvent event) {
+        String query = "update users set Name = ?, DateOfBirth = ?, Gender = ?, Phone = ?, Address = ?, Email = ? where UserID = ?";
+        try {
+            if (phoneValidator(phone.getText())) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right phone number!");
+                return false;
+            }
+            if (emailValidator(email.getText())) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right email address!");
+                return false;
+            }
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, newName.getText());
+            preparedStatement.setDate(2, Date.valueOf(newDateOfBirth.getValue()));
+            preparedStatement.setString(3, newGender.getText());
+            preparedStatement.setString(4, newPhone.getText());
+            preparedStatement.setString(5, newAddress.getText());
+            preparedStatement.setString(6, newEmail.getText());
+            preparedStatement.setInt(7, currentUser.getUserID());
+            int row = preparedStatement.executeUpdate();
+            connection.close();
+            showAlert(Alert.AlertType.INFORMATION, "Successful", "Update information successful");
+            return row != 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @FXML
+    private boolean updateUserPassword(ActionEvent event) {
+        String query = "update users set Password = ? where UserID = ?";
+        try {
+            if (oldPassword.getText().equals(currentUser.getPassword()) && newPassword.getText().length() >= 8) {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, newPassword.getText());
+                preparedStatement.setInt(2, currentUser.getUserID());
+                int row = preparedStatement.executeUpdate();
+                connection.close();
+                showAlert(Alert.AlertType.INFORMATION, "Successful", "Change password successful");
+                return row != 0;
+            } else if (oldPassword.getText().equals(currentUser.getPassword()) && newPassword.getText().length() < 8) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Password must have at least 8 letter or number");
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Incorrect password");
+            }
+            return false;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
