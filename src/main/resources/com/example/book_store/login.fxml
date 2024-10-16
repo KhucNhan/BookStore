@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="404.0" prefWidth="682.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.LoginController">
+    <children>
+        <VBox alignment="CENTER_LEFT" layoutX="159.0" layoutY="55.0" prefHeight="293.0" prefWidth="376.0" spacing="10">
+            <Label contentDisplay="CENTER" style="-fx-font-size: 18px; -fx-text-fill: #003399;" text="ĐĂNG NHẬP VÀO TÀI KHOẢN" />
+
+            <Label text="Tên đăng nhập" />
+            <TextField fx:id="usernameField" prefHeight="25.0" prefWidth="337.0" promptText="Tên đăng nhập" />
+
+            <Label prefHeight="17.0" prefWidth="348.0" text="Mật khẩu" />
+            <PasswordField fx:id="passwordField" prefHeight="25.0" prefWidth="365.0" promptText="Mật khẩu" />
+
+            <Hyperlink fx:id="forgotPasswordLink" text="Quên mật khẩu?" />
+
+            <Button fx:id="loginButton" onAction="#handleLogin" prefHeight="25.0" prefWidth="383.0" style="-fx-background-color: #003399; -fx-text-fill: white;" text="ĐĂNG NHẬP" />
+        </VBox>
+    </children>
+
+
+</AnchorPane>
