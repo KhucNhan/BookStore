@@ -7,9 +7,12 @@ import javafx.scene.control.Label;
 import java.sql.*;
 
 public class BookController {
+    private final ConnectDB connectDB;
+    BookController() {
+        connectDB = new ConnectDB();
+    }
     @FXML
-    public static void getBooks(ActionEvent event) {
-        ConnectDB connectDB = new ConnectDB();
+    public void getBooks(ActionEvent event) {
         String query = "select Title, Author, PublishedYear, Edition, Price, Amount, NameBookType, NamePublisher from Books " +
                 "join BookTypes on Books.BookTypeID = BookTypes.BookTypeID " +
                 "join Publishers on Books.PublisherID = Publishers.PublisherID";
