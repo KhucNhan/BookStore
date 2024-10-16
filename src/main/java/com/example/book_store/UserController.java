@@ -17,6 +17,11 @@ public class UserController {
         return Pattern.matches(EMAIL_REGEX, email);
     }
 
+    public boolean phoneValidator(String phone) {
+        String EMAIL_REGEX = "/(?:\\+84|0084|0)[235789][0-9]{1,2}[0-9]{7}(?:[^\\d]+|$)/g";
+        return Pattern.matches(EMAIL_REGEX, phone);
+    }
+
     private boolean addUser(String name, String username, String password, String reEnterPassword, Date dateOfBirth, String gender, String phone, String address, String email) {
         String query = "insert into user (Name, Username, Password, DateOfBirth, Gender, Phone, Address, Email, Status)" +
                 "values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -28,12 +33,16 @@ public class UserController {
                 preparedStatement.setString(3, password);
                 preparedStatement.setDate(4, dateOfBirth);
                 preparedStatement.setString(5, gender);
-                preparedStatement.setString(6, phone);
-                preparedStatement.setString(7, address);
-                if (emailValidator(email)) {
-                    preparedStatement.setString(8, email);
+                if (phoneValidator(phone)) {
+                    preparedStatement.setString(6, phone);
+                    preparedStatement.setString(7, address);
+                    if (emailValidator(email)) {
+                        preparedStatement.setString(8, email);
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Failed", "Enter right email address!");
+                    }
                 } else {
-                    showAlert(Alert.AlertType.ERROR, "Failed", "Enter right email address!");
+                    showAlert(Alert.AlertType.ERROR, "Failed", "Enter right phone number!");
                 }
             } else {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Incorrect password");
