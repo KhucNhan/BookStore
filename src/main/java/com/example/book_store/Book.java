@@ -3,6 +3,7 @@ package com.example.book_store;
 public class Book {
     private int bookID;
     private String title;
+    private String image;
     private String author;
     private int publishedYear;
     private int edition;
@@ -11,8 +12,9 @@ public class Book {
     private int bookTypeID;
     private int publisherID;
 
-    public Book(int bookID, String title, String author, int publishedYear, int edition, double price, int amount, int bookTypeID, int publisherID) {
+    public Book(int bookID, String image, String title, String author, int publishedYear, int edition, double price, int amount, int bookTypeID, int publisherID) {
         this.bookID = bookID;
+        this.image = image;
         this.title = title;
         this.author = author;
         this.publishedYear = publishedYear;
@@ -23,13 +25,20 @@ public class Book {
         this.publisherID = publisherID;
     }
 
-    // Getters và setters
     public int getBookID() {
         return bookID;
     }
 
     public void setBookID(int bookID) {
         this.bookID = bookID;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public String getTitle() {
@@ -101,6 +110,7 @@ public class Book {
         return "Book{" +
                 "bookID=" + bookID +
                 ", title='" + title + '\'' +
+                ", image='" + image + '\'' +
                 ", author='" + author + '\'' +
                 ", publishedYear=" + publishedYear +
                 ", edition=" + edition +
