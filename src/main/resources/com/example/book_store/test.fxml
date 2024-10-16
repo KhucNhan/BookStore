@@ -7,37 +7,42 @@
     <HBox prefHeight="720.0" prefWidth="1080.0">
         <VBox>
             <Label prefHeight="20" text="Sign up" />
-            <TextField fx:id="name" prefHeight="20" prefWidth="200" promptText="Name" />
-            <TextField fx:id="username" prefHeight="20" prefWidth="200" promptText="Username" />
-            <TextField fx:id="password" prefHeight="20" prefWidth="200" promptText="Password" />
-            <TextField fx:id="reEnterPassword" prefHeight="20" prefWidth="200" promptText="Re-Password" />
+            <TextField fx:id="name" prefHeight="20" prefWidth="150" promptText="Name" />
+            <TextField fx:id="username" prefHeight="20" prefWidth="150" promptText="Username" />
+            <TextField fx:id="password" prefHeight="20" prefWidth="150" promptText="Password" />
+            <TextField fx:id="reEnterPassword" prefHeight="20" prefWidth="150" promptText="Re-Password" />
             <DatePicker fx:id="dateOfBirth" promptText="Date of birth" />
-            <TextField fx:id="gender" prefHeight="20" prefWidth="200" promptText="Gender" />
-            <TextField fx:id="phone" prefHeight="20" prefWidth="200" promptText="Phone number" />
-            <TextField fx:id="address" prefHeight="20" prefWidth="200" promptText="Address" />
-            <TextField fx:id="email" prefHeight="20" prefWidth="200" promptText="Email" />
+            <TextField fx:id="gender" prefHeight="20" prefWidth="150" promptText="Gender" />
+            <TextField fx:id="phone" prefHeight="20" prefWidth="150" promptText="Phone number" />
+            <TextField fx:id="address" prefHeight="20" prefWidth="150" promptText="Address" />
+            <TextField fx:id="email" prefHeight="20" prefWidth="150" promptText="Email" />
             <Button onAction="#addUser" text="Sign up"/>
-            <Label prefWidth="225" text=" " />
+            <Label prefWidth="175" text=" " />
         </VBox>
-        
+
         <VBox>
             <Label prefHeight="20" text="Change Password" />
-            <PasswordField fx:id="oldPassword" prefHeight="20" prefWidth="200" promptText="Recent password" />
-            <PasswordField fx:id="newPassword" prefHeight="20" prefWidth="200" promptText="New password" />
+            <PasswordField fx:id="oldPassword" prefHeight="20" prefWidth="150" promptText="Recent password" />
+            <PasswordField fx:id="newPassword" prefHeight="20" prefWidth="150" promptText="New password" />
             <Button onAction="#updateUserPassword" text="Confirm"/>
-            <Label prefWidth="225" text=" " />
+            <Label prefWidth="175" text=" " />
         </VBox>
 
         <VBox>
             <Label text="Update information" />
-            <TextField fx:id="newName" prefHeight="20" prefWidth="200" promptText="New name" />
+            <TextField fx:id="newName" prefHeight="20" prefWidth="150" promptText="New name" />
             <DatePicker fx:id="newDateOfBirth" promptText="New date of birth" />
-            <TextField fx:id="newGender" prefHeight="20" prefWidth="200" promptText="New gender" />
-            <TextField fx:id="newPhone" prefHeight="20" prefWidth="200" promptText="New phone" />
-            <TextField fx:id="newAddress" prefHeight="20" prefWidth="200" promptText="New address" />
-            <TextField fx:id="newEmail" prefHeight="20" prefWidth="200" promptText="New email" />
+            <TextField fx:id="newGender" prefHeight="20" prefWidth="150" promptText="New gender" />
+            <TextField fx:id="newPhone" prefHeight="20" prefWidth="150" promptText="New phone" />
+            <TextField fx:id="newAddress" prefHeight="20" prefWidth="150" promptText="New address" />
+            <TextField fx:id="newEmail" prefHeight="20" prefWidth="150" promptText="New email" />
             <Button onAction="#updateUserInformation" text="Confirm"/>
-            <Label prefWidth="225" text=" " />
+            <Label prefWidth="175" text=" " />
+        </VBox>
+
+        <VBox>
+            <Label text="Delete account" />
+            <Button onAction="#deactivationUser" text="Delete"/>
         </VBox>
     </HBox>
 
