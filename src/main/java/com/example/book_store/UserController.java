@@ -2,8 +2,14 @@ package com.example.book_store;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -12,6 +18,9 @@ public class UserController {
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
     private final User currentUser = LoginController.currentUser;
+    private Stage stage;
+    private Scene scene;
+    private Parent root;
     @FXML
     public TextField name;
     @FXML
@@ -58,27 +67,36 @@ public class UserController {
     }
 
     @FXML
-    private boolean deactivationUser() {
+    private boolean deactivationUser(ActionEvent event) {
         String query = "update users set Status = false where UserID = ?";
         try {
-            if (showConfirmation(Alert.AlertType.CONFIRMATION, "Delete account", "Are you sure want to delete your account ?")) {
+            if (showConfirmation("Delete account", "Are you sure want to delete your account ?")) {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setInt(1, currentUser.getUserID());
                 int row = preparedStatement.executeUpdate();
                 connection.close();
+                showAlert(Alert.AlertType.INFORMATION, "Successful", "Delete account successful, you'll move to login scene");
+
+                Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+                stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                scene = new Scene(root, 1200, 800);
+                stage.setTitle("Loan Slip");
+                stage.setScene(scene);
+                stage.show();
+
                 return row != 0;
             } else {
                 showAlert(Alert.AlertType.INFORMATION, "Delete Account", "Cancel");
                 return false;
             }
-        } catch (SQLException e) {
+        } catch (SQLException | IOException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    public boolean showConfirmation(Alert.AlertType alertType, String title, String message) {
-        Alert alert = new Alert(alertType);
+    public boolean showConfirmation(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
