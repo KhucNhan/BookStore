@@ -33,7 +33,6 @@
             </items>
         </MenuButton>
     </HBox>
-    <HBox prefWidth="720" border="1" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
     <columnConstraints>
         <ColumnConstraints/>
         <ColumnConstraints/>
