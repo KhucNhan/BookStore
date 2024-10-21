@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<GridPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="480.0" prefWidth="720.0"
+          xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.example.book_store.Controller.BookController">
+    <HBox GridPane.rowIndex="0" GridPane.columnIndex="0">
+        <MenuBar layoutY="1.0" prefHeight="25.0">
+            <menus>
+                <Menu mnemonicParsing="false" text="Trang chủ"/>
+                <Menu mnemonicParsing="false" text="Giỏ hàng"/>
+                <Menu mnemonicParsing="false" text="Thống kê"/>
+            </menus>
+        </MenuBar>
+    </HBox>
+    <HBox GridPane.rowIndex="0" prefWidth="400" GridPane.columnIndex="1">
+        <TextField fx:id="search" prefWidth="275"/>
+        <Button prefWidth="75" text="Search"/>
+        <padding>
+            <Insets left="25.0" right="25.0"/>
+        </padding>
+    </HBox>
+    <HBox GridPane.rowIndex="0" GridPane.columnIndex="2">
+        <MenuButton mnemonicParsing="false" prefWidth="100.0" text="User">
+            <items>
+                <MenuItem mnemonicParsing="false" text="Chỉnh sửa thông tin cá nhân"/>
+                <MenuItem mnemonicParsing="false" text="Đổi mật khẩu"/>
+                <MenuItem mnemonicParsing="false" text="Xóa tài khoản"/>
+                <MenuItem mnemonicParsing="false" text="Đăng xuất"/>
+            </items>
+        </MenuButton>
+    </HBox>
+    <HBox prefWidth="720" border="1" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+    <columnConstraints>
+        <ColumnConstraints/>
+        <ColumnConstraints/>
+        <ColumnConstraints/>
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints/>
+    </rowConstraints>
+</GridPane>
