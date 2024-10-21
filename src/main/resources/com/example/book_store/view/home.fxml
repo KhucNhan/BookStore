@@ -34,6 +34,7 @@
 
     <TableView fx:id="bookTable" prefHeight="575.0" prefWidth="1094.0" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="1">
         <columns>
+
             <TableColumn fx:id="idColumn" prefWidth="67.3333295583725" text="Mã sách" />
             <TableColumn fx:id="imageColumn" prefWidth="95.5" text="Hình ảnh" />
             <TableColumn fx:id="titleColumn" prefWidth="138.0" text="Tên sách" />
