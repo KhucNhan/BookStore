@@ -32,9 +32,10 @@ import java.util.ResourceBundle;
 
 import static com.example.book_store.Controller.LoginController.currentUser;
 
-public class BookController {
+public class BookController implements Initializable{
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
+
     @FXML
     private TableView bookTable;
     @FXML
@@ -59,6 +60,131 @@ public class BookController {
     public TableColumn publisherIDColumn;
     @FXML
     public TableColumn statusColumn;
+    @FXML
+    public TableColumn actionColumn;
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        idColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookID"));
+        imageColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("image"));
+        imageColumn.setCellFactory(column -> new TableCell<Book, String>() {
+
+            private final ImageView imageView = new ImageView();
+
+            @Override
+            protected void updateItem(String imagePath, boolean empty) {
+                super.updateItem(imagePath, empty);
+                if (empty || imagePath == null) {
+                    setGraphic(null);
+                } else {
+                    imageView.setImage(new Image(imagePath));
+                    imageView.setFitHeight(50);
+                    imageView.setFitWidth(50);
+                    setGraphic(imageView);
+                }
+            }
+        });
+        titleColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("title"));
+        authorColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("author"));
+        publishedYearColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("publishedYear"));
+        editionColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("edition"));
+        priceColumn.setCellValueFactory(new PropertyValueFactory<Book, Double>("price"));
+        amountColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("amount"));
+        bookTypeIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookTypeID"));
+        publisherIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("publisherID"));
+        statusColumn.setCellValueFactory(new PropertyValueFactory<Book, Boolean>("status"));
+
+        loadBooks();
+    }
+
+    private void showEditDialog(Book book) {
+        TextField title = new TextField(book.getTitle());
+        TextField img = new TextField(book.getImage());
+        TextField author = new TextField(book.getAuthor());
+        TextField publishedYear = new TextField(String.valueOf(book.getPublishedYear()));
+        TextField edition = new TextField(String.valueOf(book.getEdition()));
+        TextField price = new TextField(String.valueOf(book.getPrice()));
+        TextField amount = new TextField(String.valueOf(book.getAmount()));
+        TextField bookTypeID = new TextField(String.valueOf(book.getBookTypeID()));
+        TextField publisherID = new TextField(String.valueOf(book.getPublisherID()));
+        TextField status = new TextField(String.valueOf(book.getPublishedYear()));
+
+        Button saveButton = new Button("Save");
+
+        VBox vbox = new VBox(title, img, author, publishedYear, edition, price, amount, bookTypeID, publisherID, status, saveButton);
+        vbox.setSpacing(10);
+        Scene scene = new Scene(vbox, 240, 480);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setTitle("Edit");
+        stage.show();
+
+        saveButton.setOnAction(e -> {
+            if (title.getText().isEmpty() || author.getText().isEmpty() || publishedYear.getText().isEmpty() || img.getText().isEmpty() || status.getText().isEmpty() || price.getText().isEmpty() || edition.getText().isEmpty() || amount.getText().isEmpty() || bookTypeID.getText().isEmpty() || publisherID.getText().isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Error", "No blank!");
+                return;
+            }
+
+            String query = "update from books set Title = ?, Image = ?, Author = ?, PublishedYear = ?, Edition = ?, Price = ?, Amount = ?, BookTypeID = ?, PublisherID = ?, Status = ? where BookID = ?";
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, title.getText());
+                preparedStatement.setString(2, img.getText());
+                preparedStatement.setString(3, author.getText());
+                preparedStatement.setInt(4, Integer.parseInt(publishedYear.getText()));
+                preparedStatement.setInt(5, Integer.parseInt(edition.getText()));
+                preparedStatement.setDouble(6, Double.parseDouble(price.getText()));
+                preparedStatement.setInt(7, Integer.parseInt(amount.getText()));
+                preparedStatement.setInt(8, Integer.parseInt(bookTypeID.getText()));
+                preparedStatement.setInt(9, Integer.parseInt(publisherID.getText()));
+                preparedStatement.setBoolean(10, Boolean.parseBoolean(status.getText()));
+                int row = preparedStatement.executeUpdate();
+                if (row != 0) {
+                    showAlert(Alert.AlertType.INFORMATION, "Successful", "Chang applied.");
+                } else {
+                    showAlert(Alert.AlertType.ERROR, "Failed", "Failed");
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+
+            bookTable.refresh();
+            stage.close();
+        });
+    }
+
+    private void loadBooks() {
+        ObservableList<Book> bookList = FXCollections.observableArrayList();
+        String query = "SELECT * FROM Books";
+        try {
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                Book book = new Book(
+                        resultSet.getInt("BookID"),
+                        resultSet.getString("Image"),
+                        resultSet.getString("Title"),
+                        resultSet.getString("Author"),
+                        resultSet.getInt("PublishedYear"),
+                        resultSet.getInt("Edition"),
+                        resultSet.getDouble("Price"),
+                        resultSet.getInt("Amount"),
+                        resultSet.getInt("BookTypeID"),
+                        resultSet.getInt("PublisherID"),
+                        resultSet.getBoolean("Status")
+                );
+                bookList.add(book);
+            }
+
+            bookTable.setItems(bookList);
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not load book data");
+        }
+    }
+
 
     public boolean addBook(String title, String image, String author, int publishedYear, int edition, double price, int amount, int bookTypeID, int publisherID) {
         ConnectDB connectDB = new ConnectDB();
@@ -90,13 +216,12 @@ public class BookController {
         return false;
     }
 
-    @FXML
-    private boolean deactivationBook(ActionEvent event) {
+    private boolean deactivationBook(int bookID) {
         String query = "update books set Status = false where BookID = ?";
         try {
             if (showConfirmation("Delete book", "Are you sure want to delete this book ?")) {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
-                preparedStatement.setInt(1, 3);
+                preparedStatement.setInt(1, bookID);
                 int row = preparedStatement.executeUpdate();
                 connection.close();
                 showAlert(Alert.AlertType.INFORMATION, "Successful", "Delete book successful");
