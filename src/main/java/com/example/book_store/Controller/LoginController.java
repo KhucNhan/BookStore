@@ -52,11 +52,7 @@ public class LoginController {
         if (validateLogin(username, password) && isActive(username, password)) {
             currentUser = getUSerByUserNameAndPassword(username, password);
             showAlert(Alert.AlertType.INFORMATION, "Đăng nhập thành công", "Xin chào " + currentUser.getRole() + " " + currentUser.getName() + "!");
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/book_store/test.fxml"));
-            Parent root = loader.load();
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.show();
+            goToScene(event,"/com/example/book_store/home.fxml");
         } else if (validateLogin(username, password) && !isActive(username, password)) {
             showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Tài khoản đã bị hủy.");
         } else {
@@ -189,9 +185,13 @@ public class LoginController {
     }
 
     public void goToSignUp(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/book_store/register.fxml"));
-        Parent root = loader.load();
-        Stage stage = new Stage();
+        goToScene(event, "/com/example/book_store/register.fxml");
+    }
+
+    public void goToScene(ActionEvent event, String path) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+        root = loader.load();
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         stage.setScene(new Scene(root));
         stage.show();
     }

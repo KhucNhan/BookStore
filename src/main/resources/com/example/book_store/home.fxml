@@ -38,12 +38,13 @@
             <TableColumn fx:id="imageColumn" prefWidth="66.00000381469727" text="Hình ảnh" />
             <TableColumn fx:id="titleColumn" prefWidth="115.0" text="Tên sách" />
             <TableColumn fx:id="authorColumn" prefWidth="88.33332824707031" text="Tên tác giả" />
-            <TableColumn fx:id="publicationYearColumn" prefWidth="86.33334350585938" text="Năm xuất bản" />
+            <TableColumn fx:id="publishedYearColumn" prefWidth="86.33334350585938" text="Năm xuất bản" />
             <TableColumn fx:id="editionColumn" minWidth="0.0" prefWidth="81.33334350585938" text="Lần xuất bản" />
             <TableColumn fx:id="priceColumn" minWidth="8.000030517578125" prefWidth="65.66668701171875" text="Giá bán" />
             <TableColumn fx:id="amountColumn" prefWidth="73.6666259765625" text="Số lượng" />
             <TableColumn fx:id="bookTypeIDColumn" prefWidth="104.0" text="Mã loại sách" />
             <TableColumn fx:id="publisherIDColumn" prefWidth="170.0" text="Mã nhà xuất bản" />
+            <TableColumn fx:id="statusColumn" prefWidth="170.0" text="Trạng thái" />
         </columns>
     </TableView>
 

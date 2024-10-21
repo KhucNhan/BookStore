@@ -1,47 +1,64 @@
 package com.example.book_store.Controller;
 
 import com.example.book_store.ConnectDB;
+import com.example.book_store.Entity.Book;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.ObservableListBase;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.util.Callback;
 
+import java.io.IOException;
+import java.net.URL;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.ResourceBundle;
+
+import static com.example.book_store.Controller.LoginController.currentUser;
 
 public class BookController {
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
     @FXML
-    public void getBooks(ActionEvent event) {
-
-        String query = "select Title, Author, PublishedYear, Edition, Price, Amount, NameBookType, NamePublisher, Status from Books " +
-
-                "join BookTypes on Books.BookTypeID = BookTypes.BookTypeID " +
-                "join Publishers on Books.PublisherID = Publishers.PublisherID";
-
-        try {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(query);
-
-            while (resultSet.next()) {
-                System.out.println(
-                        "Tên sách: " + resultSet.getString(2)
-                                + "|| Tác giả: " + resultSet.getString(3)
-                                + "|| Năm xuất bản: " + resultSet.getInt(4)
-                                + "|| Lần xuất bản: " + resultSet.getInt(5)
-                                + "|| Giá bán: " + resultSet.getDouble(6)
-                                + "|| Loại sách: " + resultSet.getString("NameBookType")
-                                + "|| Nhà xuất bản: " + resultSet.getString("NamePublisher")
-                                + "|| Trạng thái: " + resultSet.getBoolean("Status")
-                );
-            }
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+    private TableView bookTable;
+    @FXML
+    public TableColumn idColumn;
+    @FXML
+    public TableColumn imageColumn;
+    @FXML
+    public TableColumn titleColumn;
+    @FXML
+    public TableColumn authorColumn;
+    @FXML
+    public TableColumn publishedYearColumn;
+    @FXML
+    public TableColumn editionColumn;
+    @FXML
+    public TableColumn priceColumn;
+    @FXML
+    public TableColumn amountColumn;
+    @FXML
+    public TableColumn bookTypeIDColumn;
+    @FXML
+    public TableColumn publisherIDColumn;
+    @FXML
+    public TableColumn statusColumn;
 
     public boolean addBook(String title, String image, String author, int publishedYear, int edition, double price, int amount, int bookTypeID, int publisherID) {
         ConnectDB connectDB = new ConnectDB();
@@ -49,20 +66,20 @@ public class BookController {
                 "values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try {
-            if(String.valueOf(publishedYear).length() != 4) {
+            if (String.valueOf(publishedYear).length() != 4) {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Enter right year");
                 return false;
             }
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1,title);
-            preparedStatement.setString(2,image);
-            preparedStatement.setString(3,author);
+            preparedStatement.setString(1, title);
+            preparedStatement.setString(2, image);
+            preparedStatement.setString(3, author);
             preparedStatement.setInt(4, publishedYear);
             preparedStatement.setInt(5, edition);
-            preparedStatement.setDouble(6,price);
-            preparedStatement.setInt(7,amount);
-            preparedStatement.setInt(8,bookTypeID);
-            preparedStatement.setInt(9,publisherID);
+            preparedStatement.setDouble(6, price);
+            preparedStatement.setInt(7, amount);
+            preparedStatement.setInt(8, bookTypeID);
+            preparedStatement.setInt(9, publisherID);
             int row = preparedStatement.executeUpdate();
             connection.close();
             showAlert(Alert.AlertType.INFORMATION, "Successful", "Add book successful");
@@ -72,6 +89,7 @@ public class BookController {
         }
         return false;
     }
+
     @FXML
     private boolean deactivationBook(ActionEvent event) {
         String query = "update books set Status = false where BookID = ?";
@@ -109,5 +127,14 @@ public class BookController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-
+    private Stage stage;
+    private Scene scene;
+    private Parent root;
+    public void goToScene(ActionEvent event, String path) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+        root = loader.load();
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        stage.setScene(new Scene(root));
+        stage.show();
+    }
 }
