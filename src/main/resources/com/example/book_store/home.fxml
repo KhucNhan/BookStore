@@ -32,7 +32,6 @@
         </MenuButton>
     </HBox>
 
-    <!-- Căn giữa TableView -->
     <TableView fx:id="bookTable" prefHeight="575.0" prefWidth="1094.0" GridPane.columnIndex="0" GridPane.columnSpan="3" GridPane.rowIndex="1">
         <columns>
             <TableColumn fx:id="idColumn" prefWidth="67.3333295583725" text="Mã sách" />
@@ -47,6 +46,7 @@
             <TableColumn fx:id="publisherIDColumn" prefWidth="170.0" text="Mã nhà xuất bản" />
         </columns>
     </TableView>
+
     <columnConstraints>
         <ColumnConstraints />
         <ColumnConstraints maxWidth="749.0" minWidth="505.99999999999994" prefWidth="656.0" />
