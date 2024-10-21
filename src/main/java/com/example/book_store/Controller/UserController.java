@@ -1,6 +1,7 @@
 package com.example.book_store.Controller;
 
 import com.example.book_store.ConnectDB;
+
 import com.example.book_store.Controller.LoginController;
 import com.example.book_store.Entity.User;
 import javafx.event.ActionEvent;
@@ -11,8 +12,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import java.io.IOException;
+
 import java.sql.*;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -21,6 +24,7 @@ public class UserController {
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
     private final User currentUser = LoginController.currentUser;
+
     private Stage stage;
     private Scene scene;
     private Parent root;
@@ -43,14 +47,17 @@ public class UserController {
     @FXML
     public TextField email;
 
+
     public boolean emailValidator(String email) {
         String EMAIL_REGEX = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
         return Pattern.matches(EMAIL_REGEX, email);
     }
 
     public boolean phoneValidator(String phone) {
+
         String PHONE_REGEX = "^(03|05|07|08|09)([0-9]{8})$";
         return Pattern.matches(PHONE_REGEX, phone);
+
     }
 
     public User getUSerByID(int userID) {
@@ -70,6 +77,7 @@ public class UserController {
     }
 
     @FXML
+
     private boolean deactivationUser(ActionEvent event) {
         String query = "update users set Status = false where UserID = ?";
         try {
@@ -93,19 +101,23 @@ public class UserController {
                 return false;
             }
         } catch (SQLException | IOException e) {
+
             e.printStackTrace();
             return false;
         }
     }
 
+
     public boolean showConfirmation(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         Optional<ButtonType> option = alert.showAndWait();
         return option.get() == ButtonType.OK;
     }
+
 
 
     @FXML
@@ -134,6 +146,7 @@ public class UserController {
             preparedStatement.setString(6, phone.getText());
             preparedStatement.setString(7, address.getText());
             preparedStatement.setString(8, email.getText());
+
             int row = preparedStatement.executeUpdate();
             return row != 0;
         } catch (SQLException e) {
@@ -141,6 +154,7 @@ public class UserController {
             return false;
         }
     }
+
 
     @FXML
     public TextField newName;
@@ -213,6 +227,7 @@ public class UserController {
         }
     }
 
+
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
@@ -220,6 +235,7 @@ public class UserController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
 
     @FXML
     public void logout(ActionEvent event) throws IOException {
@@ -230,4 +246,5 @@ public class UserController {
         stage.setScene(scene);
         stage.show();
     }
+
 }

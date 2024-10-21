@@ -47,6 +47,4 @@
 
         <Button onAction="#logout" text="Log out"/>
     </HBox>
-
-
 </AnchorPane>

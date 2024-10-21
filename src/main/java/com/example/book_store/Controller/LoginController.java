@@ -43,7 +43,9 @@ public class LoginController {
 
     @FXML
     public void initialize() {
+
         // Khởi tạo nếu cần thiết
+
     }
 
     public static User currentUser;

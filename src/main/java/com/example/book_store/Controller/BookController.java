@@ -15,7 +15,9 @@ public class BookController {
     private final Connection connection = connectDB.connectionDB();
     @FXML
     public void getBooks(ActionEvent event) {
+
         String query = "select Title, Author, PublishedYear, Edition, Price, Amount, NameBookType, NamePublisher, Status from Books " +
+
                 "join BookTypes on Books.BookTypeID = BookTypes.BookTypeID " +
                 "join Publishers on Books.PublisherID = Publishers.PublisherID";
 
@@ -107,4 +109,5 @@ public class BookController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
 }
