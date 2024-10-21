@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane prefHeight="600.0" prefWidth="780.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.LoginController">
+    <center>
+        <!-- VBox với nền màu nâu nhạt (#FFEBCD) -->
+        <VBox alignment="CENTER" fillWidth="true" prefHeight="600.0" prefWidth="316.0" spacing="10.0" style="-fx-background-color:#FAEBD7;">
+            <Label contentDisplay="CENTER" style="-fx-font-size: 18px; -fx-text-fill: #003399;" text="ĐĂNG NHẬP VÀO TÀI KHOẢN" />
+            <Label prefHeight="17.0" prefWidth="293.0" text="Tên đăng nhập" />
+            <TextField fx:id="usernameField" maxWidth="300.0" promptText="Tên đăng nhập" />
+            <Label prefHeight="17.0" prefWidth="297.0" text="Mật khẩu" />
+            <PasswordField fx:id="passwordField" maxWidth="300.0" promptText="Mật khẩu" />
+            <Hyperlink fx:id="forgotPasswordLink" text="Quên mật khẩu?" />
+            <Button fx:id="loginButton" onAction="#handleLogin" prefHeight="25.0" style="-fx-background-color: #003399; -fx-text-fill: white;" text="ĐĂNG NHẬP" />
+            <padding>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </padding>
+        </VBox>
+    </center>
+</BorderPane>
