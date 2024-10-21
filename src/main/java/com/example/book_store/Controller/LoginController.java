@@ -8,18 +8,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.regex.Pattern;
 
 public class LoginController {
     private final ConnectDB connectDB = new ConnectDB();
@@ -58,10 +52,10 @@ public class LoginController {
         if (validateLogin(username, password) && isActive(username, password)) {
             currentUser = getUSerByUserNameAndPassword(username, password);
             showAlert(Alert.AlertType.INFORMATION, "Đăng nhập thành công", "Xin chào " + currentUser.getRole() + " " + currentUser.getName() + "!");
-            Parent root = FXMLLoader.load(getClass().getResource("test.fxml"));
-            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            scene = new Scene(root, 720, 480);
-            stage.setScene(scene);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/book_store/test.fxml"));
+            Parent root = loader.load();
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
             stage.show();
         } else if (validateLogin(username, password) && !isActive(username, password)) {
             showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Tài khoản đã bị hủy.");
@@ -126,5 +120,79 @@ public class LoginController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    public TextField name;
+    @FXML
+    public TextField username;
+    @FXML
+    public TextField password;
+    @FXML
+    public TextField reEnterPassword;
+    @FXML
+    public DatePicker dateOfBirth;
+    @FXML
+    public MenuButton gender;
+    @FXML
+    public TextField phone;
+    @FXML
+    public TextField address;
+    @FXML
+    public TextField email;
+
+    @FXML
+    private boolean signUp(ActionEvent event) {
+        String query = "insert into users (Name, Username, Password, DateOfBirth, Gender, Phone, Address, Email)" +
+                "values (?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            if (password.getText().equals(reEnterPassword.getText())) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Incorrect password");
+                return false;
+            }
+            if (phoneValidator(phone.getText())) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right phone number!");
+                return false;
+            }
+            if (emailValidator(email.getText())) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right email address!");
+                return false;
+            }
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, name.getText());
+            preparedStatement.setString(2, username.getText());
+            preparedStatement.setString(3, password.getText());
+            preparedStatement.setDate(4, Date.valueOf(dateOfBirth.getValue()));
+            preparedStatement.setString(5, gender.getText());
+            preparedStatement.setString(6, phone.getText());
+            preparedStatement.setString(7, address.getText());
+            preparedStatement.setString(8, email.getText());
+
+            int row = preparedStatement.executeUpdate();
+            return row != 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean emailValidator(String email) {
+        String EMAIL_REGEX = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        return Pattern.matches(EMAIL_REGEX, email);
+    }
+
+    public boolean phoneValidator(String phone) {
+
+        String PHONE_REGEX = "^(03|05|07|08|09)([0-9]{8})$";
+        return Pattern.matches(PHONE_REGEX, phone);
+
+    }
+
+    public void goToSignUp(ActionEvent event) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/book_store/register.fxml"));
+        Parent root = loader.load();
+        Stage stage = new Stage();
+        stage.setScene(new Scene(root));
+        stage.show();
     }
 }

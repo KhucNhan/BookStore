@@ -28,25 +28,6 @@ public class UserController {
     private Stage stage;
     private Scene scene;
     private Parent root;
-    @FXML
-    public TextField name;
-    @FXML
-    public TextField username;
-    @FXML
-    public TextField password;
-    @FXML
-    public TextField reEnterPassword;
-    @FXML
-    public DatePicker dateOfBirth;
-    @FXML
-    public TextField gender;
-    @FXML
-    public TextField phone;
-    @FXML
-    public TextField address;
-    @FXML
-    public TextField email;
-
 
     public boolean emailValidator(String email) {
         String EMAIL_REGEX = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
@@ -118,44 +99,6 @@ public class UserController {
         return option.get() == ButtonType.OK;
     }
 
-
-
-    @FXML
-    private boolean addUser(ActionEvent event) {
-        String query = "insert into users (Name, Username, Password, DateOfBirth, Gender, Phone, Address, Email)" +
-                "values (?, ?, ?, ?, ?, ?, ?, ?)";
-        try {
-            if (password.getText().equals(reEnterPassword.getText())) {
-                showAlert(Alert.AlertType.ERROR, "Failed", "Incorrect password");
-                return false;
-            }
-            if (phoneValidator(phone.getText())) {
-                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right phone number!");
-                return false;
-            }
-            if (emailValidator(email.getText())) {
-                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right email address!");
-                return false;
-            }
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, name.getText());
-            preparedStatement.setString(2, username.getText());
-            preparedStatement.setString(3, password.getText());
-            preparedStatement.setDate(4, Date.valueOf(dateOfBirth.getValue()));
-            preparedStatement.setString(5, gender.getText());
-            preparedStatement.setString(6, phone.getText());
-            preparedStatement.setString(7, address.getText());
-            preparedStatement.setString(8, email.getText());
-
-            int row = preparedStatement.executeUpdate();
-            return row != 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-
     @FXML
     public TextField newName;
     @FXML
@@ -177,11 +120,11 @@ public class UserController {
     private boolean updateUserInformation(ActionEvent event) {
         String query = "update users set Name = ?, DateOfBirth = ?, Gender = ?, Phone = ?, Address = ?, Email = ? where UserID = ?";
         try {
-            if (phoneValidator(phone.getText())) {
+            if (phoneValidator(newPhone.getText())) {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Enter right phone number!");
                 return false;
             }
-            if (emailValidator(email.getText())) {
+            if (emailValidator(newEmail.getText())) {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Enter right email address!");
                 return false;
             }

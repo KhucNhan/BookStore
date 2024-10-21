@@ -3,23 +3,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.UserController">
+<AnchorPane prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.UserController">
     <HBox prefHeight="720.0" prefWidth="1080.0">
-        <VBox>
-            <Label prefHeight="20" text="Sign up" />
-            <TextField fx:id="name" prefHeight="20" prefWidth="150" promptText="Name" />
-            <TextField fx:id="username" prefHeight="20" prefWidth="150" promptText="Username" />
-            <TextField fx:id="password" prefHeight="20" prefWidth="150" promptText="Password" />
-            <TextField fx:id="reEnterPassword" prefHeight="20" prefWidth="150" promptText="Re-Password" />
-            <DatePicker fx:id="dateOfBirth" promptText="Date of birth" />
-            <TextField fx:id="gender" prefHeight="20" prefWidth="150" promptText="Gender" />
-            <TextField fx:id="phone" prefHeight="20" prefWidth="150" promptText="Phone number" />
-            <TextField fx:id="address" prefHeight="20" prefWidth="150" promptText="Address" />
-            <TextField fx:id="email" prefHeight="20" prefWidth="150" promptText="Email" />
-            <Button onAction="#addUser" text="Sign up"/>
-            <Label prefWidth="175" text=" " />
-        </VBox>
-
         <VBox>
             <Label prefHeight="20" text="Change Password" />
             <PasswordField fx:id="oldPassword" prefHeight="20" prefWidth="150" promptText="Recent password" />
