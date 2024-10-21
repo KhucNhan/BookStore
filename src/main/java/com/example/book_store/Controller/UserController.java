@@ -1,5 +1,8 @@
-package com.example.book_store;
+package com.example.book_store.Controller;
 
+import com.example.book_store.ConnectDB;
+import com.example.book_store.Controller.LoginController;
+import com.example.book_store.Entity.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -216,5 +219,15 @@ public class UserController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    public void logout(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        scene = new Scene(root, 1200, 800);
+        stage.setTitle("Loan Slip");
+        stage.setScene(scene);
+        stage.show();
     }
 }
