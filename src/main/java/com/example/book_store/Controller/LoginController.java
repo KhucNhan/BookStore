@@ -1,5 +1,7 @@
-package com.example.book_store;
+package com.example.book_store.Controller;
 
+import com.example.book_store.ConnectDB;
+import com.example.book_store.Entity.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -15,7 +17,6 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;

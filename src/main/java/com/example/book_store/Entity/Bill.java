@@ -1,4 +1,4 @@
-package com.example.book_store;
+package com.example.book_store.Entity;
 
 import java.util.Date;
 

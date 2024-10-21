@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.UserController">
+<AnchorPane prefHeight="720.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.UserController">
     <HBox prefHeight="720.0" prefWidth="1080.0">
         <VBox>
             <Label prefHeight="20" text="Sign up" />
@@ -44,6 +44,8 @@
             <Label text="Delete account" />
             <Button onAction="#deactivationUser" text="Delete"/>
         </VBox>
+
+        <Button onAction="#logout" text="Log out"/>
     </HBox>
 
 
