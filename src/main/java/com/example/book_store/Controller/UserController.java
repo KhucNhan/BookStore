@@ -2,7 +2,6 @@ package com.example.book_store.Controller;
 
 import com.example.book_store.ConnectDB;
 
-import com.example.book_store.Controller.LoginController;
 import com.example.book_store.Entity.User;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -23,7 +22,7 @@ import java.util.regex.Pattern;
 public class UserController {
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
-    private final User currentUser = LoginController.currentUser;
+    private final User currentUser = Authentication.currentUser;
 
     private Stage stage;
     private Scene scene;

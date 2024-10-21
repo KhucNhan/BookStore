@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.regex.Pattern;
 
-public class LoginController {
+public class Authentication {
     private final ConnectDB connectDB = new ConnectDB();
     Connection connection = connectDB.connectionDB();
 
@@ -142,15 +142,15 @@ public class LoginController {
         String query = "insert into users (Name, Username, Password, DateOfBirth, Gender, Phone, Address, Email)" +
                 "values (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
-            if (password.getText().equals(reEnterPassword.getText())) {
+            if (!password.getText().equals(reEnterPassword.getText())) {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Incorrect password");
                 return false;
             }
-            if (phoneValidator(phone.getText())) {
+            if (!phoneValidator(phone.getText())) {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Enter right phone number!");
                 return false;
             }
-            if (emailValidator(email.getText())) {
+            if (!emailValidator(email.getText())) {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Enter right email address!");
                 return false;
             }
@@ -165,10 +165,14 @@ public class LoginController {
             preparedStatement.setString(8, email.getText());
 
             int row = preparedStatement.executeUpdate();
+            if (row != 0) showAlert(Alert.AlertType.INFORMATION, "Successful", "Sign up successful");
+            goToScene(event, "/com/example/book_store/view/login.fxml");
             return row != 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
