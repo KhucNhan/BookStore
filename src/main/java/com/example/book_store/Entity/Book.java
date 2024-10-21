@@ -11,8 +11,8 @@ public class Book {
     private int amount;
     private int bookTypeID;
     private int publisherID;
-
-    public Book(int bookID, String image, String title, String author, int publishedYear, int edition, double price, int amount, int bookTypeID, int publisherID) {
+    private boolean status;
+    public Book(int bookID, String image, String title, String author, int publishedYear, int edition, double price, int amount, int bookTypeID, int publisherID, boolean status) {
         this.bookID = bookID;
         this.image = image;
         this.title = title;
@@ -23,6 +23,15 @@ public class Book {
         this.amount = amount;
         this.bookTypeID = bookTypeID;
         this.publisherID = publisherID;
+        this.status = status;
+    }
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public void setStatus(boolean status) {
+        this.status = status;
     }
 
     public int getBookID() {
@@ -118,6 +127,7 @@ public class Book {
                 ", amount=" + amount +
                 ", bookTypeID=" + bookTypeID +
                 ", publisherID=" + publisherID +
+                ", status=" + status +
                 '}';
     }
 }
