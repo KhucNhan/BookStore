@@ -28,6 +28,7 @@ import java.util.ResourceBundle;
 
 public class BookController implements Initializable {
     private final User currentUser = Authentication.currentUser;
+    public Button addBook;
     private UserController userController = new UserController();
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
@@ -132,7 +133,8 @@ public class BookController implements Initializable {
     }
 
     private void initializeUser() {
-        idColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookID"));
+        addBook.setVisible(false);
+        idColumn.setVisible(false);
         imageColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("image"));
         imageColumn.setCellFactory(column -> new TableCell<Book, String>() {
 
@@ -160,7 +162,26 @@ public class BookController implements Initializable {
         bookTypeIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookTypeID"));
         publisherIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("publisherID"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<Book, Boolean>("status"));
-        actionColumn.setCellValueFactory(new PropertyValueFactory<Book, Void>(""));
+        actionColumn.setCellFactory(column -> new TableCell<Book, Void>() {
+            private final Button addToCartButton = new Button("Add to cart");
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    addToCartButton.setOnAction(e -> {
+                        Book book = getTableView().getItems().get(getIndex());
+
+                    });
+
+                    HBox hBox = new HBox(addToCartButton);
+                    hBox.setSpacing(10);
+                    setGraphic(hBox);
+                }
+            }
+        });
 
         loadBooks();
     }
@@ -365,5 +386,15 @@ public class BookController implements Initializable {
     @FXML
     public void updateUserInformation(ActionEvent event) {
         userController.updateUserInformation(event);
+    }
+
+    @FXML
+    public void goToHome(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/home.fxml");
+    }
+
+    @FXML
+    public void goToCart(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/cart.fxml");
     }
 }
