@@ -192,11 +192,25 @@ public class Authentication {
         goToScene(event, "/com/example/book_store/view/register.fxml");
     }
 
+    @FXML
     public void goToScene(ActionEvent event, String path) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
         root = loader.load();
-        stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        stage.setScene(new Scene(root));
-        stage.show();
+
+        // Kiểm tra nguồn sự kiện
+        if (event.getSource() instanceof Node) {
+            // Nếu nguồn sự kiện là một Node (ví dụ như Button), thì lấy Stage từ Node
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } else {
+            // Ép kiểu nguồn sự kiện từ MenuItem (không thuộc về root) về Node
+            Node node = ((MenuItem) event.getSource()).getParentPopup().getOwnerNode();
+            Stage stage = (Stage) node.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        }
     }
 }

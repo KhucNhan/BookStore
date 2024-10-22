@@ -35,10 +35,10 @@
     <HBox prefHeight="25.0" prefWidth="253.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
         <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" prefWidth="100.0" text="User">
             <items>
-                <MenuItem mnemonicParsing="false" text="Chỉnh sửa thông tin cá nhân" />
-                <MenuItem mnemonicParsing="false" text="Đổi mật khẩu" />
-                <MenuItem mnemonicParsing="false" text="Xóa tài khoản" />
-                <MenuItem mnemonicParsing="false" text="Đăng xuất" />
+                <MenuItem onAction="#updateUserInformation" mnemonicParsing="false" text="Chỉnh sửa thông tin cá nhân" />
+                <MenuItem onAction="#updateUserPassword" mnemonicParsing="false" text="Đổi mật khẩu" />
+                <MenuItem onAction="#deactivationUser" mnemonicParsing="false" text="Xóa tài khoản" />
+                <MenuItem onAction="#logout" mnemonicParsing="false" text="Đăng xuất" />
             </items>
         </MenuButton>
     </HBox>
