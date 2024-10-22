@@ -15,6 +15,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
@@ -24,7 +25,7 @@ import java.sql.*;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class BookController implements Initializable{
+public class BookController implements Initializable {
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
 
@@ -57,6 +58,7 @@ public class BookController implements Initializable{
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
         idColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookID"));
         imageColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("image"));
         imageColumn.setCellFactory(column -> new TableCell<Book, String>() {
@@ -86,7 +88,38 @@ public class BookController implements Initializable{
         publisherIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("publisherID"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<Book, Boolean>("status"));
 
+
+        actionColumn.setCellFactory(column -> new TableCell<Book, Void>() {
+            private final Button editBook = new Button("Edit");
+            private final Button deleteBook = new Button("Delete");
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    editBook.setOnAction(e -> {
+                        Book book = getTableView().getItems().get(getIndex());
+                        showEditDialog(book);
+                    });
+
+                    deleteBook.setOnAction(e -> {
+                        Book book = getTableView().getItems().get(getIndex());
+                        if (deactivationBook(book.getBookID())) {
+                            loadBooks();
+                        }
+                    });
+
+                    HBox hBox = new HBox(editBook, deleteBook);
+                    hBox.setSpacing(10);
+                    setGraphic(hBox);
+                }
+            }
+        });
+
         loadBooks();
+
     }
 
     private void showEditDialog(Book book) {
@@ -244,9 +277,11 @@ public class BookController implements Initializable{
         alert.setContentText(message);
         alert.showAndWait();
     }
+
     private Stage stage;
     private Scene scene;
     private Parent root;
+
     public void goToScene(ActionEvent event, String path) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
         root = loader.load();
