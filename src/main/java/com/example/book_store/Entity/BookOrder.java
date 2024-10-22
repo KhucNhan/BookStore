@@ -1,11 +1,11 @@
 package com.example.book_store.Entity;
 
-public class BooksOrders {
+public class BookOrder {
     private int orderID;
     private int bookID;
     private int amount;
 
-    public BooksOrders(int orderID, int bookID, int amount) {
+    public BookOrder(int orderID, int bookID, int amount) {
         this.orderID = orderID;
         this.bookID = bookID;
         this.amount = amount;

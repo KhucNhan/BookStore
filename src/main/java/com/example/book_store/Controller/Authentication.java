@@ -8,20 +8,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.regex.Pattern;
 
-public class LoginController {
+public class Authentication {
     private final ConnectDB connectDB = new ConnectDB();
     Connection connection = connectDB.connectionDB();
 
@@ -44,6 +38,8 @@ public class LoginController {
     @FXML
     public void initialize() {
 
+        // Khởi tạo nếu cần thiết
+
     }
 
     public static User currentUser;
@@ -56,11 +52,7 @@ public class LoginController {
         if (validateLogin(username, password) && isActive(username, password)) {
             currentUser = getUSerByUserNameAndPassword(username, password);
             showAlert(Alert.AlertType.INFORMATION, "Đăng nhập thành công", "Xin chào " + currentUser.getRole() + " " + currentUser.getName() + "!");
-            Parent root = FXMLLoader.load(getClass().getResource("test.fxml"));
-            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            scene = new Scene(root, 720, 480);
-            stage.setScene(scene);
-            stage.show();
+            goToScene(event, "/com/example/book_store/view/home.fxml");
         } else if (validateLogin(username, password) && !isActive(username, password)) {
             showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Tài khoản đã bị hủy.");
         } else {
@@ -124,5 +116,101 @@ public class LoginController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    public TextField name;
+    @FXML
+    public TextField username;
+    @FXML
+    public TextField password;
+    @FXML
+    public TextField reEnterPassword;
+    @FXML
+    public DatePicker dateOfBirth;
+    @FXML
+    public MenuButton gender;
+    @FXML
+    public TextField phone;
+    @FXML
+    public TextField address;
+    @FXML
+    public TextField email;
+
+    @FXML
+    private boolean signUp(ActionEvent event) {
+        String query = "insert into users (Name, Username, Password, DateOfBirth, Gender, Phone, Address, Email)" +
+                "values (?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            if (!password.getText().equals(reEnterPassword.getText())) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Incorrect password");
+                return false;
+            }
+            if (!phoneValidator(phone.getText())) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right phone number!");
+                return false;
+            }
+            if (!emailValidator(email.getText())) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right email address!");
+                return false;
+            }
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, name.getText());
+            preparedStatement.setString(2, username.getText());
+            preparedStatement.setString(3, password.getText());
+            preparedStatement.setDate(4, Date.valueOf(dateOfBirth.getValue()));
+            preparedStatement.setString(5, gender.getText());
+            preparedStatement.setString(6, phone.getText());
+            preparedStatement.setString(7, address.getText());
+            preparedStatement.setString(8, email.getText());
+
+            int row = preparedStatement.executeUpdate();
+            if (row != 0) showAlert(Alert.AlertType.INFORMATION, "Successful", "Sign up successful");
+            goToScene(event, "/com/example/book_store/view/login.fxml");
+            return row != 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean emailValidator(String email) {
+        String EMAIL_REGEX = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
+        return Pattern.matches(EMAIL_REGEX, email);
+    }
+
+    public boolean phoneValidator(String phone) {
+
+        String PHONE_REGEX = "^(03|05|07|08|09)([0-9]{8})$";
+        return Pattern.matches(PHONE_REGEX, phone);
+
+    }
+
+    public void goToSignUp(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/register.fxml");
+    }
+
+    @FXML
+    public void goToScene(ActionEvent event, String path) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+        root = loader.load();
+
+        // Kiểm tra nguồn sự kiện
+        if (event.getSource() instanceof Node) {
+            // Nếu nguồn sự kiện là một Node (ví dụ như Button), thì lấy Stage từ Node
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } else {
+            // Ép kiểu nguồn sự kiện từ MenuItem (không thuộc về root) về Node
+            Node node = ((MenuItem) event.getSource()).getParentPopup().getOwnerNode();
+            Stage stage = (Stage) node.getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        }
     }
 }
