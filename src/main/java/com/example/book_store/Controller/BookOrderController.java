@@ -96,14 +96,31 @@ public class BookOrderController {
                 cart.add(cartItem);
             }
 
-            System.out.println(cart);
-
             cartTableView.setItems(cart);
-            connection.close();
+             
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "Could not load book data");
         }
+    }
+
+    public boolean addBookOrder(int orderID, int bookID, int amount) {
+        String query = "INSERT INTO Books_Orders (OrderID, BookID, Amount) select ?, ?, ? where BookID = ?";
+        int row = 0;
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, orderID);
+            preparedStatement.setInt(2, bookID);
+            preparedStatement.setInt(3, amount);
+            preparedStatement.setInt(4, bookID);
+            row = preparedStatement.executeUpdate();
+             
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return row != 0;
     }
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
