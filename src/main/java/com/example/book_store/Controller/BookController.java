@@ -27,6 +27,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class BookController implements Initializable {
+    private final User currentUser = Authentication.currentUser;
     private UserController userController = new UserController();
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
@@ -60,7 +61,14 @@ public class BookController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        if (currentUser.getRole().equalsIgnoreCase("admin")) {
+            initializeAdmin();
+        } else {
+            initializeUser();
+        }
+    }
 
+    private void initializeAdmin() {
         idColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookID"));
         imageColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("image"));
         imageColumn.setCellFactory(column -> new TableCell<Book, String>() {
@@ -121,7 +129,40 @@ public class BookController implements Initializable {
         });
 
         loadBooks();
+    }
 
+    private void initializeUser() {
+        idColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookID"));
+        imageColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("image"));
+        imageColumn.setCellFactory(column -> new TableCell<Book, String>() {
+
+            private final ImageView imageView = new ImageView();
+
+            @Override
+            protected void updateItem(String imagePath, boolean empty) {
+                super.updateItem(imagePath, empty);
+                if (empty || imagePath == null) {
+                    setGraphic(null);
+                } else {
+                    imageView.setImage(new Image(imagePath));
+                    imageView.setFitHeight(50);
+                    imageView.setFitWidth(50);
+                    setGraphic(imageView);
+                }
+            }
+        });
+        titleColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("title"));
+        authorColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("author"));
+        publishedYearColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("publishedYear"));
+        editionColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("edition"));
+        priceColumn.setCellValueFactory(new PropertyValueFactory<Book, Double>("price"));
+        amountColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("amount"));
+        bookTypeIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookTypeID"));
+        publisherIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("publisherID"));
+        statusColumn.setCellValueFactory(new PropertyValueFactory<Book, Boolean>("status"));
+        actionColumn.setCellValueFactory(new PropertyValueFactory<Book, Void>(""));
+
+        loadBooks();
     }
 
     private void showEditDialog(Book book) {
