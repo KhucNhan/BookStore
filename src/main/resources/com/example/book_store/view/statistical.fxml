@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="452.0" prefWidth="541.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.RtatisticalController">
+    <children>
+        <Label layoutX="378.0" layoutY="24.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Sách Bán Chạy Nhất" AnchorPane.leftAnchor="378.0" AnchorPane.topAnchor="24.0" />
+
+        <TableView fx:id="bestsellingBooksTable" layoutX="261.0" layoutY="122.0" prefHeight="393.0" prefWidth="646.0" AnchorPane.leftAnchor="261.0" AnchorPane.topAnchor="122.0">
+            <columns>
+                <TableColumn fx:id="image" prefWidth="136.99996948242188" text="Hình ảnh" />
+                <TableColumn fx:id="title" prefWidth="149.66668701171875" text="Tên sách" />
+                <TableColumn fx:id="author" minWidth="0.0" prefWidth="175.0" text="Tên tác Giả" />
+                <TableColumn fx:id="soldCount" prefWidth="109.66668701171875" text="Số Lượng Đã Bán" />
+                <TableColumn fx:id="price" prefWidth="74.33331298828125" text="Giá" />
+            </columns>
+        </TableView>
+    </children>
+</AnchorPane>
