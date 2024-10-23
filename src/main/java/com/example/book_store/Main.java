@@ -12,6 +12,7 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("/com/example/book_store/view/login.fxml"));
         Scene scene = new Scene(fxmlLoader.load(), 1080, 720);
         stage.setTitle("Login");
+        stage.setMaximized(true);
         stage.setScene(scene);
         stage.show();
     }

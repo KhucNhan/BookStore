@@ -198,6 +198,10 @@ public class Authentication {
         goToScene(event, "/com/example/book_store/view/register.fxml");
     }
 
+public void goToLogin(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/login.fxml");
+    }
+
     @FXML
     public void goToScene(ActionEvent event, String path) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
