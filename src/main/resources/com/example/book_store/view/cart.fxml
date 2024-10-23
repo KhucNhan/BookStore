@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane minHeight="430" minWidth="900" prefHeight="430.0" prefWidth="815.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.CartController">
+<BorderPane minHeight="430" minWidth="900" prefHeight="430.0" prefWidth="815.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.BookOrderController">
 
     <top>
         <Label alignment="CENTER" prefHeight="40.0" prefWidth="815.0" style="-fx-font-size: 25px; -fx-font-weight: bold;" text="Giỏ hàng" />
@@ -13,10 +13,10 @@
         <TableView fx:id="cartTableView" prefHeight="333.0" prefWidth="845.0" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn fx:id="select" prefWidth="96.99999237060547" text="Chọn" />
-                <TableColumn fx:id="product" prefWidth="160.3333282470703" text="Sản phẩm" />
+                <TableColumn fx:id="title" prefWidth="160.3333282470703" text="Sản phẩm" />
                 <TableColumn fx:id="image" prefWidth="270.3333435058594" text="Hình ảnh" />
                 <TableColumn fx:id="price" prefWidth="167.66665649414062" text="Giá" />
-                <TableColumn fx:id="quantity" prefWidth="113.99993896484375" text="Số lượng" />
+                <TableColumn fx:id="amount" prefWidth="113.99993896484375" text="Số lượng" />
                 <TableColumn fx:id="total" prefWidth="91.3333740234375" text="Tổng cộng" />
             </columns>
         </TableView>

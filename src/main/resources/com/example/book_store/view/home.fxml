@@ -5,16 +5,16 @@
 <?import javafx.scene.layout.*?>
 
 <GridPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="600.0" prefWidth="1226.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.BookController">
-    <HBox GridPane.rowIndex="1">
+    <HBox GridPane.rowIndex="0" GridPane.columnIndex="0">
         <MenuBar layoutY="1.0" prefHeight="22.0" prefWidth="263.0">
             <menus>
-                <Menu mnemonicParsing="false" text="Trang chủ" />
-                <Menu mnemonicParsing="false" text="Giỏ hàng" />
+                <Menu onAction="#goToHome" mnemonicParsing="false" text="Trang chủ" />
+                <Menu onAction="#goToCart" mnemonicParsing="false" text="Giỏ hàng" />
                 <Menu mnemonicParsing="false" text="Thống kê" />
             </menus>
         </MenuBar>
     </HBox>
-    <HBox prefHeight="25.0" prefWidth="500.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+    <HBox prefHeight="25.0" prefWidth="500.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
         <TextField fx:id="search" prefHeight="25.0" prefWidth="552.0">
          <HBox.margin>
             <Insets top="5.0" />
@@ -27,7 +27,7 @@
             <Insets left="25.0" right="25.0" />
         </padding>
     </HBox>
-    <HBox prefHeight="25.0" prefWidth="253.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+    <HBox prefHeight="25.0" prefWidth="253.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
         <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" prefWidth="100.0" text="User">
             <items>
                 <MenuItem onAction="#updateUserInformation" mnemonicParsing="false" text="Chỉnh sửa thông tin cá nhân" />

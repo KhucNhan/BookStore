@@ -2,6 +2,7 @@ package com.example.book_store.Controller;
 
 import com.example.book_store.ConnectDB;
 import com.example.book_store.Entity.Book;
+import com.example.book_store.Entity.Order;
 import com.example.book_store.Entity.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,6 +20,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import java.sql.Date;
 
 import java.io.IOException;
 import java.net.URL;
@@ -28,7 +30,11 @@ import java.util.ResourceBundle;
 
 public class BookController implements Initializable {
     private final User currentUser = Authentication.currentUser;
+    public Button addBook;
     private UserController userController = new UserController();
+    private BillController billController = new BillController();
+    private OrderController orderController = new OrderController();
+    private BookOrderController bookOrderController = new BookOrderController();
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
 
@@ -132,7 +138,8 @@ public class BookController implements Initializable {
     }
 
     private void initializeUser() {
-        idColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookID"));
+        addBook.setVisible(false);
+        idColumn.setVisible(false);
         imageColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("image"));
         imageColumn.setCellFactory(column -> new TableCell<Book, String>() {
 
@@ -160,9 +167,126 @@ public class BookController implements Initializable {
         bookTypeIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookTypeID"));
         publisherIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("publisherID"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<Book, Boolean>("status"));
-        actionColumn.setCellValueFactory(new PropertyValueFactory<Book, Void>(""));
+        actionColumn.setCellFactory(column -> new TableCell<Book, Void>() {
+            private final Button addToCartButton = new Button("Add to cart");
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    addToCartButton.setOnAction(e -> {
+                        Book book = getTableView().getItems().get(getIndex());
+                        try {
+                            addToCart(currentUser.getUserID(), book.getBookID(), 1, book.getPrice());
+                            showAlert(Alert.AlertType.INFORMATION, "Successful", "Add to cart successful");
+                        } catch (SQLException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    });
+
+                    HBox hBox = new HBox(addToCartButton);
+                    hBox.setSpacing(10);
+                    setGraphic(hBox);
+                }
+            }
+        });
+
 
         loadBooks();
+    }
+
+    public void addToCart(int userId, int bookId, int quantity, double price) throws SQLException {
+        // 1. Kiểm tra hóa đơn hiện có hay chưa
+        PreparedStatement stmt = connection.prepareStatement("SELECT BillID FROM Bills WHERE UserID = ? AND Status = 'pending'");
+        stmt.setInt(1, userId);
+        ResultSet rs = stmt.executeQuery();
+
+        int billId;
+        if (rs.next()) {
+            billId = rs.getInt("BillID");
+        } else {
+            // Tạo hóa đơn mới
+            stmt = connection.prepareStatement("INSERT INTO Bills (Date, TotalAmount, UserID, Status) VALUES (CURRENT_DATE, 0, ?, 'pending')", Statement.RETURN_GENERATED_KEYS);
+            stmt.setInt(1, userId);
+            stmt.executeUpdate();
+            rs = stmt.getGeneratedKeys();
+            if (rs.next()) {
+                billId = rs.getInt(1);
+            } else {
+                throw new SQLException("Failed to create bill");
+            }
+        }
+
+        // 2. Kiểm tra xem có order nào với BillID và BookID đã tồn tại hay chưa
+        stmt = connection.prepareStatement("SELECT OrderID, Amount FROM Orders WHERE BillID = ? AND BookID = ?");
+        stmt.setInt(1, billId);
+        stmt.setInt(2, bookId);
+        rs = stmt.executeQuery();
+
+        if (rs.next()) {
+            // Nếu đã tồn tại order, cập nhật số lượng và tổng tiền
+            int orderId = rs.getInt("OrderID");
+            int existingAmount = rs.getInt("Amount");
+            int newAmount = existingAmount + quantity;
+
+            // Cập nhật số lượng trong bảng Orders
+            stmt = connection.prepareStatement("UPDATE Orders SET Amount = ?, Price = ? WHERE OrderID = ?");
+            stmt.setInt(1, newAmount);
+            stmt.setDouble(2, price);
+            stmt.setInt(3, orderId);
+            stmt.executeUpdate();
+
+            // Cập nhật số lượng trong bảng Books_Orders
+            stmt = connection.prepareStatement("UPDATE Books_Orders SET Amount = ? WHERE OrderID = ? AND BookID = ?");
+            stmt.setInt(1, newAmount);
+            stmt.setInt(2, orderId);
+            stmt.setInt(3, bookId);
+            stmt.executeUpdate();
+
+            // Cập nhật tổng tiền hóa đơn
+            updateTotalAmount(stmt, billId);
+        } else {
+            // 3. Thêm sản phẩm vào Orders
+            stmt = connection.prepareStatement("INSERT INTO Orders (BillID, BookID, Amount, Price) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+            stmt.setInt(1, billId);
+            stmt.setInt(2, bookId);
+            stmt.setInt(3, quantity);
+            stmt.setDouble(4, price);
+            stmt.executeUpdate();
+            rs = stmt.getGeneratedKeys();
+            int orderId;
+            if (rs.next()) {
+                orderId = rs.getInt(1);
+            } else {
+                throw new SQLException("Failed to add order");
+            }
+
+            // 4. Cập nhật số lượng sách trong kho
+            stmt = connection.prepareStatement("UPDATE Books SET Amount = Amount - ? WHERE BookID = ?");
+            stmt.setInt(1, quantity);
+            stmt.setInt(2, bookId);
+            stmt.executeUpdate();
+
+            // Cập nhật số lượng trong bảng Books_Orders
+            stmt = connection.prepareStatement("INSERT INTO Books_Orders (OrderID, BookID, Amount) VALUES (?, ?, ?)");
+            stmt.setInt(1, orderId);
+            stmt.setInt(2, bookId);
+            stmt.setInt(3, quantity);
+            stmt.executeUpdate();
+
+            // 5. Cập nhật tổng tiền hóa đơn
+            updateTotalAmount(stmt, billId);
+        }
+    }
+
+    private void updateTotalAmount(PreparedStatement stmt, int billId) throws SQLException {
+        // Cập nhật tổng tiền hóa đơn
+        stmt = connection.prepareStatement("UPDATE Bills SET TotalAmount = (SELECT SUM(Price * Amount) FROM Orders WHERE BillID = ?) WHERE BillID = ?");
+        stmt.setInt(1, billId);
+        stmt.setInt(2, billId);
+        stmt.executeUpdate();
     }
 
     private void showEditDialog(Book book) {
@@ -246,7 +370,7 @@ public class BookController implements Initializable {
             }
 
             bookTable.setItems(bookList);
-            connection.close();
+             
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "Could not load book data");
@@ -275,7 +399,7 @@ public class BookController implements Initializable {
             preparedStatement.setInt(8, bookTypeID);
             preparedStatement.setInt(9, publisherID);
             int row = preparedStatement.executeUpdate();
-            connection.close();
+             
             showAlert(Alert.AlertType.INFORMATION, "Successful", "Add book successful");
             return row != 0;
         } catch (SQLException e) {
@@ -291,7 +415,7 @@ public class BookController implements Initializable {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setInt(1, bookID);
                 int row = preparedStatement.executeUpdate();
-                connection.close();
+                 
                 showAlert(Alert.AlertType.INFORMATION, "Successful", "Delete book successful");
                 return row != 0;
             } else {
@@ -365,5 +489,15 @@ public class BookController implements Initializable {
     @FXML
     public void updateUserInformation(ActionEvent event) {
         userController.updateUserInformation(event);
+    }
+
+    @FXML
+    public void goToHome(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/home.fxml");
+    }
+
+    @FXML
+    public void goToCart(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/cart.fxml");
     }
 }
