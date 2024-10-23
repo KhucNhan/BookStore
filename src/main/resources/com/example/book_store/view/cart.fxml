@@ -1,38 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane minHeight="430" minWidth="900" prefHeight="430.0" prefWidth="815.0"
-            xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.book_store.Controller.BookOrderController">
+<BorderPane minHeight="430" minWidth="900" prefHeight="600.0" prefWidth="1226.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.BookOrderController">
 
     <top>
-        <Label alignment="CENTER" prefHeight="40.0" prefWidth="815.0"
-               style="-fx-font-size: 25px; -fx-font-weight: bold;" text="Giỏ hàng"/>
+        <GridPane>
+            <HBox alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <Button mnemonicParsing="false" onAction="#goToHome" text="Trang chủ" />
+                <Button mnemonicParsing="false" onAction="#goToCart" text="Giỏ hàng" />
+                <Button mnemonicParsing="false" text="Thống kê" />
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="25.0" prefWidth="500.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <TextField prefHeight="25.0" prefWidth="552.0">
+                    <HBox.margin>
+                        <Insets top="5.0" />
+                    </HBox.margin>
+                </TextField>
+                <Button prefHeight="25.0" prefWidth="123.0" text="Search">
+                    <HBox.margin>
+                        <Insets left="10.0" top="5.0" />
+                    </HBox.margin>
+                </Button>
+                <padding>
+                    <Insets left="25.0" right="25.0" />
+                </padding>
+            </HBox>
+            <HBox alignment="CENTER" prefHeight="25.0" prefWidth="253.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" prefWidth="100.0" text="Setting">
+                    <items>
+                        <MenuItem mnemonicParsing="false" onAction="#updateUserInformation" text="Chỉnh sửa thông tin cá nhân" />
+                        <MenuItem mnemonicParsing="false" onAction="#updateUserPassword" text="Đổi mật khẩu" />
+                        <MenuItem mnemonicParsing="false" onAction="#deactivationUser" text="Xóa tài khoản" />
+                        <MenuItem mnemonicParsing="false" onAction="#logout" text="Đăng xuất" />
+                    </items>
+                    <HBox.margin>
+                        <Insets bottom="10.0" left="100.0" right="10.0" top="5.0" />
+                    </HBox.margin>
+                </MenuButton>
+            </HBox>
+         <columnConstraints>
+            <ColumnConstraints />
+            <ColumnConstraints />
+            <ColumnConstraints />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints />
+         </rowConstraints>
+        </GridPane>
     </top>
 
     <center>
         <TableView fx:id="cartTableView" prefHeight="333.0" prefWidth="845.0" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn fx:id="select" prefWidth="96.99999237060547" text="Chọn"/>
-                <TableColumn fx:id="title" prefWidth="160.3333282470703" text="Sản phẩm"/>
-                <TableColumn fx:id="image" prefWidth="270.3333435058594" text="Hình ảnh"/>
-                <TableColumn fx:id="price" prefWidth="167.66665649414062" text="Giá"/>
-                <TableColumn fx:id="amount" prefWidth="113.99993896484375" text="Số lượng"/>
-                <TableColumn fx:id="total" prefWidth="91.3333740234375" text="Tổng cộng"/>
+                <TableColumn fx:id="select" prefWidth="96.99999237060547" text="Chọn" />
+                <TableColumn fx:id="title" prefWidth="160.3333282470703" text="Sản phẩm" />
+                <TableColumn fx:id="image" prefWidth="270.3333435058594" text="Hình ảnh" />
+                <TableColumn fx:id="price" prefWidth="167.66665649414062" text="Giá" />
+                <TableColumn fx:id="amount" prefWidth="113.99993896484375" text="Số lượng" />
+                <TableColumn fx:id="total" prefWidth="91.3333740234375" text="Tổng cộng" />
             </columns>
         </TableView>
     </center>
 
     <bottom>
         <HBox alignment="CENTER_LEFT" prefHeight="47.0" prefWidth="482.0" spacing="10" style="-fx-padding: 10px">
-            <CheckBox fx:id="selectAllBooks" onAction="#selectAllBooks" mnemonicParsing="false" prefHeight="17.0" prefWidth="155.0" text="Select all books"/>
-            <Label fx:id="totalCartLabel" alignment="CENTER_RIGHT" prefHeight="47.0" prefWidth="589.0"
-                   style="-fx-text-fill: red" text="Tổng cộng: $0.00"/>
-            <Button fx:id="buyButton" alignment="CENTER" onAction="#buySelectedBooks" prefHeight="37.0"
-                    prefWidth="233.0" style="-fx-padding: 10px; -fx-background-color: #FF8C00; -fx-text-fill: white"
-                    text="Đặt hàng"/>
+            <CheckBox fx:id="selectAllBooks" mnemonicParsing="false" onAction="#selectAllBooks" prefHeight="17.0" prefWidth="155.0" text="Select all books" />
+            <Label fx:id="totalCartLabel" alignment="CENTER_RIGHT" prefHeight="47.0" prefWidth="589.0" style="-fx-text-fill: red" text="Tổng cộng: $0.00" />
+            <Button fx:id="buyButton" alignment="CENTER" onAction="#buySelectedBooks" prefHeight="37.0" prefWidth="233.0" style="-fx-padding: 10px; -fx-background-color: #FF8C00; -fx-text-fill: white" text="Đặt hàng" />
         </HBox>
     </bottom>
 
