@@ -28,7 +28,7 @@
         </padding>
     </HBox>
     <HBox prefHeight="25.0" prefWidth="253.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
-        <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" prefWidth="100.0" text="User">
+        <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" prefWidth="100.0" text="Setting">
             <items>
                 <MenuItem onAction="#updateUserInformation" mnemonicParsing="false" text="Chỉnh sửa thông tin cá nhân" />
                 <MenuItem onAction="#updateUserPassword" mnemonicParsing="false" text="Đổi mật khẩu" />
