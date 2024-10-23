@@ -1,10 +1,12 @@
 package com.example.book_store.Controller;
+
 import com.example.book_store.ConnectDB;
 import com.example.book_store.Entity.Book;
 import com.example.book_store.Entity.CartItem;
 import com.example.book_store.Entity.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -18,6 +20,8 @@ public class BookOrderController {
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
     private final User currentUser = Authentication.currentUser;
+    public TableColumn<CartItem, Boolean> select;
+    public CheckBox selectAllBooks;
 
     @FXML
     private TableView<CartItem> cartTableView;
@@ -47,6 +51,32 @@ public class BookOrderController {
 
     @FXML
     public void initialize() {
+        select.setCellValueFactory(new PropertyValueFactory<CartItem, Boolean>("select"));
+        select.setCellValueFactory(cellData -> {
+            CartItem item = cellData.getValue();
+            return item.selectedProperty();
+        });
+
+        select.setCellFactory(column -> new TableCell<CartItem, Boolean>() {
+            private final CheckBox selected = new CheckBox();
+
+            @Override
+            protected void updateItem(Boolean selectedValue, boolean empty) {
+                super.updateItem(selectedValue, empty);
+                if (empty || selectedValue == null) {
+                    setGraphic(null);
+                } else {
+                    selected.setSelected(selectedValue);
+
+                    selected.setOnAction(event -> {
+                        CartItem item = getTableView().getItems().get(getIndex());
+                        item.setSelected(selected.isSelected());
+                        updateTotalCartLabel();
+                    });
+                    setGraphic(selected);
+                }
+            }
+        });
         title.setCellValueFactory(new PropertyValueFactory<CartItem, String>("title"));
         image.setCellValueFactory(new PropertyValueFactory<CartItem, String>("image"));
         image.setCellFactory(column -> new TableCell<CartItem, String>() {
@@ -73,6 +103,33 @@ public class BookOrderController {
         loadCart();
     }
 
+    @FXML
+    public void selectAllBooks(ActionEvent event) {
+        double total = 0.0;
+        if (selectAllBooks.isSelected()) {
+            for (CartItem item : cartTableView.getItems()) {
+                item.setSelected(true);
+                total += item.getPrice() * item.getAmount();
+            }
+            totalCartLabel.setText(String.format("$%.2f", total));
+        } else {
+            for (CartItem item : cartTableView.getItems()) {
+                item.setSelected(false);
+            }
+            totalCartLabel.setText(String.format("$%.2f", total));
+        }
+    }
+
+    private void updateTotalCartLabel() {
+        double total = 0.0;
+        for (CartItem item : cartTableView.getItems()) {
+            if (item.isSelected()) {
+                total += item.getPrice() * item.getAmount();
+            }
+        }
+        totalCartLabel.setText(String.format("$%.2f", total));
+    }
+
     private void loadCart() {
         ObservableList<CartItem> cart = FXCollections.observableArrayList();
         String query = "SELECT Books.Title, Books.Image, Books.Price, Books_Orders.Amount, Orders.TotalAmount FROM Books " +
@@ -97,31 +154,13 @@ public class BookOrderController {
             }
 
             cartTableView.setItems(cart);
-             
+
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "Could not load book data");
         }
     }
 
-    public boolean addBookOrder(int orderID, int bookID, int amount) {
-        String query = "INSERT INTO Books_Orders (OrderID, BookID, Amount) select ?, ?, ? where BookID = ?";
-        int row = 0;
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, orderID);
-            preparedStatement.setInt(2, bookID);
-            preparedStatement.setInt(3, amount);
-            preparedStatement.setInt(4, bookID);
-            row = preparedStatement.executeUpdate();
-             
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return row != 0;
-    }
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
