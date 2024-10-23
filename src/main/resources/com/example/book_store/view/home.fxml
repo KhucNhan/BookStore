@@ -65,7 +65,8 @@
     </TableView>
 
     <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0" GridPane.columnSpan="3" GridPane.rowIndex="4" />
-     <Button fx:id="addBook" contentDisplay="CENTER" prefHeight="25.0" prefWidth="119.0" text=" Thêm sách " GridPane.columnIndex="2" GridPane.rowIndex="2">
+     <Button fx:id="addBook" contentDisplay="CENTER" prefHeight="25.0" prefWidth="119.0" text=" Thêm sách "  GridPane.columnIndex="2" GridPane.rowIndex="2">
+<!--   <Button fx:id="addBook" contentDisplay="CENTER" prefHeight="25.0" prefWidth="119.0" text=" Thêm sách " onAction="#handleAddBook" GridPane.columnIndex="2" GridPane.rowIndex="2">-->
       <opaqueInsets>
          <Insets />
       </opaqueInsets>
