@@ -299,7 +299,7 @@ public class BookController implements Initializable {
         TextField amount = new TextField(String.valueOf(book.getAmount()));
         TextField bookTypeID = new TextField(String.valueOf(book.getBookTypeID()));
         TextField publisherID = new TextField(String.valueOf(book.getPublisherID()));
-        TextField status = new TextField(String.valueOf(book.getPublishedYear()));
+        TextField status = new TextField(String.valueOf(book.isStatus()));
 
         Button saveButton = new Button("Save");
 
@@ -317,7 +317,7 @@ public class BookController implements Initializable {
                 return;
             }
 
-            String query = "update from books set Title = ?, Image = ?, Author = ?, PublishedYear = ?, Edition = ?, Price = ?, Amount = ?, BookTypeID = ?, PublisherID = ?, Status = ? where BookID = ?";
+            String query = "update books set Title = ?, Image = ?, Author = ?, PublishedYear = ?, Edition = ?, Price = ?, Amount = ?, BookTypeID = ?, PublisherID = ?, Status = ? where BookID = ?";
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, title.getText());
@@ -330,6 +330,7 @@ public class BookController implements Initializable {
                 preparedStatement.setInt(8, Integer.parseInt(bookTypeID.getText()));
                 preparedStatement.setInt(9, Integer.parseInt(publisherID.getText()));
                 preparedStatement.setBoolean(10, Boolean.parseBoolean(status.getText()));
+                preparedStatement.setInt(11, book.getBookID());
                 int row = preparedStatement.executeUpdate();
                 if (row != 0) {
                     showAlert(Alert.AlertType.INFORMATION, "Successful", "Chang applied.");
@@ -339,8 +340,7 @@ public class BookController implements Initializable {
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-
-            bookTable.refresh();
+            loadBooks();
             stage.close();
         });
     }

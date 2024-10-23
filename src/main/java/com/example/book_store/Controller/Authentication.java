@@ -55,7 +55,7 @@ public class Authentication {
         if (isActive(username, password)) {
             currentUser = getUSerByUserNameAndPassword(username, password);
             showAlert(Alert.AlertType.INFORMATION, "Đăng nhập thành công", "Xin chào " + currentUser.getRole() + " " + currentUser.getName() + "!");
-            goToScene(event, "/com/example/book_store/view/cart.fxml");
+            goToScene(event, "/com/example/book_store/view/home.fxml");
             endTime = System.currentTimeMillis(); // Kết thúc tính thời gian
             long duration = endTime - startTime;
             System.out.println("Thời gian thực thi: " + duration + " ms");
