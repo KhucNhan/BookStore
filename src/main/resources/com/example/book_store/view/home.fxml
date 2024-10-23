@@ -60,7 +60,7 @@
             <Insets bottom="10.0" left="50.0" top="10.0"/>
         </GridPane.margin>
     </TableView>
-
+  
     <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0" GridPane.columnSpan="3"
           GridPane.rowIndex="4"/>
     <Button fx:id="addBook" onAction="#showAddBookDialog" contentDisplay="CENTER" prefHeight="25.0" prefWidth="119.0"
