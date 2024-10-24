@@ -5,6 +5,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 
 public class CartItem {
+    private int idOrder;
+    private int idBook;
     private String title;
     private String image;
     private double price;
@@ -12,13 +14,31 @@ public class CartItem {
     private double total;
     private BooleanProperty selected = new SimpleBooleanProperty(false);
 
-    public CartItem(String title, String image, double price, int amount, double total) {
+    public CartItem(int idOrder, int idBook, String title, String image, double price, int amount, double total) {
+        this.idOrder = idOrder;
+        this.idBook = idBook;
         this.title = title;
         this.image = image;
         this.price = price;
         this.amount = amount;
         this.total = total;
         this.selected.set(false);
+    }
+
+    public int getIdOrder() {
+        return idOrder;
+    }
+
+    public void setIdOrder(int idOrder) {
+        this.idOrder = idOrder;
+    }
+
+    public int getIdBook() {
+        return idBook;
+    }
+
+    public void setIdBook(int idBook) {
+        this.idBook = idBook;
     }
 
     public boolean isSelected() {
@@ -73,4 +93,5 @@ public class CartItem {
     public BooleanProperty selectedProperty() {
         return selected;
     }
+
 }

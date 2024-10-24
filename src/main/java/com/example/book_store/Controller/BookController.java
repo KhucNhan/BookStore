@@ -2,7 +2,6 @@ package com.example.book_store.Controller;
 
 import com.example.book_store.ConnectDB;
 import com.example.book_store.Entity.Book;
-import com.example.book_store.Entity.Order;
 import com.example.book_store.Entity.User;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,13 +20,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import java.sql.Date;
-
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BookController implements Initializable {
     private final User currentUser = Authentication.currentUser;
@@ -183,12 +181,7 @@ public class BookController implements Initializable {
                 } else {
                     addToCartButton.setOnAction(e -> {
                         Book book = getTableView().getItems().get(getIndex());
-                        try {
-                            addToCart(currentUser.getUserID(), book.getBookID(), 1, book.getPrice());
-                            showAlert(Alert.AlertType.INFORMATION, "Successful", "Add to cart successful");
-                        } catch (SQLException ex) {
-                            throw new RuntimeException(ex);
-                        }
+                        showAmountDialog(book);
                     });
 
                     HBox hBox = new HBox(addToCartButton);
@@ -200,6 +193,30 @@ public class BookController implements Initializable {
 
 
         loadBooks();
+    }
+
+    private void showAmountDialog(Book book) {
+        TextField amount = new TextField("1");
+        Button saveButton = new Button("Save");
+
+        VBox vbox = new VBox(amount, saveButton);
+        vbox.setSpacing(10);
+        Scene scene = new Scene(vbox, 240, 480);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setTitle("Enter amount");
+        stage.show();
+
+        saveButton.setOnAction(e -> {
+            loadBooks();
+            stage.close();
+            try {
+                addToCart(currentUser.getUserID(), book.getBookID(), Integer.parseInt(amount.getText()), book.getPrice());
+                showAlert(Alert.AlertType.INFORMATION, "Successful", "Add to cart successful");
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
     }
 
     public void addToCart(int userId, int bookId, int quantity, double price) throws SQLException {

@@ -8,12 +8,12 @@
 
     <!-- Top section (was BorderPane's top) -->
     <HBox alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
-        <Button mnemonicParsing="false" onAction="#goToCart" text="Giỏ hàng">
+        <Button mnemonicParsing="false" onAction="#goToHome" text="Trang chủ">
          <HBox.margin>
             <Insets right="10.0" />
          </HBox.margin></Button>
-        <Button mnemonicParsing="false" onAction="#goToHome" text="Trang chủ">
-         <HBox.margin>
+        <Button mnemonicParsing="false" onAction="#goToCart" text="Giỏ hàng">
+        <HBox.margin>
             <Insets right="15.0" />
          </HBox.margin></Button>
         <Button mnemonicParsing="false" text="Thống kê">
