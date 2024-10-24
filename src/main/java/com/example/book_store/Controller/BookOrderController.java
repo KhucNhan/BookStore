@@ -9,6 +9,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -16,6 +17,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -105,7 +107,9 @@ public class BookOrderController {
         });
         price.setCellValueFactory(new PropertyValueFactory<CartItem, Double>("price"));
         amount.setCellFactory(column -> new TableCell<CartItem, Integer>() {
-            private final Spinner<Integer> spinner = new Spinner<>(1, 100, 1);
+            private final Button minus = new Button("-");
+            private final Label currentAmount = new Label();
+            private final Button plus = new Button("+");
 
             @Override
             protected void updateItem(Integer amount, boolean empty) {
@@ -114,15 +118,23 @@ public class BookOrderController {
                     setGraphic(null);
                 } else {
                     CartItem cartItem = getTableView().getItems().get(getIndex());
-                    spinner.getValueFactory().setValue(cartItem.getAmount());  // Set số lượng hiện tại
-
-                    spinner.valueProperty().addListener((obs, oldValue, newValue) -> {
-                        cartItem.setAmount(newValue);
-                        getTableView().refresh();
+                    currentAmount.setText(cartItem.getAmount() + "");
+                    minus.setOnAction(e -> {
+                        minusAmount(cartItem.getIdOrder(), cartItem.getIdBook());
+                        loadCart();
                         updateTotalCartLabel();
                     });
 
-                    setGraphic(spinner);
+                    plus.setOnAction(e -> {
+                        plusAmount(cartItem.getIdOrder(), cartItem.getIdBook());
+                        loadCart();
+                        updateTotalCartLabel();
+                    });
+
+                    HBox hBox = new HBox(minus, currentAmount, plus);
+                    hBox.setAlignment(Pos.valueOf("CENTER"));
+                    hBox.setSpacing(10);
+                    setGraphic(hBox);
                 }
             }
         });
@@ -130,6 +142,70 @@ public class BookOrderController {
         total.setCellValueFactory(new PropertyValueFactory<CartItem, Double>("total"));
 
         loadCart();
+    }
+
+    private void minusAmount(int orderID, int bookID) {
+        String query = "update books_orders set Amount = Amount - 1 where OrderID = ? and BookID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, orderID);
+            preparedStatement.setInt(2, bookID);
+            int row = preparedStatement.executeUpdate();
+            if (row != 0) {
+                query = "UPDATE Orders " +
+                        "SET Amount = (" +
+                        "    SELECT SUM(Amount) " +
+                        "    FROM books_orders " +
+                        "    WHERE OrderID = ?" +
+                        ") " +
+                        "WHERE OrderID = ?";
+                preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setInt(1, orderID);
+                preparedStatement.setInt(2, orderID);
+                preparedStatement.executeUpdate();
+            } else {
+                System.out.println("Failed");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void plusAmount(int orderID, int bookID) {
+        String query = "update books_orders set Amount = Amount + 1 where OrderID = ? and BookID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, orderID);
+            preparedStatement.setInt(2, bookID);
+            int row = preparedStatement.executeUpdate();
+            if (row != 0) {
+                query = "UPDATE Orders " +
+                        "SET Amount = (" +
+                        "    SELECT SUM(Amount) " +
+                        "    FROM books_orders " +
+                        "    WHERE OrderID = ?" +
+                        ") " +
+                        "WHERE OrderID = ?";
+                preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setInt(1, orderID);
+                preparedStatement.setInt(2, orderID);
+                preparedStatement.executeUpdate();
+            } else {
+                System.out.println("Failed");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void updateNewAmountInCart(int value) {
+        String query = "update orders set Amount = Amount - ? where ";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, value);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
@@ -161,11 +237,11 @@ public class BookOrderController {
 
     private void loadCart() {
         ObservableList<CartItem> cart = FXCollections.observableArrayList();
-        String query = "SELECT Books.Title, Books.Image, Books.Price, Books_Orders.Amount, Orders.TotalAmount FROM Books " +
+        String query = "SELECT Books_Orders.OrderID, Books_Orders.BookID, Books.Title, Books.Image, Books.Price, Books_Orders.Amount, Orders.TotalAmount FROM Books " +
                 "inner join Books_Orders on Books.BookID = Books_Orders.BookID " +
                 "inner join Orders on Books_Orders.OrderID = Orders.OrderID " +
                 "inner join Bills on Orders.BillID = Bills.BillID " +
-                "where Bills.UserID = ?";
+                "where Bills.UserID = ? and Bills.Status = 'Pending'";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, currentUser.getUserID());
@@ -173,6 +249,8 @@ public class BookOrderController {
 
             while (resultSet.next()) {
                 CartItem cartItem = new CartItem(
+                        resultSet.getInt(1),
+                        resultSet.getInt(2),
                         resultSet.getString("Title"),
                         resultSet.getString("Image"),
                         resultSet.getDouble("Price"),
