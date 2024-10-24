@@ -104,6 +104,28 @@ public class BookOrderController {
             }
         });
         price.setCellValueFactory(new PropertyValueFactory<CartItem, Double>("price"));
+        amount.setCellFactory(column -> new TableCell<CartItem, Integer>() {
+            private final Spinner<Integer> spinner = new Spinner<>(1, 100, 1);
+
+            @Override
+            protected void updateItem(Integer amount, boolean empty) {
+                super.updateItem(amount, empty);
+                if (empty || amount == null) {
+                    setGraphic(null);
+                } else {
+                    CartItem cartItem = getTableView().getItems().get(getIndex());
+                    spinner.getValueFactory().setValue(cartItem.getAmount());  // Set số lượng hiện tại
+
+                    spinner.valueProperty().addListener((obs, oldValue, newValue) -> {
+                        cartItem.setAmount(newValue);
+                        getTableView().refresh();
+                        updateTotalCartLabel();
+                    });
+
+                    setGraphic(spinner);
+                }
+            }
+        });
         amount.setCellValueFactory(new PropertyValueFactory<CartItem, Integer>("amount"));
         total.setCellValueFactory(new PropertyValueFactory<CartItem, Double>("total"));
 
@@ -187,6 +209,7 @@ public class BookOrderController {
     }
 
     private Parent root;
+
     @FXML
     public void goToScene(ActionEvent event, String path) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
