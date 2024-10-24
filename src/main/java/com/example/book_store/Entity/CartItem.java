@@ -59,6 +59,7 @@ public class CartItem {
 
     public void setAmount(int amount) {
         this.amount = amount;
+        this.total = this.price * this.amount;
     }
 
     public double getTotal() {
