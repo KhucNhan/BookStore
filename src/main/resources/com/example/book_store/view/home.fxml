@@ -4,85 +4,89 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="600.0" prefWidth="1226.0"
-          xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="com.example.book_store.Controller.BookController">
-    <HBox alignment="CENTER"  GridPane.rowIndex="0" GridPane.columnIndex="0">
-        <Button fx:id="goToHome" onAction="#goToHome" mnemonicParsing="false" text="Trang chủ"/>
-        <Button fx:id="goToCart" onAction="#goToCart" mnemonicParsing="false" text="Giỏ hàng"/>
-        <Button mnemonicParsing="false" text="Thống kê"/>
+<GridPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="600.0" prefWidth="1226.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.BookController">
+    <HBox alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <Button fx:id="goToHome" mnemonicParsing="false" onAction="#goToHome" text="Trang chủ">
+         <HBox.margin>
+            <Insets left="10.0" right="10.0" />
+         </HBox.margin></Button>
+        <Button fx:id="goToCart" mnemonicParsing="false" onAction="#goToCart" text="Giỏ hàng">
+         <HBox.margin>
+            <Insets left="10.0" right="10.0" />
+         </HBox.margin></Button>
+        <Button mnemonicParsing="false" text="Thống kê">
+         <HBox.margin>
+            <Insets left="10.0" right="10.0" />
+         </HBox.margin></Button>
     </HBox>
-    <HBox alignment="CENTER"  prefHeight="25.0" prefWidth="500.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
-        <TextField prefHeight="25.0" prefWidth="552.0"/>
+    <HBox alignment="CENTER" prefHeight="25.0" prefWidth="500.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <TextField prefHeight="25.0" prefWidth="552.0" />
         <Button prefHeight="25.0" prefWidth="123.0" text="Search">
             <HBox.margin>
-                <Insets left="10.0"/>
+                <Insets left="10.0" />
             </HBox.margin>
         </Button>
         <padding>
-            <Insets left="25.0" right="25.0"/>
+            <Insets left="25.0" right="25.0" />
         </padding>
     </HBox>
-    <HBox alignment="CENTER"  prefHeight="25.0" prefWidth="253.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+    <HBox alignment="CENTER" prefHeight="25.0" prefWidth="253.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
         <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" prefWidth="100.0" text="Setting">
             <items>
-                <MenuItem onAction="#updateUserInformation" mnemonicParsing="false" text="Chỉnh sửa thông tin cá nhân"/>
-                <MenuItem onAction="#updateUserPassword" mnemonicParsing="false" text="Đổi mật khẩu"/>
-                <MenuItem onAction="#deactivationUser" mnemonicParsing="false" text="Xóa tài khoản"/>
-                <MenuItem onAction="#logout" mnemonicParsing="false" text="Đăng xuất"/>
+                <MenuItem mnemonicParsing="false" onAction="#updateUserInformation" text="Chỉnh sửa thông tin cá nhân" />
+                <MenuItem mnemonicParsing="false" onAction="#updateUserPassword" text="Đổi mật khẩu" />
+                <MenuItem mnemonicParsing="false" onAction="#deactivationUser" text="Xóa tài khoản" />
+                <MenuItem mnemonicParsing="false" onAction="#logout" text="Đăng xuất" />
             </items>
             <HBox.margin>
-                <Insets bottom="10.0" left="200.0" right="10.0" top="5.0"/>
+                <Insets bottom="10.0" left="200.0" right="10.0" top="5.0" />
             </HBox.margin>
         </MenuButton>
     </HBox>
-    <Region prefHeight="28.0" prefWidth="251.0" GridPane.rowIndex="1"/>
+    <Region prefHeight="28.0" prefWidth="251.0" GridPane.rowIndex="1" />
 
-    <TableView fx:id="bookTable" layoutX="50.0" layoutY="100.0" prefHeight="635.0" prefWidth="1175.0"
-               GridPane.columnSpan="3" GridPane.rowIndex="3">
+    <TableView fx:id="bookTable" layoutX="50.0" layoutY="100.0" prefHeight="635.0" prefWidth="1175.0" GridPane.columnSpan="3" GridPane.rowIndex="3">
         <columns>
 
-            <TableColumn fx:id="idColumn" prefWidth="67" text="Mã sách"/>
-            <TableColumn fx:id="imageColumn" prefWidth="95.5" text="Hình ảnh"/>
-            <TableColumn fx:id="titleColumn" prefWidth="143" text="Tên sách"/>
-            <TableColumn fx:id="authorColumn" prefWidth="92" text="Tên tác giả"/>
-            <TableColumn fx:id="publishedYearColumn" prefWidth="96" text="Năm xuất bản"/>
-            <TableColumn fx:id="editionColumn" prefWidth="91.0" text="Lần xuất bản"/>
-            <TableColumn fx:id="priceColumn" prefWidth="75" text="Giá bán"/>
-            <TableColumn fx:id="amountColumn" prefWidth="73." text="Số lượng"/>
-            <TableColumn fx:id="bookTypeIDColumn" prefWidth="89" text="Mã loại sách"/>
-            <TableColumn fx:id="publisherIDColumn" prefWidth="109" text="Mã nhà xuất bản"/>
-            <TableColumn fx:id="statusColumn" prefWidth="97" text="Trạng thái"/>
+            <TableColumn fx:id="idColumn" prefWidth="67" text="Mã sách" />
+            <TableColumn fx:id="imageColumn" prefWidth="95.5" text="Hình ảnh" />
+            <TableColumn fx:id="titleColumn" prefWidth="143" text="Tên sách" />
+            <TableColumn fx:id="authorColumn" prefWidth="92" text="Tên tác giả" />
+            <TableColumn fx:id="publishedYearColumn" prefWidth="96" text="Năm xuất bản" />
+            <TableColumn fx:id="editionColumn" prefWidth="91.0" text="Lần xuất bản" />
+            <TableColumn fx:id="priceColumn" prefWidth="75" text="Giá bán" />
+            <TableColumn fx:id="amountColumn" prefWidth="73." text="Số lượng" />
+            <TableColumn fx:id="bookTypeIDColumn" prefWidth="89" text="Mã loại sách" />
+            <TableColumn fx:id="publisherIDColumn" prefWidth="109" text="Mã nhà xuất bản" />
+            <TableColumn fx:id="statusColumn" prefWidth="97" text="Trạng thái" />
             <TableColumn fx:id="actionColumn" prefWidth="142.0" text="Hành động">
             </TableColumn>
         </columns>
         <GridPane.margin>
-            <Insets bottom="10.0" left="50.0" top="10.0"/>
+            <Insets bottom="10.0" left="50.0" top="10.0" />
         </GridPane.margin>
     </TableView>
   
-    <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0" GridPane.columnSpan="3"
-          GridPane.rowIndex="4"/>
-    <Button fx:id="addBook" onAction="#showAddBookDialog" contentDisplay="CENTER" prefHeight="25.0" prefWidth="119.0"
-            text=" Thêm sách " GridPane.columnIndex="2" GridPane.rowIndex="2">
+    <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0" GridPane.columnSpan="3" GridPane.rowIndex="4" />
+    <Button fx:id="addBook" contentDisplay="CENTER" onAction="#showAddBookDialog" prefHeight="25.0" prefWidth="119.0" text=" Thêm sách " GridPane.columnIndex="2" GridPane.rowIndex="2">
         <opaqueInsets>
-            <Insets/>
+            <Insets />
         </opaqueInsets>
         <GridPane.margin>
-            <Insets bottom="5.0" left="100.0" top="5.0"/>
+            <Insets bottom="5.0" left="100.0" top="5.0" />
         </GridPane.margin>
     </Button>
 
     <columnConstraints>
-        <ColumnConstraints/>
-        <ColumnConstraints maxWidth="749.0" minWidth="505.99999999999994" prefWidth="656.0"/>
-        <ColumnConstraints maxWidth="304.33333333333326" minWidth="61.66666666666674" prefWidth="154.66666666666674"/>
+        <ColumnConstraints />
+        <ColumnConstraints maxWidth="749.0" minWidth="505.99999999999994" prefWidth="656.0" />
+        <ColumnConstraints maxWidth="304.33333333333326" minWidth="61.66666666666674" prefWidth="154.66666666666674" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints/>
-        <RowConstraints/>
-        <RowConstraints/>
-        <RowConstraints/>
-        <RowConstraints/>
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
+        <RowConstraints />
     </rowConstraints>
 </GridPane>
