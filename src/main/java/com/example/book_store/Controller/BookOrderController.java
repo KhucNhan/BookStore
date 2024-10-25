@@ -4,6 +4,7 @@ import com.example.book_store.ConnectDB;
 import com.example.book_store.Entity.Book;
 import com.example.book_store.Entity.CartItem;
 import com.example.book_store.Entity.User;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -25,6 +26,7 @@ import java.sql.*;
 
 
 public class BookOrderController {
+    public TableColumn<CartItem, Void> act;
     private UserController userController = new UserController();
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
@@ -139,9 +141,94 @@ public class BookOrderController {
             }
         });
         amount.setCellValueFactory(new PropertyValueFactory<CartItem, Integer>("amount"));
+        act.setCellFactory(column -> new TableCell<CartItem, Void>() {
+            private final Button delete = new Button("Delete");
+
+            @Override
+            protected void updateItem(Void act, boolean empty) {
+                super.updateItem(act, empty);
+
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                } else {
+                    CartItem cartItem = getTableRow().getItem(); // Lấy item từ hàng hiện tại
+                    delete.setOnAction(e -> {
+                        deleteFromCart(cartItem.getIdOrder(), cartItem.getIdBook());
+                        getTableView().getItems().remove(cartItem);
+                    });
+                    setGraphic(delete);
+                }
+            }
+        });
+
+        act.setCellValueFactory(cellData -> new SimpleObjectProperty<>(null));
         total.setCellValueFactory(new PropertyValueFactory<CartItem, Double>("total"));
 
         loadCart();
+    }
+
+    @FXML
+    public void deleteFromCart(int orderID, int bookID) {
+        String updateBookQuery = "UPDATE Books SET Amount = Amount + ? WHERE BookID = ?";
+        String deleteProductQuery = "DELETE FROM books_orders WHERE OrderID = ? AND BookID = ?";
+        String calculateTotalQuery = "SELECT SUM(b.Price * bo.Amount) AS Total FROM books_orders bo " +
+                "JOIN Books b ON bo.BookID = b.BookID " +
+                "join orders o on bo.OrderID = o.OrderID " +
+                "join bills bi on o.BillID = bi.BillID where bi.BillID = (SELECT BillID FROM Orders WHERE OrderID = ?)";
+        String updateBillStatusQuery = "UPDATE Bills SET Status = 'canceled' WHERE BillID = (SELECT BillID FROM Orders WHERE OrderID = ?)";
+
+        try {
+            // Bước 1: Lấy số lượng sản phẩm cần xóa
+            int amountToRemove = 0;
+            String selectQuery = "SELECT Amount FROM books_orders WHERE OrderID = ? AND BookID = ?";
+            try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {
+                selectStatement.setInt(1, orderID);
+                selectStatement.setInt(2, bookID);
+                ResultSet resultSet = selectStatement.executeQuery();
+                if (resultSet.next()) {
+                    amountToRemove = resultSet.getInt("Amount");
+                }
+            }
+
+            // Bước 2: Cập nhật số lượng sách trong bảng Books
+            try (PreparedStatement updateBookStatement = connection.prepareStatement(updateBookQuery)) {
+                updateBookStatement.setInt(1, amountToRemove);
+                updateBookStatement.setInt(2, bookID);
+                updateBookStatement.executeUpdate();
+            }
+
+            // Bước 3: Xóa sản phẩm khỏi đơn hàng
+            try (PreparedStatement deleteProductStatement = connection.prepareStatement(deleteProductQuery)) {
+                deleteProductStatement.setInt(1, orderID);
+                deleteProductStatement.setInt(2, bookID);
+                deleteProductStatement.executeUpdate();
+            }
+
+            // Bước 4: Tính tổng tiền của đơn hàng còn lại
+            double totalAmount = 0;
+            try (PreparedStatement totalStatement = connection.prepareStatement(calculateTotalQuery)) {
+                totalStatement.setInt(1, orderID);
+                ResultSet totalResult = totalStatement.executeQuery();
+                if (totalResult.next()) {
+                    totalAmount = totalResult.getDouble(1);
+                }
+            }
+
+            // Bước 5: Nếu tổng tiền bằng 0, cập nhật trạng thái của Bill
+            if (totalAmount == 0) {
+                try (PreparedStatement updateBillStatusStatement = connection.prepareStatement(updateBillStatusQuery)) {
+                    updateBillStatusStatement.setInt(1, orderID);
+                    updateBillStatusStatement.executeUpdate();
+                }
+            }
+
+            // Bước 6: Tải lại giỏ hàng sau khi xóa
+            loadCart();
+            updateTotalCartLabel();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void minusAmount(int orderID, int bookID) {
