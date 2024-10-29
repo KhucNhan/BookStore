@@ -7,9 +7,9 @@ public class Bill {
     private Date date;
     private double totalAmount;
     private int userID;
-    private boolean status;
+    private String status;
 
-    public Bill(int billID, Date date, double totalAmount, int userID, boolean status) {
+    public Bill(int billID, Date date, double totalAmount, int userID, String status) {
         this.billID = billID;
         this.date = date;
         this.totalAmount = totalAmount;
@@ -17,11 +17,11 @@ public class Bill {
         this.status = status;
     }
 
-    public boolean isStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(boolean status) {
+    public void setStatus(String status) {
         this.status = status;
     }
 
