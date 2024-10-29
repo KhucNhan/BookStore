@@ -399,7 +399,7 @@ public class BookOrderController {
 
     @FXML
     public void goToHome(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/home.fxml");
+        goToScene(event, "/com/example/book_store/view/homeUser.fxml");
     }
 
     @FXML
