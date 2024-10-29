@@ -32,7 +32,6 @@ public class BookController implements Initializable {
     @FXML
     public Button addBook;
     public Button goToHome;
-    public Button goToCart;
     private UserController userController = new UserController();
     private BillController billController = new BillController();
     private OrderController orderController = new OrderController();
@@ -69,15 +68,6 @@ public class BookController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        if (currentUser.getRole().equalsIgnoreCase("admin")) {
-            goToCart.setVisible(false);
-            initializeAdmin();
-        } else {
-            initializeUser();
-        }
-    }
-
-    private void initializeAdmin() {
         idColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookID"));
         imageColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("image"));
         imageColumn.setCellFactory(column -> new TableCell<Book, String>() {
@@ -138,177 +128,6 @@ public class BookController implements Initializable {
         });
 
         loadBooks();
-    }
-
-    private void initializeUser() {
-        addBook.setVisible(false);
-        idColumn.setVisible(false);
-        imageColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("image"));
-        imageColumn.setCellFactory(column -> new TableCell<Book, String>() {
-
-            private final ImageView imageView = new ImageView();
-
-            @Override
-            protected void updateItem(String imagePath, boolean empty) {
-                super.updateItem(imagePath, empty);
-                if (empty || imagePath == null) {
-                    setGraphic(null);
-                } else {
-                    imageView.setImage(new Image(imagePath));
-                    imageView.setFitHeight(50);
-                    imageView.setFitWidth(50);
-                    setGraphic(imageView);
-                }
-            }
-        });
-        titleColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("title"));
-        authorColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("author"));
-        publishedYearColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("publishedYear"));
-        editionColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("edition"));
-        priceColumn.setCellValueFactory(new PropertyValueFactory<Book, Double>("price"));
-        amountColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("amount"));
-        bookTypeIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookTypeID"));
-        publisherIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("publisherID"));
-        statusColumn.setCellValueFactory(new PropertyValueFactory<Book, Boolean>("status"));
-        actionColumn.setCellFactory(column -> new TableCell<Book, Void>() {
-            private final Button addToCartButton = new Button("Add to cart");
-
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    addToCartButton.setOnAction(e -> {
-                        Book book = getTableView().getItems().get(getIndex());
-                        showAmountDialog(book);
-                    });
-
-                    HBox hBox = new HBox(addToCartButton);
-                    hBox.setSpacing(10);
-                    setGraphic(hBox);
-                }
-            }
-        });
-
-
-        loadBooks();
-    }
-
-    private void showAmountDialog(Book book) {
-        TextField amount = new TextField("1");
-        Button saveButton = new Button("Save");
-
-        VBox vbox = new VBox(amount, saveButton);
-        vbox.setSpacing(10);
-        Scene scene = new Scene(vbox, 240, 480);
-        Stage stage = new Stage();
-        stage.setScene(scene);
-        stage.setTitle("Enter amount");
-        stage.show();
-
-        saveButton.setOnAction(e -> {
-            loadBooks();
-            stage.close();
-            try {
-                addToCart(currentUser.getUserID(), book.getBookID(), Integer.parseInt(amount.getText()), book.getPrice());
-                showAlert(Alert.AlertType.INFORMATION, "Successful", "Add to cart successful");
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-    }
-
-    public void addToCart(int userId, int bookId, int quantity, double price) throws SQLException {
-        // 1. Kiểm tra hóa đơn hiện có hay chưa
-        PreparedStatement stmt = connection.prepareStatement("SELECT BillID FROM Bills WHERE UserID = ? AND Status = 'pending'");
-        stmt.setInt(1, userId);
-        ResultSet rs = stmt.executeQuery();
-
-        int billId;
-        if (rs.next()) {
-            billId = rs.getInt("BillID");
-        } else {
-            // Tạo hóa đơn mới
-            stmt = connection.prepareStatement("INSERT INTO Bills (Date, TotalAmount, UserID, Status) VALUES (CURRENT_DATE, 0, ?, 'pending')", Statement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, userId);
-            stmt.executeUpdate();
-            rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                billId = rs.getInt(1);
-            } else {
-                throw new SQLException("Failed to create bill");
-            }
-        }
-
-        // 2. Kiểm tra xem có order nào với BillID và BookID đã tồn tại hay chưa
-        stmt = connection.prepareStatement("SELECT OrderID, Amount FROM Orders WHERE BillID = ? AND BookID = ?");
-        stmt.setInt(1, billId);
-        stmt.setInt(2, bookId);
-        rs = stmt.executeQuery();
-
-        if (rs.next()) {
-            // Nếu đã tồn tại order, cập nhật số lượng và tổng tiền
-            int orderId = rs.getInt("OrderID");
-            int existingAmount = rs.getInt("Amount");
-            int newAmount = existingAmount + quantity;
-
-            // Cập nhật số lượng trong bảng Orders
-            stmt = connection.prepareStatement("UPDATE Orders SET Amount = ?, Price = ? WHERE OrderID = ?");
-            stmt.setInt(1, newAmount);
-            stmt.setDouble(2, price);
-            stmt.setInt(3, orderId);
-            stmt.executeUpdate();
-
-            // Cập nhật số lượng trong bảng Books_Orders
-            stmt = connection.prepareStatement("UPDATE Books_Orders SET Amount = ? WHERE OrderID = ? AND BookID = ?");
-            stmt.setInt(1, newAmount);
-            stmt.setInt(2, orderId);
-            stmt.setInt(3, bookId);
-            stmt.executeUpdate();
-
-            // Cập nhật tổng tiền hóa đơn
-            updateTotalAmount(stmt, billId);
-        } else {
-            // 3. Thêm sản phẩm vào Orders
-            stmt = connection.prepareStatement("INSERT INTO Orders (BillID, BookID, Amount, Price) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, billId);
-            stmt.setInt(2, bookId);
-            stmt.setInt(3, quantity);
-            stmt.setDouble(4, price);
-            stmt.executeUpdate();
-            rs = stmt.getGeneratedKeys();
-            int orderId;
-            if (rs.next()) {
-                orderId = rs.getInt(1);
-            } else {
-                throw new SQLException("Failed to add order");
-            }
-
-            // 4. Cập nhật số lượng sách trong kho
-            stmt = connection.prepareStatement("UPDATE Books SET Amount = Amount - ? WHERE BookID = ?");
-            stmt.setInt(1, quantity);
-            stmt.setInt(2, bookId);
-            stmt.executeUpdate();
-
-            // Cập nhật số lượng trong bảng Books_Orders
-            stmt = connection.prepareStatement("INSERT INTO Books_Orders (OrderID, BookID, Amount) VALUES (?, ?, ?)");
-            stmt.setInt(1, orderId);
-            stmt.setInt(2, bookId);
-            stmt.setInt(3, quantity);
-            stmt.executeUpdate();
-
-            // 5. Cập nhật tổng tiền hóa đơn
-            updateTotalAmount(stmt, billId);
-        }
-    }
-
-    private void updateTotalAmount(PreparedStatement stmt, int billId) throws SQLException {
-        // Cập nhật tổng tiền hóa đơn
-        stmt = connection.prepareStatement("UPDATE Bills SET TotalAmount = (SELECT SUM(Price * Amount) FROM Orders WHERE BillID = ?) WHERE BillID = ?");
-        stmt.setInt(1, billId);
-        stmt.setInt(2, billId);
-        stmt.executeUpdate();
     }
 
     private void showEditDialog(Book book) {
