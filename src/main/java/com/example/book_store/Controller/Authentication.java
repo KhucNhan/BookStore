@@ -43,16 +43,26 @@ public class Authentication {
     }
 
     public static User currentUser;
+    private long startTime;
+    private long endTime;
 
     @FXML
     private void handleLogin(ActionEvent event) throws IOException {
+        startTime = System.currentTimeMillis(); // Bắt đầu tính thời gian
         String username = usernameField.getText();
         String password = passwordField.getText();
 
-        if (validateLogin(username, password) && isActive(username, password)) {
+        if (isActive(username, password)) {
             currentUser = getUSerByUserNameAndPassword(username, password);
             showAlert(Alert.AlertType.INFORMATION, "Đăng nhập thành công", "Xin chào " + currentUser.getRole() + " " + currentUser.getName() + "!");
-            goToScene(event, "/com/example/book_store/view/home.fxml");
+            if (currentUser.getRole().equalsIgnoreCase("admin")) {
+                goToScene(event, "/com/example/book_store/view/home.fxml");
+            } else {
+                goToScene(event, "/com/example/book_store/view/homeUser.fxml");
+            }
+            endTime = System.currentTimeMillis(); // Kết thúc tính thời gian
+            long duration = endTime - startTime;
+            System.out.println("Thời gian thực thi: " + duration + " ms");
         } else if (validateLogin(username, password) && !isActive(username, password)) {
             showAlert(Alert.AlertType.ERROR, "Đăng nhập thất bại", "Tài khoản đã bị hủy.");
         } else {
@@ -190,6 +200,10 @@ public class Authentication {
 
     public void goToSignUp(ActionEvent event) throws IOException {
         goToScene(event, "/com/example/book_store/view/register.fxml");
+    }
+
+public void goToLogin(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/login.fxml");
     }
 
     @FXML

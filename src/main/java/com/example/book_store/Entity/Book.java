@@ -1,5 +1,8 @@
 package com.example.book_store.Entity;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 public class Book {
     private int bookID;
     private String title;
@@ -12,6 +15,7 @@ public class Book {
     private int bookTypeID;
     private int publisherID;
     private boolean status;
+
     public Book(int bookID, String image, String title, String author, int publishedYear, int edition, double price, int amount, int bookTypeID, int publisherID, boolean status) {
         this.bookID = bookID;
         this.image = image;
@@ -24,6 +28,27 @@ public class Book {
         this.bookTypeID = bookTypeID;
         this.publisherID = publisherID;
         this.status = status;
+    }
+
+    public Book(int id, String image, String title, String author, double price, int amount, int publishedYear) {
+        this.bookID = id;
+        this.image = image;
+        this.title = title;
+        this.author = author;
+        this.price = price;
+        this.amount = amount;
+        this.publishedYear = publishedYear;
+    }
+
+    public static Book fromResultSet(ResultSet rs) throws SQLException {
+        int id = rs.getInt("BookID");
+        String image = rs.getString("image");
+        String title = rs.getString("title");
+        String author = rs.getString("author");
+        double price = rs.getDouble("price");
+        int amount = rs.getInt("amount");
+        int publishedYear =rs.getInt("publishedYear");
+        return new Book(id, image, title, author, price,amount,publishedYear);
     }
 
     public boolean isStatus() {
@@ -130,5 +155,6 @@ public class Book {
                 ", status=" + status +
                 '}';
     }
+
 }
 

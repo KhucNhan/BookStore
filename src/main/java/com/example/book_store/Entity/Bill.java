@@ -7,12 +7,22 @@ public class Bill {
     private Date date;
     private double totalAmount;
     private int userID;
+    private String status;
 
-    public Bill(int billID, Date date, double totalAmount, int userID) {
+    public Bill(int billID, Date date, double totalAmount, int userID, String status) {
         this.billID = billID;
         this.date = date;
         this.totalAmount = totalAmount;
         this.userID = userID;
+        this.status = status;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public int getBillID() {
@@ -54,6 +64,7 @@ public class Bill {
                 ", date=" + date +
                 ", totalAmount=" + totalAmount +
                 ", userID=" + userID +
+                ", status=" + status +
                 '}';
     }
 }

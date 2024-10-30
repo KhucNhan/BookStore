@@ -25,9 +25,17 @@ import java.net.URL;
 import java.sql.*;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BookController implements Initializable {
+    private final User currentUser = Authentication.currentUser;
+    @FXML
+    public Button addBook;
+    public Button goToHome;
     private UserController userController = new UserController();
+    private BillController billController = new BillController();
+    private OrderController orderController = new OrderController();
+    private BookOrderController bookOrderController = new BookOrderController();
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
 
@@ -60,7 +68,6 @@ public class BookController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
         idColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookID"));
         imageColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("image"));
         imageColumn.setCellFactory(column -> new TableCell<Book, String>() {
@@ -121,7 +128,6 @@ public class BookController implements Initializable {
         });
 
         loadBooks();
-
     }
 
     private void showEditDialog(Book book) {
@@ -134,7 +140,7 @@ public class BookController implements Initializable {
         TextField amount = new TextField(String.valueOf(book.getAmount()));
         TextField bookTypeID = new TextField(String.valueOf(book.getBookTypeID()));
         TextField publisherID = new TextField(String.valueOf(book.getPublisherID()));
-        TextField status = new TextField(String.valueOf(book.getPublishedYear()));
+        TextField status = new TextField(String.valueOf(book.isStatus()));
 
         Button saveButton = new Button("Save");
 
@@ -152,7 +158,7 @@ public class BookController implements Initializable {
                 return;
             }
 
-            String query = "update from books set Title = ?, Image = ?, Author = ?, PublishedYear = ?, Edition = ?, Price = ?, Amount = ?, BookTypeID = ?, PublisherID = ?, Status = ? where BookID = ?";
+            String query = "update books set Title = ?, Image = ?, Author = ?, PublishedYear = ?, Edition = ?, Price = ?, Amount = ?, BookTypeID = ?, PublisherID = ?, Status = ? where BookID = ?";
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, title.getText());
@@ -165,6 +171,7 @@ public class BookController implements Initializable {
                 preparedStatement.setInt(8, Integer.parseInt(bookTypeID.getText()));
                 preparedStatement.setInt(9, Integer.parseInt(publisherID.getText()));
                 preparedStatement.setBoolean(10, Boolean.parseBoolean(status.getText()));
+                preparedStatement.setInt(11, book.getBookID());
                 int row = preparedStatement.executeUpdate();
                 if (row != 0) {
                     showAlert(Alert.AlertType.INFORMATION, "Successful", "Chang applied.");
@@ -174,8 +181,7 @@ public class BookController implements Initializable {
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
-
-            bookTable.refresh();
+            loadBooks();
             stage.close();
         });
     }
@@ -205,42 +211,94 @@ public class BookController implements Initializable {
             }
 
             bookTable.setItems(bookList);
-            connection.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "Could not load book data");
         }
     }
 
+    @FXML
+    private void showAddBookDialog() {
+        TextField img = new TextField();
+        img.setPromptText("Url");
+        TextField title = new TextField();
+        title.setPromptText("Title");
+        TextField author = new TextField();
+        author.setPromptText("Author");
+        TextField publishedYear = new TextField();
+        publishedYear.setPromptText("Public year");
+        TextField edition = new TextField();
+        edition.setPromptText("Edition");
+        TextField price = new TextField();
+        price.setPromptText("Price");
+        TextField amount = new TextField();
+        amount.setPromptText("Amount");
+        TextField bookTypeID = new TextField();
+        bookTypeID.setPromptText("Book type ID");
+        TextField publisherID = new TextField();
+        publisherID.setPromptText("Publisher ID");
 
-    public boolean addBook(String title, String image, String author, int publishedYear, int edition, double price, int amount, int bookTypeID, int publisherID) {
-        ConnectDB connectDB = new ConnectDB();
-        String query = "insert into Books (Title, Image, Author, PublishedYear, Edition, Price, Amount, BookTypeID, PublisherID) " +
-                "values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        Button saveButton = new Button("Add Book");
 
-        try {
-            if (String.valueOf(publishedYear).length() != 4) {
-                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right year");
-                return false;
+        VBox vbox = new VBox(img, title, author, publishedYear, edition, price, amount, bookTypeID, publisherID, saveButton);
+        vbox.setSpacing(10);
+        Scene scene = new Scene(vbox, 240, 480);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setTitle("Add Book");
+        stage.show();
+
+        saveButton.setOnAction(e -> {
+            if (title.getText().isEmpty() || amount.getText().isEmpty() || publishedYear.getText().isEmpty() || img.getText().isEmpty() || price.getText().isEmpty() || edition.getText().isEmpty() || amount.getText().isEmpty() || bookTypeID.getText().isEmpty() || publisherID.getText().isEmpty()) {
+                showAlert(Alert.AlertType.ERROR, "Error", "No blank!");
+                return;
             }
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, title);
-            preparedStatement.setString(2, image);
-            preparedStatement.setString(3, author);
-            preparedStatement.setInt(4, publishedYear);
-            preparedStatement.setInt(5, edition);
-            preparedStatement.setDouble(6, price);
-            preparedStatement.setInt(7, amount);
-            preparedStatement.setInt(8, bookTypeID);
-            preparedStatement.setInt(9, publisherID);
-            int row = preparedStatement.executeUpdate();
-            connection.close();
-            showAlert(Alert.AlertType.INFORMATION, "Successful", "Add book successful");
-            return row != 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
+
+            String checkQuery = "SELECT * FROM books WHERE Title = ? AND Author = ?";
+            try {
+                PreparedStatement checkStatement = connection.prepareStatement(checkQuery);
+                checkStatement.setString(1, title.getText());
+                checkStatement.setString(2, author.getText());
+                ResultSet rs = checkStatement.executeQuery();
+
+                if (rs.next()) { // Nếu sách đã tồn tại
+                    int existingAmount = rs.getInt("Amount");
+                    int newAmount = existingAmount + Integer.parseInt(amount.getText());
+
+                    // Cập nhật số lượng sách
+                    String updateQuery = "UPDATE books SET Amount = ? WHERE BookID = ?";
+                    PreparedStatement updateStatement = connection.prepareStatement(updateQuery);
+                    updateStatement.setInt(1, newAmount);
+                    updateStatement.setInt(2, rs.getInt("BookID"));
+                    int row = updateStatement.executeUpdate();
+                    if (row != 0) {
+                        showAlert(Alert.AlertType.INFORMATION, "Successful", "Book amount updated successfully.");
+                    } else {
+                        showAlert(Alert.AlertType.ERROR, "Failed", "Book amount updated failed");
+                    }
+                } else { // Nếu sách chưa tồn tại, thêm mới
+                    String insertQuery = "INSERT INTO books (Title, Image, Author, PublishedYear, Edition, Price, Amount, BookTypeID, PublisherID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
+                    preparedStatement.setString(1, img.getText());
+                    preparedStatement.setString(2, title.getText());
+                    preparedStatement.setString(3, author.getText());
+                    preparedStatement.setInt(4, Integer.parseInt(publishedYear.getText()));
+                    preparedStatement.setInt(5, Integer.parseInt(edition.getText()));
+                    preparedStatement.setDouble(6, Double.parseDouble(price.getText()));
+                    preparedStatement.setInt(7, Integer.parseInt(amount.getText()));
+                    preparedStatement.setInt(8, Integer.parseInt(bookTypeID.getText()));
+                    preparedStatement.setInt(9, Integer.parseInt(publisherID.getText()));
+                    preparedStatement.executeUpdate();
+
+                    showAlert(Alert.AlertType.INFORMATION, "Successful", "Book added successfully.");
+                }
+            } catch (SQLException ex) {
+                showAlert(Alert.AlertType.ERROR, "SQL Error", "Error while adding/updating book: " + ex.getMessage());
+            }
+            loadBooks(); // Cập nhật lại danh sách sách
+            stage.close(); // Đóng cửa sổ thêm sách
+        });
     }
 
     private boolean deactivationBook(int bookID) {
@@ -250,7 +308,7 @@ public class BookController implements Initializable {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setInt(1, bookID);
                 int row = preparedStatement.executeUpdate();
-                connection.close();
+
                 showAlert(Alert.AlertType.INFORMATION, "Successful", "Delete book successful");
                 return row != 0;
             } else {
@@ -324,5 +382,19 @@ public class BookController implements Initializable {
     @FXML
     public void updateUserInformation(ActionEvent event) {
         userController.updateUserInformation(event);
+    }
+
+    @FXML
+    public void goToHome(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/home.fxml");
+    }
+
+    @FXML
+    public void goToCart(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/cart.fxml");
+    }
+
+    public void goToAddBookScene(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/addBook.fxml");
     }
 }
