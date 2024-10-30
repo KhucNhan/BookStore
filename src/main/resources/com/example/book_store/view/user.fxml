@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.AdminOrderController">
+<GridPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.UserDisplayController">
 
     <HBox alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
         <Button fx:id="goToHome" mnemonicParsing="false" onAction="#goToHome" text="Trang chủ">
@@ -51,36 +51,44 @@
         </MenuButton>
     </HBox>
 
-    <Region prefHeight="28.0" GridPane.rowIndex="1" />
-
-    <Label prefHeight="27.0" prefWidth="222.0" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Danh Sách Đơn Hàng" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-
-    <TableView fx:id="billTable" prefHeight="455.0" prefWidth="1128.0" GridPane.columnSpan="3" GridPane.rowIndex="3">
+    <TableView fx:id="userTable" layoutX="50.0" layoutY="100.0" prefHeight="635.0" prefWidth="1175.0" GridPane.columnSpan="3" GridPane.rowIndex="2">
         <columns>
-            <TableColumn fx:id="billId" prefWidth="164.3333282470703" text="Mã Đơn Hàng" />
-            <TableColumn fx:id="customerId" prefWidth="185.00003051757812" text=" Mã Khách Hàng" />
-            <TableColumn fx:id="date" prefWidth="201.33334350585938" text="Ngày Đặt Hàng" />
-            <TableColumn fx:id="totalAmount" minWidth="0.0" prefWidth="164.99993896484375" text="Tổng Số Tiền" />
-            <TableColumn fx:id="status" prefWidth="175.33331298828125" text="Trạng Thái" />
-            <TableColumn fx:id="action" prefWidth="269.666748046875" text="Hành Động" />
+            <TableColumn fx:id="userID" prefWidth="100" text="Mã người dùng" />
+            <TableColumn fx:id="name" prefWidth="120" text="Họ tên" />
+            <TableColumn fx:id="username" prefWidth="120" text="Tên đăng nhập" />
+            <TableColumn fx:id="email" prefWidth="160" text="Email" />
+            <TableColumn fx:id="dateOfBirth" prefWidth="100" text="Ngày sinh" />
+            <TableColumn fx:id="gender" prefWidth="80" text="Giới tính" />
+            <TableColumn fx:id="phone" prefWidth="120" text="Số điện thoại" />
+            <TableColumn fx:id="address" prefWidth="180" text="Địa chỉ" />
+            <TableColumn fx:id="status" prefWidth="80" text="Trạng thái" />
+            <TableColumn fx:id="action" prefWidth="114.6666259765625" text="Hành động" />
         </columns>
-      <GridPane.margin>
-         <Insets left="100.0" right="10.0" top="10.0" />
-      </GridPane.margin>
+        <GridPane.margin>
+            <Insets bottom="10.0" left="50.0" top="10.0" />
+        </GridPane.margin>
     </TableView>
+    <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0" GridPane.columnSpan="3" GridPane.rowIndex="4" />
+    <Button fx:id="addUser" contentDisplay="CENTER" onAction="#showAddBookDialog" prefHeight="25.0" prefWidth="119.0" text=" Thêm  " GridPane.columnIndex="2" GridPane.rowIndex="1">
+        <opaqueInsets>
+            <Insets />
+        </opaqueInsets>
+        <GridPane.margin>
+            <Insets />
+        </GridPane.margin>
+    </Button>
 
-    <!-- Column and row constraints -->
+
     <columnConstraints>
-        <ColumnConstraints maxWidth="414.6666666666667" minWidth="223.33333333333334" prefWidth="382.6666666666667" />
-        <ColumnConstraints maxWidth="749.0" minWidth="443.3333333333333" prefWidth="648.3333333333333" />
-        <ColumnConstraints maxWidth="347.3333333333335" minWidth="61.0" prefWidth="175.0" />
-      <ColumnConstraints maxWidth="304.0" minWidth="0.0" prefWidth="0.0" />
+        <ColumnConstraints />
+        <ColumnConstraints maxWidth="749.0" minWidth="505.99999999999994" prefWidth="656.0" />
+        <ColumnConstraints maxWidth="304.33333333333326" minWidth="61.66666666666674" prefWidth="154.66666666666674" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints maxHeight="40.33333524068197" minHeight="32.333333333333336" prefHeight="32.333333333333336" />
-        <RowConstraints maxHeight="31.0" minHeight="22.999998092651367" prefHeight="31.0" />
         <RowConstraints />
-        <RowConstraints maxHeight="464.6666666666667" minHeight="464.00000000000006" prefHeight="464.6666666666667" />
-        <RowConstraints maxHeight="0.0" minHeight="0.0" prefHeight="0.0" />
+        <RowConstraints maxHeight="87.00000381469727" minHeight="5.0" prefHeight="57.99999618530273" />
+        <RowConstraints maxHeight="650.3333333333334" minHeight="568.3333295186361" prefHeight="597.3333371480306" />
+        <RowConstraints />
+        <RowConstraints />
     </rowConstraints>
 </GridPane>
