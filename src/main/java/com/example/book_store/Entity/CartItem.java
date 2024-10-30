@@ -5,56 +5,60 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableValue;
 
 public class CartItem {
-    private int idOrder;
-    private int idBook;
-    private String title;
+    private int cartItemID;
+    private boolean selected;
+    private int cartID;
+    private int bookID;
     private String image;
+    private String title;
     private double price;
     private int amount;
     private double total;
-    private BooleanProperty selected = new SimpleBooleanProperty(false);
+    private int orderItemID;
 
-    public CartItem(int idOrder, int idBook, String title, String image, double price, int amount, double total) {
-        this.idOrder = idOrder;
-        this.idBook = idBook;
-        this.title = title;
+    public CartItem(int cartItemID, boolean selected, int cartID, int bookID, String image, String title, double price, int amount, double total, int orderItemID) {
+        this.cartItemID = cartItemID;
+        this.cartID = cartID;
+        this.bookID = bookID;
         this.image = image;
+        this.title = title;
         this.price = price;
         this.amount = amount;
         this.total = total;
-        this.selected.set(false);
+        this.orderItemID = orderItemID;
+        this.selected = selected;
     }
 
-    public int getIdOrder() {
-        return idOrder;
+    public int getCartItemID() {
+        return cartItemID;
     }
 
-    public void setIdOrder(int idOrder) {
-        this.idOrder = idOrder;
-    }
-
-    public int getIdBook() {
-        return idBook;
-    }
-
-    public void setIdBook(int idBook) {
-        this.idBook = idBook;
+    public void setCartItemID(int cartItemID) {
+        this.cartItemID = cartItemID;
     }
 
     public boolean isSelected() {
-        return selected.get();
+        return selected;
     }
 
     public void setSelected(boolean selected) {
-        this.selected.set(selected);
+        this.selected = selected;
     }
 
-    public String getTitle() {
-        return title;
+    public int getCartID() {
+        return cartID;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setCartID(int cartID) {
+        this.cartID = cartID;
+    }
+
+    public int getbookID() {
+        return bookID;
+    }
+
+    public void setbookID(int bookID) {
+        this.bookID = bookID;
     }
 
     public String getImage() {
@@ -63,6 +67,14 @@ public class CartItem {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public double getPrice() {
@@ -79,7 +91,6 @@ public class CartItem {
 
     public void setAmount(int amount) {
         this.amount = amount;
-        this.total = this.price * this.amount;
     }
 
     public double getTotal() {
@@ -90,8 +101,12 @@ public class CartItem {
         this.total = total;
     }
 
-    public BooleanProperty selectedProperty() {
-        return selected;
+    public int getOrderItemID() {
+        return orderItemID;
+    }
+
+    public void setOrderItemID(int orderItemID) {
+        this.orderItemID = orderItemID;
     }
 
 }

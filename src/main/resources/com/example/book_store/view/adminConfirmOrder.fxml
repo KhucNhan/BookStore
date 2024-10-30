@@ -11,10 +11,7 @@
          <HBox.margin>
             <Insets top="10.0" />
          </HBox.margin></Button>
-        <Button fx:id="goToCart" mnemonicParsing="false" onAction="#goToOrder" text=" Đơn hàng">
-         <HBox.margin>
-            <Insets top="10.0" />
-         </HBox.margin></Button>
+
         <Button mnemonicParsing="false" text="Thống kê">
          <HBox.margin>
             <Insets top="10.0" />

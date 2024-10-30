@@ -39,7 +39,7 @@ public class HomeUserController {
     private UserController userController = new UserController();
     private BillController billController = new BillController();
     private OrderController orderController = new OrderController();
-    private BookOrderController bookOrderController = new BookOrderController();
+    private CartController cartController = new CartController();
     private BookController bookController = new BookController();
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
@@ -51,7 +51,7 @@ public class HomeUserController {
 
     private void loadBooksFromDatabase() {
         try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM books")) {
+             ResultSet rs = stmt.executeQuery("SELECT * FROM books where Status = true")) {
 
             booksList.clear();
             while (rs.next()) {
@@ -110,106 +110,65 @@ public class HomeUserController {
         stage.show();
 
         saveButton.setOnAction(e -> {
-            stage.close();
-            try {
-                addToCart(currentUser.getUserID(), book.getBookID(), Integer.parseInt(amount.getText()), book.getPrice());
-                showAlert(Alert.AlertType.INFORMATION, "Successful", "Add to cart successful");
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
+            if (Integer.parseInt(amount.getText()) < 1) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right amount");
+                return;
             }
+            stage.close();
+            addToCart(currentUser.getUserID(), book.getBookID(), Integer.parseInt(amount.getText()));
+            showAlert(Alert.AlertType.INFORMATION, "Successful", "Add to cart successful");
         });
     }
 
-    public void addToCart(int userId, int bookId, int quantity, double price) throws SQLException {
-        // 1. Kiểm tra hóa đơn hiện có hay chưa
-        PreparedStatement stmt = connection.prepareStatement("SELECT BillID FROM Bills WHERE UserID = ? AND Status = 'pending'");
-        stmt.setInt(1, userId);
-        ResultSet rs = stmt.executeQuery();
+    private void addToCart(int userID, int bookID, int amount) {
+        String checkQuery = "SELECT CartItemID, Amount FROM CartItems " +
+                "JOIN Cart ON CartItems.CartID = Cart.CartID " +
+                "WHERE Cart.UserID = ? AND CartItems.BookID = ?";
 
-        int billId;
-        if (rs.next()) {
-            billId = rs.getInt("BillID");
-        } else {
-            // Tạo hóa đơn mới
-            stmt = connection.prepareStatement("INSERT INTO Bills (Date, TotalAmount, UserID, Status) VALUES (CURRENT_DATE, 0, ?, 'pending')", Statement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, userId);
-            stmt.executeUpdate();
-            rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                billId = rs.getInt(1);
+        String updateQuery = "UPDATE CartItems SET Amount = Amount + ? " +
+                "WHERE CartItemID = ?";
+
+        String insertQuery = "INSERT INTO CartItems (CartID, BookID, Amount, Price, TotalPrice) " +
+                "VALUES (" +
+                "(SELECT CartID FROM Cart WHERE UserID = ?), " +
+                "?, " +
+                "?, " +
+                "(SELECT Price FROM Books WHERE BookID = ?), " +
+                "(SELECT Price FROM Books WHERE BookID = ?) * ?" +
+                ")";
+
+        try {
+            // Bước 1: Kiểm tra nếu mục đã có trong giỏ hàng
+            PreparedStatement checkStmt = connection.prepareStatement(checkQuery);
+            checkStmt.setInt(1, userID);
+            checkStmt.setInt(2, bookID);
+
+            ResultSet resultSet = checkStmt.executeQuery();
+
+            if (resultSet.next()) {
+                // Bước 2: Nếu mục đã tồn tại, cập nhật số lượng
+                int cartItemID = resultSet.getInt("CartItemID");
+                PreparedStatement updateStmt = connection.prepareStatement(updateQuery);
+                updateStmt.setInt(1, amount);
+                updateStmt.setInt(2, cartItemID);
+                updateStmt.executeUpdate();
+                System.out.println("Updated quantity for existing item in cart.");
             } else {
-                throw new SQLException("Failed to create bill");
-            }
-        }
-
-        // 2. Kiểm tra xem có order nào với BillID và BookID đã tồn tại hay chưa
-        stmt = connection.prepareStatement("SELECT OrderID, Amount FROM Orders WHERE BillID = ? AND BookID = ?");
-        stmt.setInt(1, billId);
-        stmt.setInt(2, bookId);
-        rs = stmt.executeQuery();
-
-        if (rs.next()) {
-            // Nếu đã tồn tại order, cập nhật số lượng và tổng tiền
-            int orderId = rs.getInt("OrderID");
-            int existingAmount = rs.getInt("Amount");
-            int newAmount = existingAmount + quantity;
-
-            // Cập nhật số lượng trong bảng Orders
-            stmt = connection.prepareStatement("UPDATE Orders SET Amount = ?, Price = ? WHERE OrderID = ?");
-            stmt.setInt(1, newAmount);
-            stmt.setDouble(2, price);
-            stmt.setInt(3, orderId);
-            stmt.executeUpdate();
-
-            // Cập nhật số lượng trong bảng Books_Orders
-            stmt = connection.prepareStatement("UPDATE Books_Orders SET Amount = ? WHERE OrderID = ? AND BookID = ?");
-            stmt.setInt(1, newAmount);
-            stmt.setInt(2, orderId);
-            stmt.setInt(3, bookId);
-            stmt.executeUpdate();
-
-            // Cập nhật tổng tiền hóa đơn
-            updateTotalAmount(stmt, billId);
-        } else {
-            // 3. Thêm sản phẩm vào Orders
-            stmt = connection.prepareStatement("INSERT INTO Orders (BillID, BookID, Amount, Price) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, billId);
-            stmt.setInt(2, bookId);
-            stmt.setInt(3, quantity);
-            stmt.setDouble(4, price);
-            stmt.executeUpdate();
-            rs = stmt.getGeneratedKeys();
-            int orderId;
-            if (rs.next()) {
-                orderId = rs.getInt(1);
-            } else {
-                throw new SQLException("Failed to add order");
+                // Bước 3: Nếu mục chưa tồn tại, thêm mục mới
+                PreparedStatement insertStmt = connection.prepareStatement(insertQuery);
+                insertStmt.setInt(1, userID);
+                insertStmt.setInt(2, bookID);
+                insertStmt.setInt(3, amount);
+                insertStmt.setInt(4, bookID);
+                insertStmt.setInt(5, bookID);
+                insertStmt.setInt(6, amount);
+                insertStmt.executeUpdate();
+                System.out.println("Added new item to cart.");
             }
 
-            // 4. Cập nhật số lượng sách trong kho
-            stmt = connection.prepareStatement("UPDATE Books SET Amount = Amount - ? WHERE BookID = ?");
-            stmt.setInt(1, quantity);
-            stmt.setInt(2, bookId);
-            stmt.executeUpdate();
-
-            // Cập nhật số lượng trong bảng Books_Orders
-            stmt = connection.prepareStatement("INSERT INTO Books_Orders (OrderID, BookID, Amount) VALUES (?, ?, ?)");
-            stmt.setInt(1, orderId);
-            stmt.setInt(2, bookId);
-            stmt.setInt(3, quantity);
-            stmt.executeUpdate();
-
-            // 5. Cập nhật tổng tiền hóa đơn
-            updateTotalAmount(stmt, billId);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-    }
-
-    private void updateTotalAmount(PreparedStatement stmt, int billId) throws SQLException {
-        // Cập nhật tổng tiền hóa đơn
-        stmt = connection.prepareStatement("UPDATE Bills SET TotalAmount = (SELECT SUM(Price * Amount) FROM Orders WHERE BillID = ?) WHERE BillID = ?");
-        stmt.setInt(1, billId);
-        stmt.setInt(2, billId);
-        stmt.executeUpdate();
     }
 
     private void showBookDetails(Book book) {
@@ -240,7 +199,7 @@ public class HomeUserController {
     }
 
     private void showAlert(Alert.AlertType information, String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+        Alert alert = new Alert(information);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
