@@ -278,7 +278,7 @@ public class BookController implements Initializable {
                         showAlert(Alert.AlertType.ERROR, "Failed", "Book amount updated failed");
                     }
                 } else { // Nếu sách chưa tồn tại, thêm mới
-                    String insertQuery = "INSERT INTO books (Title, Image, Author, PublishedYear, Edition, Price, Amount, BookTypeID, PublisherID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    String insertQuery = "INSERT INTO books (Image, Title, Author, PublishedYear, Edition, Price, Amount, BookTypeID, PublisherID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                     PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
                     preparedStatement.setString(1, img.getText());
                     preparedStatement.setString(2, title.getText());
