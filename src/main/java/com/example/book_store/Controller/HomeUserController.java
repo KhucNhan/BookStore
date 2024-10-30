@@ -51,7 +51,7 @@ public class HomeUserController {
 
     private void loadBooksFromDatabase() {
         try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM books")) {
+             ResultSet rs = stmt.executeQuery("SELECT * FROM books where Status = true")) {
 
             booksList.clear();
             while (rs.next()) {
