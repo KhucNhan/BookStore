@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane minHeight="430" minWidth="900" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.BookOrderController">
+<GridPane minHeight="430" minWidth="900" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.CartController">
 
     <!-- Top section (was BorderPane's top) -->
     <HBox alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
@@ -53,13 +53,17 @@
     <!-- Center section (was BorderPane's center) -->
     <TableView fx:id="cartTableView" prefHeight="413.0" prefWidth="1135.0" GridPane.columnSpan="3" GridPane.rowIndex="2">
         <columns>
-            <TableColumn fx:id="select" prefWidth="96.99999237060547" text="Chọn" />
+            <TableColumn fx:id="cartItemID" prefWidth="20" text="cartItemID" />
+            <TableColumn fx:id="selected" prefWidth="96.99999237060547" text="Chọn" />
+            <TableColumn fx:id="cardID" prefWidth="20" text="cardID" />
+            <TableColumn fx:id="bookID" prefWidth="20" text="bookID" />
             <TableColumn fx:id="title" prefWidth="241.3333282470703" text="Sản phẩm" />
             <TableColumn fx:id="image" prefWidth="190.66668701171875" text="Hình ảnh" />
             <TableColumn fx:id="price" prefWidth="161.33331298828125" text="Giá" />
             <TableColumn fx:id="amount" prefWidth="122.0" text="Số lượng" />
             <TableColumn fx:id="total" minWidth="0.0" prefWidth="144.0" text="Tổng cộng" />
             <TableColumn fx:id="act" prefWidth="151.33319091796875" text="Hành động" />
+            <TableColumn fx:id="orderItemID" prefWidth="20" text="OrderItemID" />
         </columns>
       <GridPane.margin>
          <Insets left="65.0" right="10.0" top="35.0" />

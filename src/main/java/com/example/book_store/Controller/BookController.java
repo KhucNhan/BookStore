@@ -25,7 +25,6 @@ import java.net.URL;
 import java.sql.*;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class BookController implements Initializable {
     private final User currentUser = Authentication.currentUser;
@@ -35,7 +34,7 @@ public class BookController implements Initializable {
     private UserController userController = new UserController();
     private BillController billController = new BillController();
     private OrderController orderController = new OrderController();
-    private BookOrderController bookOrderController = new BookOrderController();
+    private CartController cartController = new CartController();
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
 
@@ -58,9 +57,9 @@ public class BookController implements Initializable {
     @FXML
     public TableColumn amountColumn;
     @FXML
-    public TableColumn bookTypeIDColumn;
+    public TableColumn bookTypeColumn;
     @FXML
-    public TableColumn publisherIDColumn;
+    public TableColumn publisherColumn;
     @FXML
     public TableColumn statusColumn;
     @FXML
@@ -93,8 +92,8 @@ public class BookController implements Initializable {
         editionColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("edition"));
         priceColumn.setCellValueFactory(new PropertyValueFactory<Book, Double>("price"));
         amountColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("amount"));
-        bookTypeIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookTypeID"));
-        publisherIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("publisherID"));
+        bookTypeColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("bookType"));
+        publisherColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("publisher"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<Book, Boolean>("status"));
 
 
@@ -138,13 +137,13 @@ public class BookController implements Initializable {
         TextField edition = new TextField(String.valueOf(book.getEdition()));
         TextField price = new TextField(String.valueOf(book.getPrice()));
         TextField amount = new TextField(String.valueOf(book.getAmount()));
-        TextField bookTypeID = new TextField(String.valueOf(book.getBookTypeID()));
-        TextField publisherID = new TextField(String.valueOf(book.getPublisherID()));
+        TextField bookType = new TextField(String.valueOf(book.getBookType()));
+        TextField publisher = new TextField(String.valueOf(book.getPublisher()));
         TextField status = new TextField(String.valueOf(book.isStatus()));
 
         Button saveButton = new Button("Save");
 
-        VBox vbox = new VBox(title, img, author, publishedYear, edition, price, amount, bookTypeID, publisherID, status, saveButton);
+        VBox vbox = new VBox(title, img, author, publishedYear, edition, price, amount, bookType, publisher, status, saveButton);
         vbox.setSpacing(10);
         Scene scene = new Scene(vbox, 240, 480);
         Stage stage = new Stage();
@@ -153,12 +152,12 @@ public class BookController implements Initializable {
         stage.show();
 
         saveButton.setOnAction(e -> {
-            if (title.getText().isEmpty() || author.getText().isEmpty() || publishedYear.getText().isEmpty() || img.getText().isEmpty() || status.getText().isEmpty() || price.getText().isEmpty() || edition.getText().isEmpty() || amount.getText().isEmpty() || bookTypeID.getText().isEmpty() || publisherID.getText().isEmpty()) {
+            if (title.getText().isEmpty() || author.getText().isEmpty() || publishedYear.getText().isEmpty() || img.getText().isEmpty() || status.getText().isEmpty() || price.getText().isEmpty() || edition.getText().isEmpty() || amount.getText().isEmpty() || bookType.getText().isEmpty() || publisher.getText().isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, "Error", "No blank!");
                 return;
             }
 
-            String query = "update books set Title = ?, Image = ?, Author = ?, PublishedYear = ?, Edition = ?, Price = ?, Amount = ?, BookTypeID = ?, PublisherID = ?, Status = ? where BookID = ?";
+            String query = "update books set Title = ?, Image = ?, Author = ?, PublishedYear = ?, Edition = ?, Price = ?, Amount = ?, BookType = ?, Publisher = ?, Status = ? where BookID = ?";
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, title.getText());
@@ -168,8 +167,8 @@ public class BookController implements Initializable {
                 preparedStatement.setInt(5, Integer.parseInt(edition.getText()));
                 preparedStatement.setDouble(6, Double.parseDouble(price.getText()));
                 preparedStatement.setInt(7, Integer.parseInt(amount.getText()));
-                preparedStatement.setInt(8, Integer.parseInt(bookTypeID.getText()));
-                preparedStatement.setInt(9, Integer.parseInt(publisherID.getText()));
+                preparedStatement.setString(8, bookType.getText());
+                preparedStatement.setString(9, publisher.getText());
                 preparedStatement.setBoolean(10, Boolean.parseBoolean(status.getText()));
                 preparedStatement.setInt(11, book.getBookID());
                 int row = preparedStatement.executeUpdate();
@@ -203,8 +202,8 @@ public class BookController implements Initializable {
                         resultSet.getInt("Edition"),
                         resultSet.getDouble("Price"),
                         resultSet.getInt("Amount"),
-                        resultSet.getInt("BookTypeID"),
-                        resultSet.getInt("PublisherID"),
+                        resultSet.getString("BookType"),
+                        resultSet.getString("Publisher"),
                         resultSet.getBoolean("Status")
                 );
                 bookList.add(book);
@@ -234,14 +233,14 @@ public class BookController implements Initializable {
         price.setPromptText("Price");
         TextField amount = new TextField();
         amount.setPromptText("Amount");
-        TextField bookTypeID = new TextField();
-        bookTypeID.setPromptText("Book type ID");
-        TextField publisherID = new TextField();
-        publisherID.setPromptText("Publisher ID");
+        TextField bookType = new TextField();
+        bookType.setPromptText("Book type");
+        TextField publisher = new TextField();
+        publisher.setPromptText("Publisher");
 
         Button saveButton = new Button("Add Book");
 
-        VBox vbox = new VBox(img, title, author, publishedYear, edition, price, amount, bookTypeID, publisherID, saveButton);
+        VBox vbox = new VBox(img, title, author, publishedYear, edition, price, amount, bookType, publisher, saveButton);
         vbox.setSpacing(10);
         Scene scene = new Scene(vbox, 240, 480);
         Stage stage = new Stage();
@@ -250,7 +249,7 @@ public class BookController implements Initializable {
         stage.show();
 
         saveButton.setOnAction(e -> {
-            if (title.getText().isEmpty() || amount.getText().isEmpty() || publishedYear.getText().isEmpty() || img.getText().isEmpty() || price.getText().isEmpty() || edition.getText().isEmpty() || amount.getText().isEmpty() || bookTypeID.getText().isEmpty() || publisherID.getText().isEmpty()) {
+            if (title.getText().isEmpty() || amount.getText().isEmpty() || publishedYear.getText().isEmpty() || img.getText().isEmpty() || price.getText().isEmpty() || edition.getText().isEmpty() || amount.getText().isEmpty() || bookType.getText().isEmpty() || publisher.getText().isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, "Error", "No blank!");
                 return;
             }
@@ -278,7 +277,9 @@ public class BookController implements Initializable {
                         showAlert(Alert.AlertType.ERROR, "Failed", "Book amount updated failed");
                     }
                 } else { // Nếu sách chưa tồn tại, thêm mới
-                    String insertQuery = "INSERT INTO books (Image, Title, Author, PublishedYear, Edition, Price, Amount, BookTypeID, PublisherID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                    String insertQuery = "INSERT INTO books ( Image, Title, Author, PublishedYear, Edition, Price, Amount, BookType, Publisher) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
                     PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
                     preparedStatement.setString(1, img.getText());
                     preparedStatement.setString(2, title.getText());
@@ -287,8 +288,8 @@ public class BookController implements Initializable {
                     preparedStatement.setInt(5, Integer.parseInt(edition.getText()));
                     preparedStatement.setDouble(6, Double.parseDouble(price.getText()));
                     preparedStatement.setInt(7, Integer.parseInt(amount.getText()));
-                    preparedStatement.setInt(8, Integer.parseInt(bookTypeID.getText()));
-                    preparedStatement.setInt(9, Integer.parseInt(publisherID.getText()));
+                    preparedStatement.setString(8, bookType.getText());
+                    preparedStatement.setString(9, publisher.getText());
                     preparedStatement.executeUpdate();
 
                     showAlert(Alert.AlertType.INFORMATION, "Successful", "Book added successfully.");
@@ -392,9 +393,5 @@ public class BookController implements Initializable {
     @FXML
     public void goToCart(ActionEvent event) throws IOException {
         goToScene(event, "/com/example/book_store/view/cart.fxml");
-    }
-
-    public void goToAddBookScene(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/addBook.fxml");
     }
 }

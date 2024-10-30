@@ -4,6 +4,7 @@ import com.example.book_store.ConnectDB;
 import com.example.book_store.Entity.Book;
 import com.example.book_store.Entity.CartItem;
 import com.example.book_store.Entity.User;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,17 +26,24 @@ import java.io.IOException;
 import java.sql.*;
 
 
-public class BookOrderController {
+public class CartController {
     public TableColumn<CartItem, Void> act;
     private UserController userController = new UserController();
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
     private final User currentUser = Authentication.currentUser;
-    public TableColumn<CartItem, Boolean> select;
+    public TableColumn<CartItem, Boolean> selected;
     public CheckBox selectAllBooks;
 
     @FXML
     private TableView<CartItem> cartTableView;
+
+    @FXML
+    private TableColumn<CartItem, Integer> cartItemID;
+    @FXML
+    private TableColumn<CartItem, Integer> cardID;
+    @FXML
+    private TableColumn<CartItem, Integer> bookID;
 
     @FXML
     private TableColumn<CartItem, String> title;
@@ -53,6 +61,9 @@ public class BookOrderController {
     private TableColumn<CartItem, Double> total;
 
     @FXML
+    private TableColumn<CartItem, Integer> orderItemID;
+
+    @FXML
     private Label totalCartLabel;
 
     @FXML
@@ -62,14 +73,21 @@ public class BookOrderController {
 
     @FXML
     public void initialize() {
-        select.setCellValueFactory(new PropertyValueFactory<CartItem, Boolean>("select"));
-        select.setCellValueFactory(cellData -> {
-            CartItem item = cellData.getValue();
-            return item.selectedProperty();
-        });
+        cartItemID.setCellValueFactory(new PropertyValueFactory<>("cartItemID"));
+        cartItemID.setVisible(false);
 
-        select.setCellFactory(column -> new TableCell<CartItem, Boolean>() {
-            private final CheckBox selected = new CheckBox();
+        cardID.setCellValueFactory(new PropertyValueFactory<>("cartID"));
+        cardID.setVisible(false);
+
+        bookID.setCellValueFactory(new PropertyValueFactory<>("bookID"));
+        bookID.setVisible(false);
+
+        orderItemID.setCellValueFactory(new PropertyValueFactory<>("orderItemID"));
+        orderItemID.setVisible(false);
+
+        selected.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().isSelected()));
+        selected.setCellFactory(column -> new TableCell<>() {
+            private final CheckBox selectedCheckbox = new CheckBox();
 
             @Override
             protected void updateItem(Boolean selectedValue, boolean empty) {
@@ -77,20 +95,26 @@ public class BookOrderController {
                 if (empty || selectedValue == null) {
                     setGraphic(null);
                 } else {
-                    selected.setSelected(selectedValue);
+                    selectedCheckbox.setSelected(selectedValue);
 
-                    selected.setOnAction(event -> {
+                    selectedCheckbox.setOnAction(event -> {
                         CartItem item = getTableView().getItems().get(getIndex());
-                        item.setSelected(selected.isSelected());
+
+                        item.setSelected(selectedCheckbox.isSelected());
+
+                        updateSelectedCartItem(item.isSelected(), item.getCartItemID());
+
+                        updateSelectAllBooks();
                         updateTotalCartLabel();
                     });
-                    setGraphic(selected);
+                    setGraphic(selectedCheckbox);
+                    setAlignment(Pos.valueOf("CENTER"));
                 }
             }
         });
-        title.setCellValueFactory(new PropertyValueFactory<CartItem, String>("title"));
-        image.setCellValueFactory(new PropertyValueFactory<CartItem, String>("image"));
-        image.setCellFactory(column -> new TableCell<CartItem, String>() {
+        title.setCellValueFactory(new PropertyValueFactory<>("title"));
+        image.setCellValueFactory(new PropertyValueFactory<>("image"));
+        image.setCellFactory(column -> new TableCell<>() {
 
             private final ImageView imageView = new ImageView();
 
@@ -107,8 +131,8 @@ public class BookOrderController {
                 }
             }
         });
-        price.setCellValueFactory(new PropertyValueFactory<CartItem, Double>("price"));
-        amount.setCellFactory(column -> new TableCell<CartItem, Integer>() {
+        price.setCellValueFactory(new PropertyValueFactory<>("price"));
+        amount.setCellFactory(column -> new TableCell<>() {
             private final Button minus = new Button("-");
             private final Label currentAmount = new Label();
             private final Button plus = new Button("+");
@@ -122,13 +146,13 @@ public class BookOrderController {
                     CartItem cartItem = getTableView().getItems().get(getIndex());
                     currentAmount.setText(cartItem.getAmount() + "");
                     minus.setOnAction(e -> {
-                        minusAmount(cartItem.getIdOrder(), cartItem.getIdBook());
+                        minusAmount(cartItem.getCartItemID());
                         loadCart();
                         updateTotalCartLabel();
                     });
 
                     plus.setOnAction(e -> {
-                        plusAmount(cartItem.getIdOrder(), cartItem.getIdBook());
+                        plusAmount(cartItem.getCartItemID());
                         loadCart();
                         updateTotalCartLabel();
                     });
@@ -151,9 +175,9 @@ public class BookOrderController {
                 if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                     setGraphic(null);
                 } else {
-                    CartItem cartItem = getTableRow().getItem(); // Lấy item từ hàng hiện tại
+                    CartItem cartItem = getTableView().getItems().get(getIndex()); // Lấy item từ hàng hiện tại
                     delete.setOnAction(e -> {
-                        deleteFromCart(cartItem.getIdOrder(), cartItem.getIdBook());
+                        deleteFromCart(cartItem.getCartItemID());
                         getTableView().getItems().remove(cartItem);
                     });
                     setGraphic(delete);
@@ -167,131 +191,60 @@ public class BookOrderController {
         loadCart();
     }
 
+    private void updateSelectedCartItem(boolean value, int cartItemID) {
+        String query = "update cartitems set Selected = ? where CartItemID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setBoolean(1, value);
+            preparedStatement.setInt(2, cartItemID);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void updateSelectAllBooks() {
+        boolean allSelected = cartTableView.getItems().stream()
+                .allMatch(CartItem::isSelected);
+        selectAllBooks.setSelected(allSelected);
+    }
+
     @FXML
-    public void deleteFromCart(int orderID, int bookID) {
-        String updateBookQuery = "UPDATE Books SET Amount = Amount + ? WHERE BookID = ?";
-        String deleteProductQuery = "DELETE FROM books_orders WHERE OrderID = ? AND BookID = ?";
-        String calculateTotalQuery = "SELECT SUM(b.Price * bo.Amount) AS Total FROM books_orders bo " +
-                "JOIN Books b ON bo.BookID = b.BookID " +
-                "join orders o on bo.OrderID = o.OrderID " +
-                "join bills bi on o.BillID = bi.BillID where bi.BillID = (SELECT BillID FROM Orders WHERE OrderID = ?)";
-        String updateBillStatusQuery = "UPDATE Bills SET Status = 'canceled' WHERE BillID = (SELECT BillID FROM Orders WHERE OrderID = ?)";
-
-        try {
-            // Bước 1: Lấy số lượng sản phẩm cần xóa
-            int amountToRemove = 0;
-            String selectQuery = "SELECT Amount FROM books_orders WHERE OrderID = ? AND BookID = ?";
-            try (PreparedStatement selectStatement = connection.prepareStatement(selectQuery)) {
-                selectStatement.setInt(1, orderID);
-                selectStatement.setInt(2, bookID);
-                ResultSet resultSet = selectStatement.executeQuery();
-                if (resultSet.next()) {
-                    amountToRemove = resultSet.getInt("Amount");
-                }
-            }
-
-            // Bước 2: Cập nhật số lượng sách trong bảng Books
-            try (PreparedStatement updateBookStatement = connection.prepareStatement(updateBookQuery)) {
-                updateBookStatement.setInt(1, amountToRemove);
-                updateBookStatement.setInt(2, bookID);
-                updateBookStatement.executeUpdate();
-            }
-
-            // Bước 3: Xóa sản phẩm khỏi đơn hàng
-            try (PreparedStatement deleteProductStatement = connection.prepareStatement(deleteProductQuery)) {
-                deleteProductStatement.setInt(1, orderID);
-                deleteProductStatement.setInt(2, bookID);
-                deleteProductStatement.executeUpdate();
-            }
-
-            // Bước 4: Tính tổng tiền của đơn hàng còn lại
-            double totalAmount = 0;
-            try (PreparedStatement totalStatement = connection.prepareStatement(calculateTotalQuery)) {
-                totalStatement.setInt(1, orderID);
-                ResultSet totalResult = totalStatement.executeQuery();
-                if (totalResult.next()) {
-                    totalAmount = totalResult.getDouble(1);
-                }
-            }
-
-            // Bước 5: Nếu tổng tiền bằng 0, cập nhật trạng thái của Bill
-            if (totalAmount == 0) {
-                try (PreparedStatement updateBillStatusStatement = connection.prepareStatement(updateBillStatusQuery)) {
-                    updateBillStatusStatement.setInt(1, orderID);
-                    updateBillStatusStatement.executeUpdate();
-                }
-            }
-
-            // Bước 6: Tải lại giỏ hàng sau khi xóa
-            loadCart();
-            updateTotalCartLabel();
-
+    public boolean deleteFromCart(int cartItemID) {
+        String query = "DELETE FROM CartItems WHERE CartItemID = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, cartItemID);
+            int rowsAffected = preparedStatement.executeUpdate();
+            return rowsAffected > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 
-    private void minusAmount(int orderID, int bookID) {
-        String query = "update books_orders set Amount = Amount - 1 where OrderID = ? and BookID = ?";
+    private boolean minusAmount(int cartItemID) {
+        String query = "UPDATE CartItems " +
+                "SET Amount = Amount - 1 " +
+                "WHERE CartItemID = ? AND Amount > 0";
+        return updateCartItemAmount(cartItemID, query);
+    }
+
+    private boolean plusAmount(int cartItemID) {
+        String query = "UPDATE CartItems " +
+                "SET Amount = Amount + 1 " +
+                "WHERE CartItemID = ?";
+        return updateCartItemAmount(cartItemID, query);
+    }
+
+    private boolean updateCartItemAmount(int cartItemID, String query) {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, orderID);
-            preparedStatement.setInt(2, bookID);
+            preparedStatement.setInt(1, cartItemID);
             int row = preparedStatement.executeUpdate();
-            if (row != 0) {
-                query = "UPDATE Orders " +
-                        "SET Amount = (" +
-                        "    SELECT SUM(Amount) " +
-                        "    FROM books_orders " +
-                        "    WHERE OrderID = ?" +
-                        ") " +
-                        "WHERE OrderID = ?";
-                preparedStatement = connection.prepareStatement(query);
-                preparedStatement.setInt(1, orderID);
-                preparedStatement.setInt(2, orderID);
-                preparedStatement.executeUpdate();
-            } else {
-                System.out.println("Failed");
-            }
+            return row > 0;
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-    }
-
-    private void plusAmount(int orderID, int bookID) {
-        String query = "update books_orders set Amount = Amount + 1 where OrderID = ? and BookID = ?";
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, orderID);
-            preparedStatement.setInt(2, bookID);
-            int row = preparedStatement.executeUpdate();
-            if (row != 0) {
-                query = "UPDATE Orders " +
-                        "SET Amount = (" +
-                        "    SELECT SUM(Amount) " +
-                        "    FROM books_orders " +
-                        "    WHERE OrderID = ?" +
-                        ") " +
-                        "WHERE OrderID = ?";
-                preparedStatement = connection.prepareStatement(query);
-                preparedStatement.setInt(1, orderID);
-                preparedStatement.setInt(2, orderID);
-                preparedStatement.executeUpdate();
-            } else {
-                System.out.println("Failed");
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void updateNewAmountInCart(int value) {
-        String query = "update orders set Amount = Amount - ? where ";
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, value);
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return false;
         }
     }
 
@@ -301,12 +254,14 @@ public class BookOrderController {
         if (selectAllBooks.isSelected()) {
             for (CartItem item : cartTableView.getItems()) {
                 item.setSelected(true);
+                updateSelectedCartItem(true, item.getCartItemID());
                 total += item.getPrice() * item.getAmount();
             }
             totalCartLabel.setText(String.format("$%.2f", total));
         } else {
             for (CartItem item : cartTableView.getItems()) {
                 item.setSelected(false);
+                updateSelectedCartItem(false, item.getCartItemID());
             }
             totalCartLabel.setText(String.format("$%.2f", total));
         }
@@ -324,11 +279,15 @@ public class BookOrderController {
 
     private void loadCart() {
         ObservableList<CartItem> cart = FXCollections.observableArrayList();
-        String query = "SELECT Books_Orders.OrderID, Books_Orders.BookID, Books.Title, Books.Image, Books.Price, Books_Orders.Amount, Orders.TotalAmount FROM Books " +
-                "inner join Books_Orders on Books.BookID = Books_Orders.BookID " +
-                "inner join Orders on Books_Orders.OrderID = Orders.OrderID " +
-                "inner join Bills on Orders.BillID = Bills.BillID " +
-                "where Bills.UserID = ? and Bills.Status = 'Pending'";
+        String query = """
+                    SELECT ci.CartItemID, ci.Selected, ci.CartID, ci.BookID, b.Image, b.Title, 
+                           ci.Price, ci.Amount AS Amount, ci.TotalPrice, ci.OrderItemID 
+                    FROM CartItems ci
+                    JOIN Cart c ON ci.CartID = c.CartID
+                    JOIN Books b ON ci.BookID = b.BookID
+                    WHERE c.UserID = ? and ci.OrderItemID is null 
+                """;
+
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, currentUser.getUserID());
@@ -336,14 +295,18 @@ public class BookOrderController {
 
             while (resultSet.next()) {
                 CartItem cartItem = new CartItem(
-                        resultSet.getInt(1),
-                        resultSet.getInt(2),
-                        resultSet.getString("Title"),
+                        resultSet.getInt("CartItemID"),
+                        resultSet.getBoolean("Selected"),
+                        resultSet.getInt("CartID"),
+                        resultSet.getInt("BookID"),
                         resultSet.getString("Image"),
+                        resultSet.getString("Title"),
                         resultSet.getDouble("Price"),
                         resultSet.getInt("Amount"),
-                        resultSet.getDouble("TotalAmount")
+                        resultSet.getDouble("TotalPrice"),
+                        resultSet.getInt("OrderItemID")
                 );
+
                 cart.add(cartItem);
             }
 
@@ -351,9 +314,10 @@ public class BookOrderController {
 
         } catch (SQLException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Error", "Could not load book data");
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not load cart data");
         }
     }
+
 
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
