@@ -240,7 +240,7 @@ public class HomeUserController {
     }
 
     private void showAlert(Alert.AlertType information, String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+        Alert alert = new Alert(information);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
