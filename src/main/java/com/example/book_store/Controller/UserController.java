@@ -3,6 +3,8 @@ package com.example.book_store.Controller;
 import com.example.book_store.ConnectDB;
 
 import com.example.book_store.Entity.User;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +12,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.scene.control.Alert;
@@ -28,6 +31,72 @@ public class UserController {
     private final Connection connection = connectDB.connectionDB();
     private final User currentUser = Authentication.currentUser;
 //    private BookController bookController = new BookController();
+
+    @FXML
+    private TableView<User> userTable;
+    @FXML
+    private TableColumn<User, Integer> userID;
+    @FXML
+    private TableColumn<User, String> name;
+    @FXML
+    private TableColumn<User, String> username;
+    @FXML
+    private TableColumn<User, String> email;
+    @FXML
+    private TableColumn<User, String> dateOfBirth;
+    @FXML
+    private TableColumn<User, String> gender;
+    @FXML
+    private TableColumn<User, String> phone;
+    @FXML
+    private TableColumn<User, String> address;
+    @FXML
+    private TableColumn<User, String> status;
+
+    private ObservableList<User> userList = FXCollections.observableArrayList();
+
+    // Phương thức khởi tạo
+    public void initialize() {
+
+        userID.setCellValueFactory(new PropertyValueFactory<>("userID"));
+        name.setCellValueFactory(new PropertyValueFactory<>("name"));
+        username.setCellValueFactory(new PropertyValueFactory<>("username"));
+        email.setCellValueFactory(new PropertyValueFactory<>("email"));
+        dateOfBirth.setCellValueFactory(new PropertyValueFactory<>("dateOfBirth"));
+        gender.setCellValueFactory(new PropertyValueFactory<>("gender"));
+        phone.setCellValueFactory(new PropertyValueFactory<>("phone"));
+        address.setCellValueFactory(new PropertyValueFactory<>("address"));
+        status.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        loadUserData();
+        userTable.setItems(userList);
+    }
+
+    private void loadUserData() {
+        String query = "SELECT * FROM users ";
+
+        try (PreparedStatement stmt = connection.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int userID = rs.getInt("UserID");
+                String name = rs.getString("Name");
+                String username = rs.getString("Username");
+                String password = rs.getString("Password");
+                java.util.Date dateOfBirth = rs.getDate("DateOfbirth");
+                String gender = rs.getString("Gender");
+                String phone = rs.getString("Phone");
+                String address = rs.getString("Address");
+                String email = rs.getString("Email");
+                boolean status = rs.getBoolean("Status");
+
+                userList.add(new User(userID, name, username, password, dateOfBirth, gender, phone, address, email, status));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     private Stage stage;
     private Scene scene;
@@ -288,4 +357,18 @@ public class UserController {
         }
     }
 
+    @FXML
+    public void goToHome(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/home.fxml");
+    }
+
+    @FXML
+    public void goToUser(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/user.fxml");
+    }
+
+    @FXML
+    public void goToOrder(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/adminConfirmOrder.fxml");
+    }
 }

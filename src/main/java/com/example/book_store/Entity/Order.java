@@ -1,20 +1,18 @@
 package com.example.book_store.Entity;
 
+import java.sql.Date;
+
 public class Order {
     private int orderID;
-    private int billID;
-    private int bookID;
-    private int amount;
-    private double price;
-    private double totalAmount;
+    private int userID;
+    private String date;
+    private String status;
 
-    public Order(int orderID, int billID, int bookID, int amount, double price) {
+    public Order(int orderID, int userID, String date, String status) {
         this.orderID = orderID;
-        this.billID = billID;
-        this.bookID = bookID;
-        this.amount = amount;
-        this.price = price;
-        this.totalAmount = amount * price;
+        this.userID = userID;
+        this.date = date;
+        this.status = status;
     }
 
     public int getOrderID() {
@@ -25,55 +23,37 @@ public class Order {
         this.orderID = orderID;
     }
 
-    public int getBillID() {
-        return billID;
+    public int getUserID() {
+        return userID;
     }
 
-    public void setBillID(int billID) {
-        this.billID = billID;
+    public void setUserID(int userID) {
+        this.userID = userID;
     }
 
-    public int getBookID() {
-        return bookID;
+    public String getDate() {
+        return date;
     }
 
-    public void setBookID(int bookID) {
-        this.bookID = bookID;
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    public int getAmount() {
-        return amount;
+    public String getStatus() {
+        return status;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
-    }
-
-    public double getPrice() {
-        return price;
-    }
-
-    public void setPrice(double price) {
-        this.price = price;
-    }
-
-    public double getTotalAmount() {
-        return totalAmount;
-    }
-
-    public void setTotalAmount(double totalAmount) {
-        this.totalAmount = totalAmount;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     @Override
     public String toString() {
         return "Order{" +
                 "orderID=" + orderID +
-                ", billID=" + billID +
-                ", bookID=" + bookID +
-                ", amount=" + amount +
-                ", price=" + price +
-                ", totalAmount=" + totalAmount +
+                ", userID=" + userID +
+                ", date='" + date + '\'' +
+                ", status='" + status + '\'' +
                 '}';
     }
 }
