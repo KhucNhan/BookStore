@@ -24,6 +24,8 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class CartController {
@@ -329,13 +331,79 @@ public class CartController {
 
     @FXML
     private void buySelectedBooks() {
-        if (!cart.isEmpty()) {
-            // Logic xử lý đặt hàng cho các sản phẩm trong giỏ
-            System.out.println("Đặt hàng thành công cho " + cart.size() + " sản phẩm!");
-        } else {
-            System.out.println("Giỏ hàng trống!");
+        sendOrder();
+    }
+
+    private void sendOrder() {
+        List<CartItem> selectedItems = new ArrayList<>();
+        for (CartItem item : cartTableView.getItems()) {
+            if (item.isSelected()) {
+                selectedItems.add(item);
+            }
+        }
+
+        if (selectedItems.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Warning", "No items selected for order.");
+            return;
+        }
+
+        // 1. Tạo đơn hàng mới
+        String orderQuery = "INSERT INTO Orders (UserID, OrderDate) VALUES (?, CURRENT_TIMESTAMP)";
+        try {
+            PreparedStatement orderStmt = connection.prepareStatement(orderQuery, Statement.RETURN_GENERATED_KEYS);
+            orderStmt.setInt(1, currentUser.getUserID());
+            int affectedRows = orderStmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating order failed, no rows affected.");
+            }
+
+            ResultSet generatedKeys = orderStmt.getGeneratedKeys();
+            int orderID;
+            if (generatedKeys.next()) {
+                orderID = generatedKeys.getInt(1);
+            } else {
+                throw new SQLException("Creating order failed, no ID obtained.");
+            }
+
+            // 2. Tạo từng OrderItem cho các sản phẩm đã chọn và lấy OrderItemID
+            String orderItemQuery = "INSERT INTO OrderItems (OrderID, BookID, Amount, Price) VALUES (?, ?, ?, ?)";
+            PreparedStatement orderItemStmt = connection.prepareStatement(orderItemQuery, Statement.RETURN_GENERATED_KEYS);
+
+            // 3. Cập nhật OrderItemID trong CartItems cho mỗi sản phẩm
+            String updateCartItemQuery = "UPDATE CartItems SET OrderItemID = ? WHERE CartItemID = ?";
+            PreparedStatement updateCartItemStmt = connection.prepareStatement(updateCartItemQuery);
+
+            for (CartItem item : selectedItems) {
+                // Thêm sản phẩm vào OrderItems
+                orderItemStmt.setInt(1, orderID);
+                orderItemStmt.setInt(2, item.getbookID());
+                orderItemStmt.setInt(3, item.getAmount());
+                orderItemStmt.setDouble(4, item.getPrice());
+                orderItemStmt.executeUpdate();
+
+                // Lấy OrderItemID vừa tạo
+                ResultSet orderItemKeys = orderItemStmt.getGeneratedKeys();
+                if (orderItemKeys.next()) {
+                    int orderItemID = orderItemKeys.getInt(1);
+
+                    // Cập nhật OrderItemID vào CartItems
+                    updateCartItemStmt.setInt(1, orderItemID);
+                    updateCartItemStmt.setInt(2, item.getCartItemID());
+                    updateCartItemStmt.executeUpdate();
+                }
+            }
+
+            showAlert(Alert.AlertType.INFORMATION, "Success", "Order created successfully.");
+            loadCart(); // Làm mới giao diện giỏ hàng
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to create order.");
         }
     }
+
+
 
     private Parent root;
 
