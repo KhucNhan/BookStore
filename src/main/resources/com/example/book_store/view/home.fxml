@@ -10,11 +10,11 @@
          <HBox.margin>
             <Insets left="10.0" right="10.0" />
          </HBox.margin></Button>
-        <Button fx:id="goToUser" mnemonicParsing="false" text="Người dùng">
+        <Button onAction="#goToUser" fx:id="goToUser" mnemonicParsing="false" text="Người dùng">
             <HBox.margin>
                 <Insets left="10.0" right="10.0" />
             </HBox.margin>
-        </Button><Button fx:id="goToOrder" mnemonicParsing="false" text=" Đơn hàng">
+        </Button><Button fx:id="goToOrder" onAction="#goToOrder" mnemonicParsing="false" text=" Đơn hàng">
         <HBox.margin>
             <Insets left="10.0" right="10.0" />
         </HBox.margin></Button>

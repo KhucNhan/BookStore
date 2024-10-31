@@ -30,11 +30,13 @@ public class BookController implements Initializable {
     private final User currentUser = Authentication.currentUser;
     @FXML
     public Button addBook;
+    @FXML
     public Button goToHome;
+    @FXML
+    public Button goToUser;
+    @FXML
+    public Button goToOrder;
     private UserController userController = new UserController();
-    private BillController billController = new BillController();
-    private OrderController orderController = new OrderController();
-    private CartController cartController = new CartController();
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
 
@@ -393,5 +395,15 @@ public class BookController implements Initializable {
     @FXML
     public void goToCart(ActionEvent event) throws IOException {
         goToScene(event, "/com/example/book_store/view/cart.fxml");
+    }
+
+    @FXML
+    public void goToUser(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/user.fxml");
+    }
+
+    @FXML
+    public void goToOrder(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/adminConfirmOrder.fxml");
     }
 }

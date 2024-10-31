@@ -166,8 +166,8 @@ public class CartController {
                 }
             }
         });
-        amount.setCellValueFactory(new PropertyValueFactory<CartItem, Integer>("amount"));
-        act.setCellFactory(column -> new TableCell<CartItem, Void>() {
+        amount.setCellValueFactory(new PropertyValueFactory<>("amount"));
+        act.setCellFactory(column -> new TableCell<>() {
             private final Button delete = new Button("Delete");
 
             @Override
@@ -188,7 +188,7 @@ public class CartController {
         });
 
         act.setCellValueFactory(cellData -> new SimpleObjectProperty<>(null));
-        total.setCellValueFactory(new PropertyValueFactory<CartItem, Double>("total"));
+        total.setCellValueFactory(new PropertyValueFactory<>("total"));
 
         loadCart();
     }

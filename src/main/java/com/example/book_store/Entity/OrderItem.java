@@ -8,13 +8,13 @@ public class OrderItem {
     private double price;
     private double totalPrice;
 
-    public OrderItem(int orderItemID, int orderID, int bookID, int amount, double price) {
+    public OrderItem(int orderItemID, int orderID, int bookID, int amount, double price, double totalPrice) {
         this.orderItemID = orderItemID;
         this.orderID = orderID;
         this.bookID = bookID;
         this.amount = amount;
         this.price = price;
-        this.totalPrice = amount * price;
+        this.totalPrice = totalPrice;
     }
 
     public int getOrderItemID() {
