@@ -81,24 +81,26 @@ public class OrderController implements Initializable {
                     Order order = getTableView().getItems().get(getIndex()); // Lấy item từ hàng hiện tại
                     detail.setOnAction(e -> {
                         showOrderDetail(order);
+                        loadOrders();
                     });
 
                     confirm.setOnAction(e -> {
                         confirmOrder(order);
+                        loadOrders();
                     });
 
                     cancelled.setOnAction(e -> {
                         cancelOrder(order);
+                        loadOrders();
                     });
+                    HBox hBox;
                     if (order.getStatus().equalsIgnoreCase("Pending")) {
-                        HBox hBox = new HBox(detail, confirm, cancelled);
-                        hBox.setSpacing(10);
-                        setGraphic(hBox);
+                        hBox = new HBox(detail, confirm, cancelled);
                     } else {
-                        HBox hBox = new HBox(detail);
-                        hBox.setSpacing(10);
-                        setGraphic(hBox);
+                        hBox = new HBox(detail);
                     }
+                    hBox.setSpacing(10);
+                    setGraphic(hBox);
                 }
             }
         });
@@ -106,12 +108,13 @@ public class OrderController implements Initializable {
         loadOrders();
     }
 
-    private void confirmOrder(Order order) {
+    private boolean confirmOrder(Order order) {
         String query = "update orders set Status = 'Paid' where OrderID = ?";
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, order.getUserID());
-            preparedStatement.executeUpdate();
+            preparedStatement.setInt(1, order.getOrderID());
+            int row = preparedStatement.executeUpdate();
+            return row > 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
