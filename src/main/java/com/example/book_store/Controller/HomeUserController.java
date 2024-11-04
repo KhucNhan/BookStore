@@ -35,7 +35,10 @@ public class HomeUserController {
     @FXML
     public Button addBook;
     public Button goToHome;
+    @FXML
     public Button goToCart;
+    @FXML
+    public Button goToOrder;
     private UserController userController = new UserController();
     private BillController billController = new BillController();
     private OrderController orderController = new OrderController();
@@ -232,8 +235,13 @@ public class HomeUserController {
     }
 
     @FXML
-    public void logout(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/login.fxml");
+    public void goToHome(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/homeUser.fxml");
+    }
+
+    @FXML
+    public void goToCart(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/cart.fxml");
     }
 
     @FXML
@@ -252,16 +260,27 @@ public class HomeUserController {
     }
 
     @FXML
-    public void goToHome(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/homeUser.fxml");
+    public void logout(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/login.fxml");
     }
 
     @FXML
-    public void goToCart(ActionEvent event) throws IOException {
+    public void goToUser(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/user.fxml");
+    }
+
+    @FXML
+    public void goToOrderConfirm(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/adminConfirmOrder.fxml");
+    }
+
+    @FXML
+    public void goToOrder(ActionEvent event) throws IOException {
         goToScene(event, "/com/example/book_store/view/cart.fxml");
     }
 
-    public void goToAddBookScene(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/addBook.fxml");
+    @FXML
+    public void goToHistory(ActionEvent actionEvent) throws IOException {
+        goToScene(actionEvent, "/com/example/book_store/view/bill.fxml");
     }
 }

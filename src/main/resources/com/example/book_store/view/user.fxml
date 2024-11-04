@@ -4,91 +4,102 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.UserController">
+<GridPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="800.0" prefWidth="1280.0"
+          xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.example.book_store.Controller.UserController">
 
     <HBox alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
         <Button mnemonicParsing="false" onAction="#goToHome" text="Trang chủ">
             <HBox.margin>
-                <Insets left="10.0" right="10.0" />
-            </HBox.margin></Button>
-        <Button onAction="#goToUser" mnemonicParsing="false" text="Người dùng">
+                <Insets right="10.0"/>
+            </HBox.margin>
+        </Button>
+        <Button onAction="#goToUser" fx:id="goToUser" mnemonicParsing="false" text="Người dùng">
             <HBox.margin>
                 <Insets left="10.0" right="10.0" />
             </HBox.margin>
-        </Button><Button onAction="#goToOrder" mnemonicParsing="false" text=" Đơn hàng">
-        <HBox.margin>
-            <Insets left="10.0" right="10.0" />
-        </HBox.margin></Button>
+        </Button>
+        <Button fx:id="goToOrderConfirm" onAction="#goToOrderConfirm" mnemonicParsing="false" text="Xác nhận đơn hàng">
+            <HBox.margin>
+                <Insets left="10.0" right="10.0" />
+            </HBox.margin></Button>
         <Button mnemonicParsing="false" text="Thống kê">
             <HBox.margin>
                 <Insets left="10.0" right="10.0" />
             </HBox.margin></Button>
+        <Button onAction="#goToHistory" mnemonicParsing="false" text="Lịch sử mua hàng">
+            <HBox.margin>
+                <Insets right="10.0"/>
+            </HBox.margin>
+        </Button>
     </HBox>
 
     <HBox alignment="CENTER" prefHeight="25.0" prefWidth="500.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
-        <TextField prefHeight="25.0" prefWidth="552.0" />
+        <TextField prefHeight="25.0" prefWidth="552.0"/>
         <Button prefHeight="25.0" prefWidth="123.0" text="Search">
             <HBox.margin>
-                <Insets left="10.0" />
+                <Insets left="10.0"/>
             </HBox.margin>
         </Button>
         <padding>
-            <Insets left="25.0" right="25.0" />
+            <Insets left="25.0" right="25.0"/>
         </padding>
     </HBox>
 
     <HBox alignment="CENTER" prefHeight="25.0" prefWidth="253.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
         <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" prefWidth="100.0" text="Setting">
             <items>
-                <MenuItem mnemonicParsing="false" onAction="#updateUserInformation" text="Chỉnh sửa thông tin cá nhân" />
-                <MenuItem mnemonicParsing="false" onAction="#updateUserPassword" text="Đổi mật khẩu" />
-                <MenuItem mnemonicParsing="false" onAction="#deactivationUser" text="Xóa tài khoản" />
-                <MenuItem mnemonicParsing="false" onAction="#logout" text="Đăng xuất" />
+                <MenuItem mnemonicParsing="false" onAction="#updateUserInformation" text="Chỉnh sửa thông tin cá nhân"/>
+                <MenuItem mnemonicParsing="false" onAction="#updateUserPassword" text="Đổi mật khẩu"/>
+                <MenuItem mnemonicParsing="false" onAction="#deactivationUser" text="Xóa tài khoản"/>
+                <MenuItem mnemonicParsing="false" onAction="#logout" text="Đăng xuất"/>
             </items>
             <HBox.margin>
-                <Insets bottom="10.0" left="100.0" right="10.0" top="5.0" />
+                <Insets bottom="10.0" left="100.0" right="10.0" top="5.0"/>
             </HBox.margin>
         </MenuButton>
     </HBox>
 
-    <TableView fx:id="userTable" layoutX="50.0" layoutY="100.0" prefHeight="635.0" prefWidth="1175.0" GridPane.columnSpan="3" GridPane.rowIndex="2">
+    <TableView fx:id="userTable" layoutX="50.0" layoutY="100.0" prefHeight="635.0" prefWidth="1175.0"
+               GridPane.columnSpan="3" GridPane.rowIndex="2">
         <columns>
-            <TableColumn fx:id="userID" prefWidth="100" text="Mã người dùng" />
-            <TableColumn fx:id="name" prefWidth="120" text="Họ tên" />
-            <TableColumn fx:id="username" prefWidth="120" text="Tên đăng nhập" />
-            <TableColumn fx:id="email" prefWidth="160" text="Email" />
-            <TableColumn fx:id="dateOfBirth" prefWidth="100" text="Ngày sinh" />
-            <TableColumn fx:id="gender" prefWidth="80" text="Giới tính" />
-            <TableColumn fx:id="phone" prefWidth="120" text="Số điện thoại" />
-            <TableColumn fx:id="address" prefWidth="180" text="Địa chỉ" />
-            <TableColumn fx:id="status" prefWidth="80" text="Trạng thái" />
-            <TableColumn fx:id="action" prefWidth="114.6666259765625" text="Hành động" />
+            <TableColumn fx:id="userID" prefWidth="100" text="Mã người dùng"/>
+            <TableColumn fx:id="name" prefWidth="120" text="Họ tên"/>
+            <TableColumn fx:id="username" prefWidth="120" text="Tên đăng nhập"/>
+            <TableColumn fx:id="email" prefWidth="160" text="Email"/>
+            <TableColumn fx:id="dateOfBirth" prefWidth="100" text="Ngày sinh"/>
+            <TableColumn fx:id="gender" prefWidth="80" text="Giới tính"/>
+            <TableColumn fx:id="phone" prefWidth="120" text="Số điện thoại"/>
+            <TableColumn fx:id="address" prefWidth="180" text="Địa chỉ"/>
+            <TableColumn fx:id="status" prefWidth="80" text="Trạng thái"/>
+            <TableColumn fx:id="action" prefWidth="114.6666259765625" text="Hành động"/>
         </columns>
         <GridPane.margin>
-            <Insets bottom="10.0" left="50.0" top="10.0" />
+            <Insets bottom="10.0" left="50.0" top="10.0"/>
         </GridPane.margin>
     </TableView>
-    <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0" GridPane.columnSpan="3" GridPane.rowIndex="4" />
-<!--    <Button contentDisplay="CENTER" onAction="#showAddUserDialog" prefHeight="25.0" prefWidth="119.0" text=" Thêm  " GridPane.columnIndex="2" GridPane.rowIndex="1">-->
-<!--        <opaqueInsets>-->
-<!--            <Insets />-->
-<!--        </opaqueInsets>-->
-<!--        <GridPane.margin>-->
-<!--            <Insets />-->
-<!--        </GridPane.margin>-->
-<!--    </Button>-->
+    <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0" GridPane.columnSpan="3"
+          GridPane.rowIndex="4"/>
+    <!--    <Button contentDisplay="CENTER" onAction="#showAddUserDialog" prefHeight="25.0" prefWidth="119.0" text=" Thêm  " GridPane.columnIndex="2" GridPane.rowIndex="1">-->
+    <!--        <opaqueInsets>-->
+    <!--            <Insets />-->
+    <!--        </opaqueInsets>-->
+    <!--        <GridPane.margin>-->
+    <!--            <Insets />-->
+    <!--        </GridPane.margin>-->
+    <!--    </Button>-->
 
 
     <columnConstraints>
-        <ColumnConstraints />
-        <ColumnConstraints maxWidth="749.0" minWidth="505.99999999999994" prefWidth="656.0" />
-        <ColumnConstraints maxWidth="304.33333333333326" minWidth="61.66666666666674" prefWidth="154.66666666666674" />
+        <ColumnConstraints/>
+        <ColumnConstraints maxWidth="749.0" minWidth="505.99999999999994" prefWidth="656.0"/>
+        <ColumnConstraints maxWidth="304.33333333333326" minWidth="61.66666666666674" prefWidth="154.66666666666674"/>
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints />
-        <RowConstraints maxHeight="87.00000381469727" minHeight="5.0" prefHeight="57.99999618530273" />
-        <RowConstraints maxHeight="650.3333333333334" minHeight="568.3333295186361" prefHeight="597.3333371480306" />
-        <RowConstraints />
-        <RowConstraints />
+        <RowConstraints/>
+        <RowConstraints maxHeight="87.00000381469727" minHeight="5.0" prefHeight="57.99999618530273"/>
+        <RowConstraints maxHeight="650.3333333333334" minHeight="568.3333295186361" prefHeight="597.3333371480306"/>
+        <RowConstraints/>
+        <RowConstraints/>
     </rowConstraints>
 </GridPane>

@@ -31,6 +31,14 @@ public class UserController {
     private final Connection connection = connectDB.connectionDB();
     private final User currentUser = Authentication.currentUser;
 //    private BookController bookController = new BookController();
+@FXML
+public Button goToCart;
+    @FXML
+    public Button goToUser;
+    @FXML
+    public Button goToOrder;
+    @FXML
+    public Button goToOrderConfirm;
 
     @FXML
     private TableView<User> userTable;
@@ -331,12 +339,6 @@ public class UserController {
         alert.showAndWait();
     }
 
-
-    @FXML
-    public void logout(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/login.fxml");
-    }
-
     @FXML
     public void goToScene(ActionEvent event, String path) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
@@ -361,7 +363,18 @@ public class UserController {
 
     @FXML
     public void goToHome(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/home.fxml");
+        goToScene(event, "/com/example/book_store/view/homeUser.fxml");
+    }
+
+    @FXML
+    public void goToCart(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/cart.fxml");
+    }
+
+
+    @FXML
+    public void logout(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/login.fxml");
     }
 
     @FXML
@@ -370,7 +383,17 @@ public class UserController {
     }
 
     @FXML
-    public void goToOrder(ActionEvent event) throws IOException {
+    public void goToOrderConfirm(ActionEvent event) throws IOException {
         goToScene(event, "/com/example/book_store/view/adminConfirmOrder.fxml");
+    }
+
+    @FXML
+    public void goToOrder(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/cart.fxml");
+    }
+
+    @FXML
+    public void goToHistory(ActionEvent actionEvent) throws IOException {
+        goToScene(actionEvent, "/com/example/book_store/view/bill.fxml");
     }
 }

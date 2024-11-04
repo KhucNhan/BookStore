@@ -70,11 +70,20 @@ public class CartController {
 
     @FXML
     private Button buyButton;
+    @FXML
+    public Button goToCart;
+    @FXML
+    public Button goToUser;
+    @FXML
+    public Button goToOrder;
+    @FXML
+    public Button goToOrderConfirm;
 
     private ObservableList<Book> cart;
 
     @FXML
     public void initialize() {
+
         cartItemID.setCellValueFactory(new PropertyValueFactory<>("cartItemID"));
         cartItemID.setVisible(false);
 
@@ -402,9 +411,6 @@ public class CartController {
             showAlert(Alert.AlertType.ERROR, "Error", "Failed to create order.");
         }
     }
-
-
-
     private Parent root;
 
     @FXML
@@ -457,5 +463,25 @@ public class CartController {
     @FXML
     public void logout(ActionEvent event) throws IOException {
         goToScene(event, "/com/example/book_store/view/login.fxml");
+    }
+
+    @FXML
+    public void goToUser(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/user.fxml");
+    }
+
+    @FXML
+    public void goToOrderConfirm(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/adminConfirmOrder.fxml");
+    }
+
+    @FXML
+    public void goToOrder(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/cart.fxml");
+    }
+
+    @FXML
+    public void goToHistory(ActionEvent actionEvent) throws IOException {
+        goToScene(actionEvent, "/com/example/book_store/view/bill.fxml");
     }
 }

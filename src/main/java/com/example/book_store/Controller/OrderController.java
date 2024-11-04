@@ -49,7 +49,13 @@ public class OrderController implements Initializable {
     @FXML
     private Button goToHome;
     @FXML
-    private Button goToCart;
+    public Button goToCart;
+    @FXML
+    public Button goToUser;
+    @FXML
+    public Button goToOrder;
+    @FXML
+    public Button goToOrderConfirm;
     @FXML
     private Button searchButton;
     @FXML
@@ -62,6 +68,7 @@ public class OrderController implements Initializable {
 
     @FXML
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
         orderID.setCellValueFactory(new PropertyValueFactory<>("orderID"));
         userID.setCellValueFactory(new PropertyValueFactory<>("userID"));
         date.setCellValueFactory(new PropertyValueFactory<>("date"));
@@ -269,8 +276,13 @@ public class OrderController implements Initializable {
     }
 
     @FXML
-    public void logout(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/login.fxml");
+    public void goToHome(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/home.fxml");
+    }
+
+    @FXML
+    public void goToCart(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/cart.fxml");
     }
 
     @FXML
@@ -289,8 +301,8 @@ public class OrderController implements Initializable {
     }
 
     @FXML
-    public void goToHome(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/home.fxml");
+    public void logout(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/login.fxml");
     }
 
     @FXML
@@ -299,7 +311,17 @@ public class OrderController implements Initializable {
     }
 
     @FXML
-    public void goToOrder(ActionEvent event) throws IOException {
+    public void goToOrderConfirm(ActionEvent event) throws IOException {
         goToScene(event, "/com/example/book_store/view/adminConfirmOrder.fxml");
+    }
+
+    @FXML
+    public void goToOrder(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/cart.fxml");
+    }
+
+    @FXML
+    public void goToHistory(ActionEvent actionEvent) throws IOException {
+        goToScene(actionEvent, "/com/example/book_store/view/bill.fxml");
     }
 }

@@ -4,25 +4,25 @@ import java.util.Date;
 
 public class Bill {
     private int billID;
-    private Date date;
+    private String date;
     private double totalAmount;
     private int userID;
-    private String status;
+    private int orderID;
 
-    public Bill(int billID, Date date, double totalAmount, int userID, String status) {
+    public Bill(int billID, String date, double totalAmount, int userID,int orderID){
         this.billID = billID;
         this.date = date;
         this.totalAmount = totalAmount;
         this.userID = userID;
-        this.status = status;
+        this.orderID = orderID;
     }
 
-    public String getStatus() {
-        return status;
+    public int getOrderID() {
+        return orderID;
     }
 
-    public void setStatus(String status) {
-        this.status = status;
+    public void setOrderID(int orderID) {
+        this.orderID = orderID;
     }
 
     public int getBillID() {
@@ -33,11 +33,11 @@ public class Bill {
         this.billID = billID;
     }
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -57,14 +57,5 @@ public class Bill {
         this.userID = userID;
     }
 
-    @Override
-    public String toString() {
-        return "Bill{" +
-                "billID=" + billID +
-                ", date=" + date +
-                ", totalAmount=" + totalAmount +
-                ", userID=" + userID +
-                ", status=" + status +
-                '}';
-    }
+
 }
