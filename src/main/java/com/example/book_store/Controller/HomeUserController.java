@@ -115,27 +115,26 @@ public class HomeUserController {
                 return;
             }
             stage.close();
-            addToCart(currentUser.getUserID(), book.getBookID(), Integer.parseInt(amount.getText()));
-            showAlert(Alert.AlertType.INFORMATION, "Successful", "Add to cart successful");
+            if (addToCart(currentUser.getUserID(), book.getBookID(), Integer.parseInt(amount.getText()))) {
+                showAlert(Alert.AlertType.INFORMATION, "Successful", "Add to cart successful");
+            }
         });
     }
 
-    private void addToCart(int userID, int bookID, int amount) {
+    private boolean addToCart(int userID, int bookID, int amount) {
         String checkQuery = "SELECT CartItemID, Amount FROM CartItems " +
                 "JOIN Cart ON CartItems.CartID = Cart.CartID " +
-                "WHERE Cart.UserID = ? AND CartItems.BookID = ?";
+                "WHERE Cart.UserID = ? AND CartItems.BookID = ? and CartItems.OrderItemID is null ";
 
         String updateQuery = "UPDATE CartItems SET Amount = Amount + ? " +
                 "WHERE CartItemID = ?";
 
-        String insertQuery = "INSERT INTO CartItems (CartID, BookID, Amount, Price, TotalPrice) " +
+        String insertQuery = "INSERT INTO CartItems (CartID, BookID, Amount, Price) " +
                 "VALUES (" +
                 "(SELECT CartID FROM Cart WHERE UserID = ?), " +
                 "?, " +
                 "?, " +
-                "(SELECT Price FROM Books WHERE BookID = ?), " +
-                "(SELECT Price FROM Books WHERE BookID = ?) * ?" +
-                ")";
+                "(SELECT Price FROM Books WHERE BookID = ?) )";
 
         try {
             // Bước 1: Kiểm tra nếu mục đã có trong giỏ hàng
@@ -144,6 +143,7 @@ public class HomeUserController {
             checkStmt.setInt(2, bookID);
 
             ResultSet resultSet = checkStmt.executeQuery();
+            int row = 0;
 
             if (resultSet.next()) {
                 // Bước 2: Nếu mục đã tồn tại, cập nhật số lượng
@@ -151,7 +151,7 @@ public class HomeUserController {
                 PreparedStatement updateStmt = connection.prepareStatement(updateQuery);
                 updateStmt.setInt(1, amount);
                 updateStmt.setInt(2, cartItemID);
-                updateStmt.executeUpdate();
+                row = updateStmt.executeUpdate();
                 System.out.println("Updated quantity for existing item in cart.");
             } else {
                 // Bước 3: Nếu mục chưa tồn tại, thêm mục mới
@@ -160,14 +160,13 @@ public class HomeUserController {
                 insertStmt.setInt(2, bookID);
                 insertStmt.setInt(3, amount);
                 insertStmt.setInt(4, bookID);
-                insertStmt.setInt(5, bookID);
-                insertStmt.setInt(6, amount);
-                insertStmt.executeUpdate();
+                row = insertStmt.executeUpdate();
                 System.out.println("Added new item to cart.");
             }
-
+            return row > 0;
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 

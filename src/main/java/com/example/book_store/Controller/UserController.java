@@ -52,6 +52,8 @@ public class UserController {
     private TableColumn<User, String> address;
     @FXML
     private TableColumn<User, String> status;
+    @FXML
+    public TableColumn<User, Void> action;
 
     private ObservableList<User> userList = FXCollections.observableArrayList();
 

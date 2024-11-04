@@ -69,14 +69,14 @@
         </GridPane.margin>
     </TableView>
     <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0" GridPane.columnSpan="3" GridPane.rowIndex="4" />
-    <Button contentDisplay="CENTER" onAction="#showAddUserDialog" prefHeight="25.0" prefWidth="119.0" text=" Thêm  " GridPane.columnIndex="2" GridPane.rowIndex="1">
-        <opaqueInsets>
-            <Insets />
-        </opaqueInsets>
-        <GridPane.margin>
-            <Insets />
-        </GridPane.margin>
-    </Button>
+<!--    <Button contentDisplay="CENTER" onAction="#showAddUserDialog" prefHeight="25.0" prefWidth="119.0" text=" Thêm  " GridPane.columnIndex="2" GridPane.rowIndex="1">-->
+<!--        <opaqueInsets>-->
+<!--            <Insets />-->
+<!--        </opaqueInsets>-->
+<!--        <GridPane.margin>-->
+<!--            <Insets />-->
+<!--        </GridPane.margin>-->
+<!--    </Button>-->
 
 
     <columnConstraints>
