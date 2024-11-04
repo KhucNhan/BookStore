@@ -7,16 +7,17 @@
 <GridPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.OrderController">
 
     <HBox alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
-        <Button fx:id="goToHome" mnemonicParsing="false" onAction="#goToHome" text="Trang chủ">
+        <Button mnemonicParsing="false" onAction="#goToHome" text="Trang chủ">
             <HBox.margin>
-                <Insets left="10.0" right="10.0" />
-            </HBox.margin></Button>
-        <Button onAction="#goToUser" mnemonicParsing="false" text="Người dùng">
+                <Insets right="10.0"/>
+            </HBox.margin>
+        </Button>
+        <Button onAction="#goToUser" fx:id="goToUser" mnemonicParsing="false" text="Người dùng">
             <HBox.margin>
                 <Insets left="10.0" right="10.0" />
             </HBox.margin>
         </Button>
-        <Button onAction="#goToOrder" mnemonicParsing="false" text="Đơn hàng">
+        <Button fx:id="goToOrderConfirm" onAction="#goToOrderConfirm" mnemonicParsing="false" text="Xác nhận đơn hàng">
             <HBox.margin>
                 <Insets left="10.0" right="10.0" />
             </HBox.margin></Button>
@@ -24,6 +25,11 @@
             <HBox.margin>
                 <Insets left="10.0" right="10.0" />
             </HBox.margin></Button>
+        <Button onAction="#goToHistory" mnemonicParsing="false" text="Lịch sử mua hàng">
+            <HBox.margin>
+                <Insets right="10.0"/>
+            </HBox.margin>
+        </Button>
     </HBox>
 
     <HBox alignment="CENTER" prefHeight="25.0" prefWidth="500.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
