@@ -27,9 +27,9 @@
         <Region prefHeight="10.0" />
         <MenuButton fx:id="gender" mnemonicParsing="false" prefHeight="25.0" prefWidth="300.0" text="Giới Tính">
             <items>
-                <MenuItem text="Nam" />
-                <MenuItem text="Nữ" />
-                <MenuItem text="Khác" />
+                <MenuItem text="Nam" onAction="#selectGender" />
+                <MenuItem text="Nữ" onAction="#selectGender" />
+                <MenuItem text="Khác" onAction="#selectGender" />
             </items>
         </MenuButton>
 
