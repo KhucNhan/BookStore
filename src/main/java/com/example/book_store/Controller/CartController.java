@@ -157,13 +157,13 @@ public class CartController {
                     CartItem cartItem = getTableView().getItems().get(getIndex());
                     currentAmount.setText(cartItem.getAmount() + "");
                     minus.setOnAction(e -> {
-                        minusAmount(cartItem.getCartItemID());
+                        minusAmount(cartItem);
                         loadCart();
                         updateTotalCartLabel();
                     });
 
                     plus.setOnAction(e -> {
-                        plusAmount(cartItem.getCartItemID());
+                        plusAmount(cartItem);
                         loadCart();
                         updateTotalCartLabel();
                     });
@@ -233,26 +233,48 @@ public class CartController {
         }
     }
 
-    private boolean minusAmount(int cartItemID) {
+    private boolean minusAmount(CartItem cartItem) {
         String query = "UPDATE CartItems " +
                 "SET Amount = Amount - 1 " +
                 "WHERE CartItemID = ? AND Amount > 0";
-        return updateCartItemAmount(cartItemID, query);
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, cartItem.getCartItemID());
+            int row = preparedStatement.executeUpdate();
+
+            if (row > 0) {
+                query = "update books set Amount = Amount + 1 where BookID = ?";
+                preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setInt(1, cartItem.getbookID());
+                row = preparedStatement.executeUpdate();
+                return row > 0;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    private boolean plusAmount(int cartItemID) {
+    private boolean plusAmount(CartItem cartItem) {
         String query = "UPDATE CartItems " +
                 "SET Amount = Amount + 1 " +
                 "WHERE CartItemID = ?";
-        return updateCartItemAmount(cartItemID, query);
-    }
-
-    private boolean updateCartItemAmount(int cartItemID, String query) {
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, cartItemID);
+            preparedStatement.setInt(1, cartItem.getCartItemID());
             int row = preparedStatement.executeUpdate();
-            return row > 0;
+
+            if (row > 0) {
+                query = "update books set Amount = Amount - 1 where BookID = ?";
+                preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setInt(1, cartItem.getbookID());
+                row = preparedStatement.executeUpdate();
+                return row > 0;
+            } else {
+                return false;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -472,7 +494,7 @@ public class CartController {
 
     @FXML
     public void goToOrderConfirm(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/adminConfirmOrder.fxml");
+        goToScene(event, "/com/example/book_store/view/order.fxml");
     }
 
     @FXML

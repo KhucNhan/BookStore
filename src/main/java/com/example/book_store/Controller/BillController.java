@@ -2,7 +2,6 @@ package com.example.book_store.Controller;
 
 import com.example.book_store.ConnectDB;
 import com.example.book_store.Entity.Bill;
-import com.example.book_store.Entity.CartItem;
 import com.example.book_store.Entity.OrderItem;
 import com.example.book_store.Entity.User;
 import javafx.beans.property.SimpleObjectProperty;
@@ -16,12 +15,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.*;
-import java.time.LocalDate;
 
 public class BillController {
     @FXML
@@ -31,7 +30,7 @@ public class BillController {
     @FXML
     public Button goToOrder;
     @FXML
-    public Button goToOrderConfirm;
+    public HBox menuBar;
     private UserController userController = new UserController();
     @FXML
     private TableView<Bill> billTable;
@@ -61,12 +60,9 @@ public class BillController {
 
     public void initialize() {
         if (currentUser.getRole().equalsIgnoreCase("admin")) {
-            goToCart.setDisable(true);
-            goToOrder.setDisable(true);
+            menuBar.getChildren().remove(goToCart);
         } else {
-            goToUser.setDisable(true);
-            goToOrderConfirm.setDisable(true);
-
+            menuBar.getChildren().remove(goToUser);
         }
         billID.setCellValueFactory(new PropertyValueFactory<>("billID"));
         orderId.setCellValueFactory(new PropertyValueFactory<>("orderID"));
@@ -92,7 +88,7 @@ public class BillController {
         });
 
         act.setCellValueFactory(cellData -> new SimpleObjectProperty<>(null));
-        loadOrderData();
+        loadBills();
     }
 
     private void showBillDetail(int billID) {
@@ -153,12 +149,20 @@ public class BillController {
         }
     }
 
-    private void loadOrderData() {
+    private void loadBills() {
         ObservableList<Bill> bills = FXCollections.observableArrayList();
         try {
-            String query = "SELECT * FROM bills";
-            PreparedStatement statement = connection.prepareStatement(query);
-            ResultSet resultSet = statement.executeQuery();
+            String query;
+            PreparedStatement preparedStatement;
+            if (currentUser.getRole().equalsIgnoreCase("admin")) {
+                query = "SELECT * FROM bills";
+                preparedStatement = connection.prepareStatement(query);
+            } else {
+                query = "select * from bills where UserID = ?";
+                preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setInt(1, currentUser.getUserID());
+            }
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             while (resultSet.next()) {
 
@@ -245,7 +249,7 @@ public class BillController {
 
     @FXML
     public void goToOrderConfirm(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/adminConfirmOrder.fxml");
+        goToScene(event, "/com/example/book_store/view/order.fxml");
     }
 
     @FXML

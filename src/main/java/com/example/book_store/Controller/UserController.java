@@ -21,7 +21,6 @@ import javafx.scene.control.ButtonType;
 import java.io.IOException;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -37,8 +36,6 @@ public Button goToCart;
     public Button goToUser;
     @FXML
     public Button goToOrder;
-    @FXML
-    public Button goToOrderConfirm;
 
     @FXML
     private TableView<User> userTable;
@@ -383,13 +380,8 @@ public Button goToCart;
     }
 
     @FXML
-    public void goToOrderConfirm(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/adminConfirmOrder.fxml");
-    }
-
-    @FXML
     public void goToOrder(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/cart.fxml");
+        goToScene(event, "/com/example/book_store/view/order.fxml");
     }
 
     @FXML
