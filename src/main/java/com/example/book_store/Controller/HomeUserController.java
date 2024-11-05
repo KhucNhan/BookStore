@@ -283,4 +283,8 @@ public class HomeUserController {
     public void goToHistory(ActionEvent actionEvent) throws IOException {
         goToScene(actionEvent, "/com/example/book_store/view/bill.fxml");
     }
+    @FXML
+    public void goToTop5(ActionEvent actionEvent) throws IOException {
+        goToScene(actionEvent, "/com/example/book_store/view/statistical.fxml");
+    }
 }

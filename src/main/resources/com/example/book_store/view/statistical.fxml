@@ -3,18 +3,90 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.RtatisticalController">
-    <children>
-        <Label layoutX="378.0" layoutY="24.0" style="-fx-font-size: 24px; -fx-font-weight: bold;" text="Sách Bán Chạy Nhất" AnchorPane.leftAnchor="378.0" AnchorPane.topAnchor="24.0" />
+<?import javafx.geometry.Insets?>
+<GridPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="759.0" prefWidth="1210.0"
+          xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="com.example.book_store.Controller.StatisticalController">
 
-        <TableView fx:id="bestsellingBooksTable" layoutX="261.0" layoutY="122.0" prefHeight="393.0" prefWidth="646.0" AnchorPane.leftAnchor="261.0" AnchorPane.topAnchor="122.0">
-            <columns>
-                <TableColumn fx:id="image" prefWidth="136.99996948242188" text="Hình ảnh" />
-                <TableColumn fx:id="title" prefWidth="149.66668701171875" text="Tên sách" />
-                <TableColumn fx:id="author" minWidth="0.0" prefWidth="175.0" text="Tên tác Giả" />
-                <TableColumn fx:id="soldCount" prefWidth="109.66668701171875" text="Số Lượng Đã Bán" />
-                <TableColumn fx:id="price" prefWidth="74.33331298828125" text="Giá" />
-            </columns>
-        </TableView>
-    </children>
-</AnchorPane>
+    <HBox fx:id="menuBar" alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
+        <Button mnemonicParsing="false" onAction="#goToHome" text="Trang chủ">
+            <HBox.margin>
+                <Insets right="10.0"/>
+            </HBox.margin>
+        </Button>
+        <Button fx:id="goToCart" mnemonicParsing="false" onAction="#goToCart" text="Giỏ hàng">
+            <HBox.margin>
+                <Insets right="15.0"/>
+            </HBox.margin>
+        </Button>
+        <Button onAction="#goToUser" fx:id="goToUser" mnemonicParsing="false" text="Người dùng">
+            <HBox.margin>
+                <Insets left="10.0" right="10.0"/>
+            </HBox.margin>
+        </Button>
+        <Button fx:id="goToOrderConfirm" onAction="#goToOrderConfirm" mnemonicParsing="false" text="Xác nhận đơn hàng">
+            <HBox.margin>
+                <Insets left="10.0" right="10.0"/>
+            </HBox.margin>
+        </Button>
+        <Button fx:id="goToOrder" onAction="#goToOrder" mnemonicParsing="false" text=" Đơn hàng">
+            <HBox.margin>
+                <Insets left="10.0" right="10.0"/>
+            </HBox.margin>
+        </Button>
+        <Button onAction="#goToTop5" mnemonicParsing="false" text="Thống kê">
+            <HBox.margin>
+                <Insets left="10.0" right="10.0"/>
+            </HBox.margin>
+        </Button>
+        <Button onAction="#goToHistory" mnemonicParsing="false" text="Lịch sử mua hàng">
+            <HBox.margin>
+                <Insets right="10.0"/>
+            </HBox.margin>
+        </Button>
+    </HBox>
+    <HBox alignment="CENTER" prefHeight="40.0" prefWidth="666.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
+        <TextField prefHeight="25.0" prefWidth="552.0">
+            <HBox.margin>
+                <Insets top="5.0"/>
+            </HBox.margin>
+        </TextField>
+        <Button prefHeight="25.0" prefWidth="123.0" text="Search">
+            <HBox.margin>
+                <Insets left="10.0" top="5.0"/>
+            </HBox.margin>
+        </Button>
+        <padding>
+            <Insets left="25.0" right="25.0"/>
+        </padding>
+    </HBox>
+    <HBox alignment="CENTER" prefHeight="41.0" prefWidth="302.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
+        <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" prefWidth="100.0" text="Setting">
+            <items>
+                <MenuItem mnemonicParsing="false" onAction="#updateUserInformation" text="Chỉnh sửa thông tin cá nhân"/>
+                <MenuItem mnemonicParsing="false" onAction="#updateUserPassword" text="Đổi mật khẩu"/>
+                <MenuItem mnemonicParsing="false" onAction="#deactivationUser" text="Xóa tài khoản"/>
+                <MenuItem mnemonicParsing="false" onAction="#logout" text="Đăng xuất"/>
+            </items>
+            <HBox.margin>
+                <Insets bottom="10.0" left="120.0" right="10.0" top="10.0"/>
+            </HBox.margin>
+        </MenuButton>
+    </HBox>
+    <TableView GridPane.columnSpan="3" GridPane.rowIndex="2" fx:id="bestsellingBooksTable" layoutX="75.0" layoutY="122.0" prefHeight="561.0" prefWidth="1201.0" >
+        <columns>
+            <TableColumn fx:id="top" prefWidth="30" text="Top" />
+            <TableColumn fx:id="idColumn" prefWidth="67" text="Mã sách" />
+            <TableColumn fx:id="imageColumn" prefWidth="95.5" text="Hình ảnh" />
+            <TableColumn fx:id="titleColumn" prefWidth="143" text="Tên sách" />
+            <TableColumn fx:id="authorColumn" prefWidth="92" text="Tên tác giả" />
+            <TableColumn fx:id="publishedYearColumn" prefWidth="96" text="Năm xuất bản" />
+            <TableColumn fx:id="editionColumn" prefWidth="91.0" text="Lần xuất bản" />
+            <TableColumn fx:id="priceColumn" prefWidth="75" text="Giá bán" />
+            <TableColumn fx:id="amountColumn" prefWidth="73." text="Số lượng" />
+            <TableColumn fx:id="bookTypeColumn" prefWidth="89" text="Mã loại sách" />
+            <TableColumn fx:id="publisherColumn" prefWidth="109" text="Mã nhà xuất bản" />
+            <TableColumn fx:id="statusColumn" prefWidth="97" text="Trạng thái" />
+        </columns>
+    </TableView>
+</GridPane>
