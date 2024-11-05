@@ -54,7 +54,7 @@ public class HomeUserController {
 
     private void loadBooksFromDatabase() {
         try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM books where Status = true")) {
+             ResultSet rs = stmt.executeQuery("SELECT * FROM books where Status = true And Amount > 0")) {
 
             booksList.clear();
             while (rs.next()) {
@@ -118,10 +118,32 @@ public class HomeUserController {
                 return;
             }
             stage.close();
+            if (isOutOfStock(book, Integer.parseInt(amount.getText()))) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "We don't have that much, enter again");
+                return;
+            }
             if (addToCart(currentUser.getUserID(), book.getBookID(), Integer.parseInt(amount.getText()))) {
                 showAlert(Alert.AlertType.INFORMATION, "Successful", "Add to cart successful");
             }
         });
+    }
+
+
+    private boolean isOutOfStock(Book book, int amount) {
+        String query = "select Amount from books where BookID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, book.getBookID());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            int bookAmount = 0;
+            while (resultSet.next()) {
+                bookAmount = resultSet.getInt(1);
+            }
+            return amount > bookAmount;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private boolean addToCart(int userID, int bookID, int amount) {
@@ -138,6 +160,8 @@ public class HomeUserController {
                 "?, " +
                 "?, " +
                 "(SELECT Price FROM Books WHERE BookID = ?) )";
+
+        String updateBookStockQuery = "UPDATE Books SET Amount = Amount - ? WHERE BookID = ?";
 
         try {
             // Bước 1: Kiểm tra nếu mục đã có trong giỏ hàng
@@ -166,6 +190,16 @@ public class HomeUserController {
                 row = insertStmt.executeUpdate();
                 System.out.println("Added new item to cart.");
             }
+
+            // Bước 4: Cập nhật lại số lượng sách trong kho
+            if (row > 0) {
+                PreparedStatement updateBookStockStmt = connection.prepareStatement(updateBookStockQuery);
+                updateBookStockStmt.setInt(1, amount);
+                updateBookStockStmt.setInt(2, bookID);
+                updateBookStockStmt.executeUpdate();
+                System.out.println("Updated book stock in inventory.");
+            }
+
             return row > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -270,13 +304,8 @@ public class HomeUserController {
     }
 
     @FXML
-    public void goToOrderConfirm(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/adminConfirmOrder.fxml");
-    }
-
-    @FXML
     public void goToOrder(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/cart.fxml");
+        goToScene(event, "/com/example/book_store/view/order.fxml");
     }
 
     @FXML

@@ -1,15 +1,11 @@
 package com.example.book_store.Controller;
 
 import com.example.book_store.ConnectDB;
-import com.example.book_store.Entity.CartItem;
 import com.example.book_store.Entity.Order;
 import com.example.book_store.Entity.OrderItem;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -19,9 +15,6 @@ import javafx.event.ActionEvent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import com.example.book_store.Entity.Bill;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -34,6 +27,8 @@ import java.util.ResourceBundle;
 import static com.example.book_store.Controller.Authentication.currentUser;
 
 public class OrderController implements Initializable {
+    @FXML
+    public HBox menuBar;
     @FXML
     private TableView<Order> orderTable;
     @FXML
@@ -68,7 +63,11 @@ public class OrderController implements Initializable {
 
     @FXML
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+        if (currentUser.getRole().equalsIgnoreCase("admin")) {
+            menuBar.getChildren().remove(goToCart);
+        } else {
+            menuBar.getChildren().remove(goToUser);
+        }
         orderID.setCellValueFactory(new PropertyValueFactory<>("orderID"));
         userID.setCellValueFactory(new PropertyValueFactory<>("userID"));
         date.setCellValueFactory(new PropertyValueFactory<>("date"));
@@ -92,20 +91,25 @@ public class OrderController implements Initializable {
 
                     confirm.setOnAction(e -> {
                         confirmOrder(order);
+                        loadOrders();
                     });
 
                     cancelled.setOnAction(e -> {
                         cancelOrder(order);
+                        loadOrders();
                     });
-                    if (order.getStatus().equalsIgnoreCase("Pending")) {
-                        HBox hBox = new HBox(detail, confirm, cancelled);
-                        hBox.setSpacing(10);
-                        setGraphic(hBox);
+                    HBox hBox;
+                    if (currentUser.getRole().equalsIgnoreCase("admin")) {
+                        if (order.getStatus().equalsIgnoreCase("Pending")) {
+                            hBox = new HBox(detail, confirm, cancelled);
+                        } else {
+                            hBox = new HBox(detail);
+                        }
                     } else {
-                        HBox hBox = new HBox(detail);
-                        hBox.setSpacing(10);
-                        setGraphic(hBox);
+                        hBox = new HBox(detail);
                     }
+                    hBox.setSpacing(10);
+                    setGraphic(hBox);
                 }
             }
         });
@@ -114,35 +118,87 @@ public class OrderController implements Initializable {
     }
 
     private void confirmOrder(Order order) {
-        String query = "update orders set Status = 'Paid' where OrderID = ?";
+        // Cập nhật trạng thái đơn hàng thành 'Paid'
+        String updateOrderStatusQuery = "UPDATE Orders SET Status = 'Paid' WHERE OrderID = ?";
+
+        // Tạo hóa đơn mới sau khi xác nhận đơn hàng
+        String createBillQuery = "INSERT INTO Bills (OrderID, UserID, TotalAmount, BillDate) VALUES (?, ?, ?, NOW())";
+
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, order.getUserID());
-            preparedStatement.executeUpdate();
+            // Bước 1: Cập nhật trạng thái đơn hàng
+            PreparedStatement updateStmt = connection.prepareStatement(updateOrderStatusQuery);
+            updateStmt.setInt(1, order.getOrderID());
+            updateStmt.executeUpdate();
+
+            // Bước 2: Tính tổng tiền từ các OrderItem của Order
+            double totalAmount = calculateTotalAmount(order.getOrderID());
+
+            // Bước 3: Tạo hóa đơn mới với tổng tiền
+            PreparedStatement createBillStmt = connection.prepareStatement(createBillQuery);
+            createBillStmt.setInt(1, order.getOrderID());
+            createBillStmt.setInt(2, order.getUserID());
+            createBillStmt.setDouble(3, totalAmount);
+            createBillStmt.executeUpdate();
+
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            throw new RuntimeException("Failed to confirm order and create bill.", e);
         }
     }
 
+    // Hàm hỗ trợ tính tổng tiền dựa trên OrderItem của Order
+    private double calculateTotalAmount(int orderID) throws SQLException {
+        String totalQuery = "SELECT SUM(Amount * Price) AS TotalAmount FROM OrderItems WHERE OrderID = ?";
+        PreparedStatement totalStmt = connection.prepareStatement(totalQuery);
+        totalStmt.setInt(1, orderID);
+
+        ResultSet resultSet = totalStmt.executeQuery();
+        if (resultSet.next()) {
+            return resultSet.getDouble("TotalAmount");
+        }
+        return 0.0;
+    }
+
+
     private void loadOrders() {
         ObservableList<Order> orders = FXCollections.observableArrayList();
-        String query = """
-                SELECT * FROM orders
-                WHERE Status = 'Pending'
-            """;
+        String query;
 
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                Order order = new Order(
-                        resultSet.getInt("OrderID"),
-                        resultSet.getInt("UserID"),
-                        resultSet.getDate("OrderDate").toString(),
-                        resultSet.getString("Status")
-                );
-                orders.add(order);
+            PreparedStatement preparedStatement;
+            if (currentUser.getRole().equalsIgnoreCase("user")) {
+                query = """
+                            SELECT * FROM orders
+                            WHERE UserID = ?
+                        """;
+                preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setInt(1, currentUser.getUserID());
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    Order order = new Order(
+                            resultSet.getInt("OrderID"),
+                            resultSet.getInt("UserID"),
+                            resultSet.getDate("OrderDate").toString(),
+                            resultSet.getString("Status")
+                    );
+                    orders.add(order);
+                }
+            } else {
+                query = """
+                            SELECT * FROM orders
+                        """;
+                preparedStatement = connection.prepareStatement(query);
+                preparedStatement.execute();
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    Order order = new Order(
+                            resultSet.getInt("OrderID"),
+                            resultSet.getInt("UserID"),
+                            resultSet.getDate("OrderDate").toString(),
+                            resultSet.getString("Status")
+                    );
+                    orders.add(order);
+                }
             }
             orderTable.setItems(orders);
 
@@ -163,11 +219,11 @@ public class OrderController implements Initializable {
         ObservableList<OrderItem> orderItems = FXCollections.observableArrayList();
 
         String query = """
-        SELECT oi.OrderItemID, oi.OrderID, oi.BookID, oi.Amount, oi.Price, oi.TotalPrice 
-        FROM OrderItems oi
-        JOIN Books b ON oi.BookID = b.BookID
-        WHERE oi.OrderID = ?
-    """;
+                    SELECT oi.OrderItemID, oi.OrderID, oi.BookID, oi.Amount, oi.Price, oi.TotalPrice 
+                    FROM OrderItems oi
+                    JOIN Books b ON oi.BookID = b.BookID
+                    WHERE oi.OrderID = ?
+                """;
 
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -195,10 +251,10 @@ public class OrderController implements Initializable {
             itemIDCol.setCellValueFactory(new PropertyValueFactory<>("orderItemID"));
 
             TableColumn<OrderItem, Integer> orderIDCol = new TableColumn<>("Order ID");
-            itemIDCol.setCellValueFactory(new PropertyValueFactory<>("orderID"));
+            orderIDCol.setCellValueFactory(new PropertyValueFactory<>("orderID"));
 
             TableColumn<OrderItem, Integer> bookIDCol = new TableColumn<>("Book ID");
-            itemIDCol.setCellValueFactory(new PropertyValueFactory<>("bookID"));
+            bookIDCol.setCellValueFactory(new PropertyValueFactory<>("bookID"));
 
             TableColumn<OrderItem, Integer> quantityCol = new TableColumn<>("Amount");
             quantityCol.setCellValueFactory(new PropertyValueFactory<>("amount"));
@@ -210,8 +266,11 @@ public class OrderController implements Initializable {
             totalPriceCol.setCellValueFactory(new PropertyValueFactory<>("totalPrice"));
 
             // Thêm các cột vào TableView
-            orderItemTableView.getColumns().addAll(itemIDCol, orderIDCol, bookIDCol, quantityCol, priceCol, totalPriceCol);
-
+            if (currentUser.getRole().equalsIgnoreCase("admin")) {
+                orderItemTableView.getColumns().addAll(itemIDCol, orderIDCol, bookIDCol, quantityCol, priceCol, totalPriceCol);
+            } else {
+                orderItemTableView.getColumns().addAll(itemIDCol, orderIDCol, bookIDCol, quantityCol, priceCol, totalPriceCol);
+            }
             // Tạo cửa sổ mới hiển thị TableView
             Stage detailStage = new Stage();
             detailStage.setTitle("Order Details - Order #" + orderID);
@@ -228,18 +287,57 @@ public class OrderController implements Initializable {
     }
 
 
-
     private boolean cancelOrder(Order order) {
-        String query = "update orders set Status = 'Cancelled' where OrderID = ?";
+        String cancelOrderQuery = "UPDATE orders SET Status = 'Cancelled' WHERE OrderID = ?";
+        String getOrderItemsQuery = "SELECT OrderItemID, BookID, Amount FROM OrderItems WHERE OrderID = ?";
+        String updateBookStockQuery = "UPDATE Books SET Amount = Amount + ? WHERE BookID = ?";
+        String deleteOrderItemsQuery = "DELETE FROM OrderItems WHERE OrderID = ?";
+        String deleteCartItemsQuery = "DELETE FROM CartItems WHERE OrderItemID = ?";
+
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, order.getOrderID());
-            int row = preparedStatement.executeUpdate();
-            return row > 0;
+            // Bước 1: Cập nhật trạng thái đơn hàng thành "Cancelled"
+            PreparedStatement cancelOrderStmt = connection.prepareStatement(cancelOrderQuery);
+            cancelOrderStmt.setInt(1, order.getOrderID());
+            int row = cancelOrderStmt.executeUpdate();
+
+            if (row > 0) {
+                // Bước 2: Truy xuất tất cả OrderItems trong đơn hàng bị hủy
+                PreparedStatement getOrderItemsStmt = connection.prepareStatement(getOrderItemsQuery);
+                getOrderItemsStmt.setInt(1, order.getOrderID());
+                ResultSet resultSet = getOrderItemsStmt.executeQuery();
+
+                // Bước 3: Cập nhật lại kho sách và lưu danh sách OrderItemID để xóa CartItems
+                while (resultSet.next()) {
+                    int orderItemID = resultSet.getInt("OrderItemID");
+                    int bookID = resultSet.getInt("BookID");
+                    int amount = resultSet.getInt("Amount");
+
+                    // Cập nhật lại kho sách
+                    PreparedStatement updateBookStockStmt = connection.prepareStatement(updateBookStockQuery);
+                    updateBookStockStmt.setInt(1, amount);
+                    updateBookStockStmt.setInt(2, bookID);
+                    updateBookStockStmt.executeUpdate();
+
+                    // Xóa các CartItem liên quan đến OrderItemID này
+                    PreparedStatement deleteCartItemsStmt = connection.prepareStatement(deleteCartItemsQuery);
+                    deleteCartItemsStmt.setInt(1, orderItemID);
+                    deleteCartItemsStmt.executeUpdate();
+                }
+
+                // Bước 4: Xóa tất cả OrderItems của đơn hàng
+                PreparedStatement deleteOrderItemsStmt = connection.prepareStatement(deleteOrderItemsQuery);
+                deleteOrderItemsStmt.setInt(1, order.getOrderID());
+                deleteOrderItemsStmt.executeUpdate();
+
+                return true;
+            }
+            return false;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            return false;
         }
     }
+
 
     private void showAlert(Alert.AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
@@ -281,11 +379,6 @@ public class OrderController implements Initializable {
     }
 
     @FXML
-    public void goToCart(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/cart.fxml");
-    }
-
-    @FXML
     public void deactivationUser(ActionEvent event) {
         userController.deactivationUser(event);
     }
@@ -311,12 +404,12 @@ public class OrderController implements Initializable {
     }
 
     @FXML
-    public void goToOrderConfirm(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/adminConfirmOrder.fxml");
+    public void goToOrder(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/order.fxml");
     }
 
     @FXML
-    public void goToOrder(ActionEvent event) throws IOException {
+    public void goToCart(ActionEvent event) throws IOException {
         goToScene(event, "/com/example/book_store/view/cart.fxml");
     }
 
@@ -324,6 +417,7 @@ public class OrderController implements Initializable {
     public void goToHistory(ActionEvent actionEvent) throws IOException {
         goToScene(actionEvent, "/com/example/book_store/view/bill.fxml");
     }
+
     @FXML
     public void goToTop5(ActionEvent actionEvent) throws IOException {
         goToScene(actionEvent, "/com/example/book_store/view/statistical.fxml");

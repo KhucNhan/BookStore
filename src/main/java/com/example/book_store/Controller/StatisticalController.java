@@ -74,11 +74,9 @@ public class StatisticalController {
             bookTypeColumn.setVisible(false);
             publisherColumn.setVisible(false);
             statusColumn.setVisible(false);
-            menuBar.getChildren().remove(goToOrderConfirm);
             menuBar.getChildren().remove(goToUser);
         } else{
             menuBar.getChildren().remove(goToCart);
-            menuBar.getChildren().remove(goToOrder);
         }
         idColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookID"));
         imageColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("image"));
@@ -233,13 +231,8 @@ public class StatisticalController {
     }
 
     @FXML
-    public void goToOrderConfirm(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/adminConfirmOrder.fxml");
-    }
-
-    @FXML
     public void goToOrder(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/cart.fxml");
+        goToScene(event, "/com/example/book_store/view/order.fxml");
     }
 
     @FXML
