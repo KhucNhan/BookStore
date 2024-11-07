@@ -90,8 +90,8 @@ public class BookController implements Initializable {
                     setGraphic(null);
                 } else {
                     imageView.setImage(new Image(imagePath));
-                    imageView.setFitHeight(50);
-                    imageView.setFitWidth(50);
+                    imageView.setFitHeight(100);
+                    imageView.setFitWidth(80);
                     setGraphic(imageView);
                 }
             }
@@ -108,8 +108,8 @@ public class BookController implements Initializable {
 
 
         actionColumn.setCellFactory(column -> new TableCell<Book, Void>() {
-            private final Button editBook = new Button("Edit");
-            private final Button deleteBook = new Button("Delete");
+            private final Button editBook = new Button("Sửa");
+            private final Button deleteBook = new Button("Xóa");
 
             @Override
             protected void updateItem(Void item, boolean empty) {
@@ -152,14 +152,14 @@ public class BookController implements Initializable {
         TextField publisher = new TextField(String.valueOf(book.getPublisher()));
         TextField status = new TextField(String.valueOf(book.isStatus()));
 
-        Button saveButton = new Button("Save");
+        Button saveButton = new Button("Lưu");
 
         VBox vbox = new VBox(title, img, author, publishedYear, edition, price, amount, bookType, publisher, status, saveButton);
         vbox.setSpacing(10);
         Scene scene = new Scene(vbox, 240, 480);
         Stage stage = new Stage();
         stage.setScene(scene);
-        stage.setTitle("Edit");
+        stage.setTitle("Sửa");
         stage.show();
 
         saveButton.setOnAction(e -> {
@@ -249,14 +249,14 @@ public class BookController implements Initializable {
         TextField publisher = new TextField();
         publisher.setPromptText("Publisher");
 
-        Button saveButton = new Button("Add Book");
+        Button saveButton = new Button("Thêm");
 
         VBox vbox = new VBox(img, title, author, publishedYear, edition, price, amount, bookType, publisher, saveButton);
         vbox.setSpacing(10);
         Scene scene = new Scene(vbox, 240, 480);
         Stage stage = new Stage();
         stage.setScene(scene);
-        stage.setTitle("Add Book");
+        stage.setTitle("Thêm sách");
         stage.show();
 
         saveButton.setOnAction(e -> {
@@ -316,17 +316,15 @@ public class BookController implements Initializable {
     private boolean deactivationBook(int bookID) {
         String query = "update books set Status = false where BookID = ?";
         try {
+            int row = 0;
             if (showConfirmation("Delete book", "Are you sure want to delete this book ?")) {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setInt(1, bookID);
-                int row = preparedStatement.executeUpdate();
+                row = preparedStatement.executeUpdate();
 
                 showAlert(Alert.AlertType.INFORMATION, "Successful", "Delete book successful");
-                return row != 0;
-            } else {
-                showAlert(Alert.AlertType.INFORMATION, "Failed", "Cancel");
-                return false;
             }
+            return row != 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -363,17 +361,17 @@ public class BookController implements Initializable {
         if (event.getSource() instanceof Node) {
             // Nếu nguồn sự kiện là một Node (ví dụ như Button), thì lấy Stage từ Node
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setMaximized(true);
+            Scene scene = new Scene(root,1280,800);
             stage.setScene(scene);
+//            stage.setFullScreen(true);
             stage.show();
         } else {
             // Ép kiểu nguồn sự kiện từ MenuItem (không thuộc về root) về Node
             Node node = ((MenuItem) event.getSource()).getParentPopup().getOwnerNode();
             Stage stage = (Stage) node.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setMaximized(true);
+            Scene scene = new Scene(root,1280,800);
             stage.setScene(scene);
+//            stage.setFullScreen(true);
             stage.show();
         }
     }

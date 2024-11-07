@@ -178,17 +178,17 @@ public class StatisticalController {
         if (event.getSource() instanceof Node) {
             // Nếu nguồn sự kiện là một Node (ví dụ như Button), thì lấy Stage từ Node
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setMaximized(true);
+            Scene scene = new Scene(root,1280,800);
             stage.setScene(scene);
+//            stage.setFullScreen(true);
             stage.show();
         } else {
             // Ép kiểu nguồn sự kiện từ MenuItem (không thuộc về root) về Node
             Node node = ((MenuItem) event.getSource()).getParentPopup().getOwnerNode();
             Stage stage = (Stage) node.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setMaximized(true);
+            Scene scene = new Scene(root,1280,800);
             stage.setScene(scene);
+//            stage.setFullScreen(true);
             stage.show();
         }
     }

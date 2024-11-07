@@ -73,9 +73,9 @@ public class OrderController implements Initializable {
         date.setCellValueFactory(new PropertyValueFactory<>("date"));
         status.setCellValueFactory(new PropertyValueFactory<>("status"));
         action.setCellFactory(column -> new TableCell<>() {
-            private final Button detail = new Button("Order detail");
-            private final Button confirm = new Button("Confirm");
-            private final Button cancelled = new Button("Cancelled");
+            private final Button detail = new Button("Chi tiết");
+            private final Button confirm = new Button("Xác nhận");
+            private final Button cancelled = new Button("Hủy");
 
             @Override
             protected void updateItem(Void act, boolean empty) {
@@ -351,29 +351,30 @@ public class OrderController implements Initializable {
     private Scene scene;
     private Parent root;
 
-    @FXML
-    public void goToScene(ActionEvent event, String path) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
-        root = loader.load();
 
-        // Kiểm tra nguồn sự kiện
-        if (event.getSource() instanceof Node) {
-            // Nếu nguồn sự kiện là một Node (ví dụ như Button), thì lấy Stage từ Node
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setMaximized(true);
-            stage.setScene(scene);
-            stage.show();
-        } else {
-            // Ép kiểu nguồn sự kiện từ MenuItem (không thuộc về root) về Node
-            Node node = ((MenuItem) event.getSource()).getParentPopup().getOwnerNode();
-            Stage stage = (Stage) node.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setMaximized(true);
-            stage.setScene(scene);
-            stage.show();
+        @FXML
+        public void goToScene(ActionEvent event, String path) throws IOException {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource(path));
+            root = loader.load();
+
+            // Kiểm tra nguồn sự kiện
+            if (event.getSource() instanceof Node) {
+                // Nếu nguồn sự kiện là một Node (ví dụ như Button), thì lấy Stage từ Node
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                Scene scene = new Scene(root,1280,800);
+                stage.setScene(scene);
+//            stage.setFullScreen(true);
+                stage.show();
+            } else {
+                // Ép kiểu nguồn sự kiện từ MenuItem (không thuộc về root) về Node
+                Node node = ((MenuItem) event.getSource()).getParentPopup().getOwnerNode();
+                Stage stage = (Stage) node.getScene().getWindow();
+                Scene scene = new Scene(root,1280,800);
+                stage.setScene(scene);
+//            stage.setFullScreen(true);
+                stage.show();
+            }
         }
-    }
 
     @FXML
     public void goToHome(ActionEvent event) throws IOException {
