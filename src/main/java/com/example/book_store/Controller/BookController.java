@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -38,6 +39,10 @@ public class BookController implements Initializable {
     public Button goToOrder;
     @FXML
     public Button goToCart;
+    @FXML
+    public TextField searchField;
+    @FXML
+    public Button searchButton;
     private UserController userController = new UserController();
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
@@ -71,6 +76,7 @@ public class BookController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        searchButton.setOnAction(e -> search());
         idColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookID"));
         imageColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("image"));
         imageColumn.setCellFactory(column -> new TableCell<Book, String>() {
@@ -131,6 +137,7 @@ public class BookController implements Initializable {
         });
 
         loadBooks();
+
     }
 
     private void showEditDialog(Book book) {
@@ -417,5 +424,49 @@ public class BookController implements Initializable {
     @FXML
     public void goToTop5(ActionEvent actionEvent) throws IOException {
         goToScene(actionEvent, "/com/example/book_store/view/statistical.fxml");
+    }
+
+    @FXML
+    public void search() {
+
+        String keyword = searchField.getText();
+        if (keyword.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Warning", "Please enter a search keyword.");
+            return;
+        }
+
+        ObservableList<Book> bookList = FXCollections.observableArrayList();
+        String query = "SELECT * FROM Books WHERE Title LIKE ? OR Author LIKE ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            String searchKeyword = "%" + keyword + "%";
+            preparedStatement.setString(1, searchKeyword);
+            preparedStatement.setString(2, searchKeyword);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                Book book = new Book(
+                        resultSet.getInt("BookID"),
+                        resultSet.getString("Image"),
+                        resultSet.getString("Title"),
+                        resultSet.getString("Author"),
+                        resultSet.getInt("PublishedYear"),
+                        resultSet.getInt("Edition"),
+                        resultSet.getDouble("Price"),
+                        resultSet.getInt("Amount"),
+                        resultSet.getString("BookType"),
+                        resultSet.getString("Publisher"),
+                        resultSet.getBoolean("Status")
+                );
+                bookList.add(book);
+            }
+
+            bookTable.setItems(bookList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not search book data");
+        }
+
     }
 }
