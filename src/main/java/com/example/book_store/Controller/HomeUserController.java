@@ -2,6 +2,8 @@ package com.example.book_store.Controller;
 
 import com.example.book_store.Entity.Book;
 import com.example.book_store.ConnectDB;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,7 +26,10 @@ import java.util.List;
 import static com.example.book_store.Controller.Authentication.currentUser;
 
 public class HomeUserController {
-
+    @FXML
+    public TextField searchField;
+    @FXML
+    public Button searchButton;
     @FXML
     private FlowPane booksContainer;
 
@@ -85,13 +90,13 @@ public class HomeUserController {
         bookImage.setFitWidth(160);
         Label title = new Label(book.getTitle());
         title.setStyle("-fx-font-weight: bold;");
-        Label price = new Label("Giá: " + book.getPrice());
+        Label price = new Label("Price: " + book.getPrice());
 
 
-        Button detailsButton = new Button("Chi tiết");
+        Button detailsButton = new Button("Detail");
         detailsButton.setOnAction(event -> showBookDetails(book));
 
-        Button addToCartButton = new Button("Thêm vào giỏ hàng");
+        Button addToCartButton = new Button("Add");
         addToCartButton.setOnAction(event -> {
             showAmountDialog(book);
         });
@@ -210,7 +215,7 @@ public class HomeUserController {
     private void showBookDetails(Book book) {
 
         Dialog<Void> dialog = new Dialog<>();
-        dialog.setTitle("Thông tin chi tiết sách");
+        dialog.setTitle("Detail book");
 
 
         ImageView bookImage = new ImageView(new Image(book.getImage()));
@@ -240,6 +245,53 @@ public class HomeUserController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    public void search() {
+
+        String keyword = searchField.getText();
+        if (keyword.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Warning", "Enter something");
+            return;
+        }
+
+        booksList.clear();
+        String query = "SELECT * FROM Books WHERE Title LIKE ? OR Author LIKE ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            String searchKeyword = "%" + keyword + "%";
+            preparedStatement.setString(1, searchKeyword);
+            preparedStatement.setString(2, searchKeyword);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                Book book = new Book(
+                        resultSet.getInt("BookID"),
+                        resultSet.getString("Image"),
+                        resultSet.getString("Title"),
+                        resultSet.getString("Author"),
+                        resultSet.getInt("PublishedYear"),
+                        resultSet.getInt("Edition"),
+                        resultSet.getDouble("Price"),
+                        resultSet.getInt("Amount"),
+                        resultSet.getString("BookType"),
+                        resultSet.getString("Publisher"),
+                        resultSet.getBoolean("Status")
+                );
+                booksList.add(book);
+            }
+            if (booksList.isEmpty()){
+                showAlert(Alert.AlertType.ERROR, "Failed", "Not found");
+            }
+            displayAllBooks();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not search book data");
+        }
+
     }
 
     private Stage stage;
@@ -312,6 +364,7 @@ public class HomeUserController {
     public void goToHistory(ActionEvent actionEvent) throws IOException {
         goToScene(actionEvent, "/com/example/book_store/view/bill.fxml");
     }
+
     @FXML
     public void goToTop5(ActionEvent actionEvent) throws IOException {
         goToScene(actionEvent, "/com/example/book_store/view/statistical.fxml");

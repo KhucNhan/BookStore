@@ -12,7 +12,7 @@
                 <Insets right="10.0"/>
             </HBox.margin>
         </Button>
-        <Button mnemonicParsing="false" onAction="#goToCart" text="Giỏ hàng">
+        <Button fx:id="goToCart" mnemonicParsing="false" onAction="#goToCart" text="Giỏ hàng">
             <HBox.margin>
                 <Insets right="10.0"/>
             </HBox.margin>

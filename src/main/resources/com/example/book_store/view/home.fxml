@@ -31,8 +31,8 @@
         </Button>
     </HBox>
     <HBox alignment="CENTER" prefHeight="25.0" prefWidth="500.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
-        <TextField prefHeight="25.0" prefWidth="437.0" />
-        <Button prefHeight="25.0" prefWidth="123.0" text="Search">
+        <TextField fx:id="searchField"  prefHeight="25.0" prefWidth="437.0" />
+        <Button fx:id="searchButton" prefHeight="25.0" prefWidth="123.0" text="Tìm kiếm" onAction="#search">
             <HBox.margin>
                 <Insets left="10.0" />
             </HBox.margin>
