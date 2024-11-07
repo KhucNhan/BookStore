@@ -175,8 +175,11 @@ public class Authentication {
             preparedStatement.setString(8, email.getText());
 
             int row = preparedStatement.executeUpdate();
-            if (row != 0) showAlert(Alert.AlertType.INFORMATION, "Successful", "Sign up successful");
-            goToScene(event, "/com/example/book_store/view/login.fxml");
+            if (row != 0) {
+                showAlert(Alert.AlertType.INFORMATION, "Successful", "Sign up successful");
+                createCart();
+                goToScene(event, "/com/example/book_store/view/login.fxml");
+            }
             return row != 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -185,6 +188,19 @@ public class Authentication {
             throw new RuntimeException(e);
         }
     }
+
+    private boolean createCart() {
+        String query = "insert into cart (UserID) values ((select UserID from users group by UserID order by UserID desc limit 1 ));";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            int row = preparedStatement.executeUpdate();
+            return row > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     @FXML
     private void selectGender(javafx.event.ActionEvent event) {
         MenuItem selectedGender = (MenuItem) event.getSource();
@@ -221,6 +237,7 @@ public void goToLogin(ActionEvent event) throws IOException {
             // Nếu nguồn sự kiện là một Node (ví dụ như Button), thì lấy Stage từ Node
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
+            stage.setMaximized(true);
             stage.setScene(scene);
             stage.show();
         } else {
@@ -228,6 +245,7 @@ public void goToLogin(ActionEvent event) throws IOException {
             Node node = ((MenuItem) event.getSource()).getParentPopup().getOwnerNode();
             Stage stage = (Stage) node.getScene().getWindow();
             Scene scene = new Scene(root);
+            stage.setMaximized(true);
             stage.setScene(scene);
             stage.show();
         }

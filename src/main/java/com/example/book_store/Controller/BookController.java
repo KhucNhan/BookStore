@@ -364,6 +364,7 @@ public class BookController implements Initializable {
             // Nếu nguồn sự kiện là một Node (ví dụ như Button), thì lấy Stage từ Node
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
+            stage.setMaximized(true);
             stage.setScene(scene);
             stage.show();
         } else {
@@ -371,6 +372,7 @@ public class BookController implements Initializable {
             Node node = ((MenuItem) event.getSource()).getParentPopup().getOwnerNode();
             Stage stage = (Stage) node.getScene().getWindow();
             Scene scene = new Scene(root);
+            stage.setMaximized(true);
             stage.setScene(scene);
             stage.show();
         }
