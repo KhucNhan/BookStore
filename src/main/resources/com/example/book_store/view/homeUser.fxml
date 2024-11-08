@@ -14,8 +14,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.HomeUserController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0"
+            xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.book_store.Controller.HomeUserController">
    <top>
         <HBox alignment="CENTER_LEFT" prefHeight="55.0" prefWidth="1400.0" spacing="20.0" BorderPane.alignment="CENTER">
             <Button fx:id="goToHome" mnemonicParsing="false" onAction="#goToHome" prefHeight="25.0" prefWidth="130.0" text="Trang chủ">
@@ -26,23 +27,6 @@
                <Font size="16.0" />
             </font>
             </Button>
-           <HBox alignment="CENTER" prefHeight="25.0" spacing="10.0">
-            <children>
-                   <TextField fx:id="searchField" prefHeight="35.0" prefWidth="220.0" promptText="Nhập từ khóa tìm kiếm">
-                  <font>
-                     <Font size="14.0" />
-                  </font>
-               </TextField>
-                   <Button fx:id="searchButton" onAction="#search" prefHeight="25.0" prefWidth="130.0" text="Tìm kiếm">
-                       <HBox.margin>
-                           <Insets />
-                       </HBox.margin>
-                  <font>
-                     <Font size="16.0" />
-                  </font>
-                   </Button>
-            </children>
-         </HBox>
             <Button fx:id="goToCart" mnemonicParsing="false" onAction="#goToCart" prefWidth="130.0" text="Giỏ hàng">
                 <HBox.margin>
                     <Insets />
@@ -75,7 +59,24 @@
                <Font size="16.0" />
             </font>
             </Button>
-            <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" prefHeight="36.0" prefWidth="104.0" text="Cài đặt">
+           <HBox alignment="CENTER" prefHeight="25.0" spacing="10.0">
+            <children>
+                   <TextField fx:id="searchField" prefHeight="35.0" prefWidth="220.0" promptText="Nhập từ khóa tìm kiếm">
+                  <font>
+                     <Font size="14.0" />
+                  </font>
+               </TextField>
+                   <Button fx:id="searchButton" onAction="#search" prefHeight="25.0" prefWidth="130.0" text="Tìm kiếm">
+                       <HBox.margin>
+                           <Insets />
+                       </HBox.margin>
+                  <font>
+                     <Font size="16.0" />
+                  </font>
+                   </Button>
+            </children>
+         </HBox>
+            <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" prefHeight="36.0" prefWidth="111.0" text="Cài đặt">
                 <items>
                     <MenuItem mnemonicParsing="false" onAction="#updateUserInformation" text="Chỉnh sửa thông tin cá nhân" />
                     <MenuItem mnemonicParsing="false" onAction="#updateUserPassword" text="Đổi mật khẩu" />

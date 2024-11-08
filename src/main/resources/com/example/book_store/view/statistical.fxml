@@ -9,88 +9,121 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
 
-
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.StatisticalController">
-   <top>
-   
-          <HBox fx:id="menuBar" alignment="CENTER" prefHeight="73.0" prefWidth="1513.0" spacing="20.0" BorderPane.alignment="CENTER">
-           <Button mnemonicParsing="false" onAction="#goToHome" prefWidth="130.0" text="Trang chủ">
-               <HBox.margin>
-                   <Insets />
-               </HBox.margin>
-           </Button>
-         <HBox alignment="CENTER" prefHeight="100.0" spacing="10.0">
-            <children>
-                 <TextField prefHeight="25.0" prefWidth="220.0" promptText="Nhập từ khoá tìm kiếm">
-                     <HBox.margin>
-                         <Insets />
-                     </HBox.margin>
-                 </TextField>
-                 <Button prefHeight="25.0" prefWidth="123.0" text="Tìm kiếm">
-                     <HBox.margin>
-                         <Insets />
-                     </HBox.margin>
-                 </Button>
-            </children>
-         </HBox>
-           <Button fx:id="goToCart" mnemonicParsing="false" onAction="#goToCart" prefWidth="130.0" text="Giỏ hàng">
-               <HBox.margin>
-                   <Insets />
-               </HBox.margin>
-           </Button>
-           <Button fx:id="goToUser" mnemonicParsing="false" onAction="#goToUser" prefWidth="130.0" text="Người dùng">
-               <HBox.margin>
-                   <Insets />
-               </HBox.margin>
-           </Button>
-           <Button fx:id="goToOrder" mnemonicParsing="false" onAction="#goToOrder" prefWidth="130.0" text=" Đơn hàng">
-               <HBox.margin>
-                   <Insets />
-               </HBox.margin>
-           </Button>
-           <Button mnemonicParsing="false" onAction="#goToTop5" prefWidth="130.0" text="Thống kê">
-               <HBox.margin>
-                   <Insets />
-               </HBox.margin>
-           </Button>
-           <Button mnemonicParsing="false" onAction="#goToHistory" prefWidth="185.0" text="Lịch sử mua hàng">
-               <HBox.margin>
-                   <Insets />
-               </HBox.margin>
-           </Button>
-           <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" prefWidth="100.0" text="Setting">
-               <items>
-                   <MenuItem mnemonicParsing="false" onAction="#updateUserInformation" text="Chỉnh sửa thông tin cá nhân" />
-                   <MenuItem mnemonicParsing="false" onAction="#updateUserPassword" text="Đổi mật khẩu" />
-                   <MenuItem mnemonicParsing="false" onAction="#deactivationUser" text="Xóa tài khoản" />
-                   <MenuItem mnemonicParsing="false" onAction="#logout" text="Đăng xuất" />
-               </items>
-               <HBox.margin>
-                   <Insets />
-               </HBox.margin>
-           </MenuButton>
-       </HBox>
-   </top>
-   <center>
-       <TableView fx:id="bestsellingBooksTable" prefHeight="576.0" prefWidth="1280.0" BorderPane.alignment="CENTER">
-           <columns>
-               <TableColumn fx:id="top" prefWidth="65.0" text="Top" />
-               <TableColumn fx:id="idColumn" prefWidth="90.0" text="Mã sách" />
-               <TableColumn fx:id="imageColumn" prefWidth="120.0" text="Hình ảnh" />
-               <TableColumn fx:id="titleColumn" prefWidth="150.0" text="Tên sách" />
-               <TableColumn fx:id="authorColumn" prefWidth="100.0" text="Tên tác giả" />
-               <TableColumn fx:id="publishedYearColumn" prefWidth="95.0" text="Năm xuất bản" />
-               <TableColumn fx:id="editionColumn" prefWidth="95.0" text="Lần xuất bản" />
-               <TableColumn fx:id="priceColumn" prefWidth="95.0" text="Giá bán" />
-               <TableColumn fx:id="amountColumn" prefWidth="95.0" text="Số lượng" />
-               <TableColumn fx:id="bookTypeColumn" prefWidth="95.0" text="Mã loại sách" />
-               <TableColumn fx:id="publisherColumn" prefWidth="120.0" text="Mã nhà xuất bản" />
-               <TableColumn fx:id="statusColumn" prefWidth="157.0" text="Trạng thái" />
-           </columns>
-         <BorderPane.margin>
-            <Insets top="10.0" />
-         </BorderPane.margin>
-       </TableView>
-   </center>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0"
+            prefWidth="1280.0"  xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.book_store.Controller.StatisticalController">
+    <top>
+        <HBox fx:id="menuBar" alignment="CENTER" prefHeight="55.0" prefWidth="1513.0" spacing="20.0"
+              BorderPane.alignment="CENTER">
+            <Button mnemonicParsing="false" onAction="#goToHome" prefWidth="130.0" text="Trang chủ">
+                <HBox.margin>
+                    <Insets/>
+                </HBox.margin>
+                <font>
+                    <Font size="16.0"/>
+                </font>
+            </Button>
+            <Button fx:id="goToCart" mnemonicParsing="false" onAction="#goToCart" prefWidth="130.0" text="Giỏ hàng">
+                <HBox.margin>
+                    <Insets/>
+                </HBox.margin>
+                <font>
+                    <Font size="16.0"/>
+                </font>
+            </Button>
+            <Button fx:id="goToUser" mnemonicParsing="false" onAction="#goToUser" prefWidth="130.0" text="Người dùng">
+                <HBox.margin>
+                    <Insets/>
+                </HBox.margin>
+                <font>
+                    <Font size="16.0"/>
+                </font>
+            </Button>
+            <Button fx:id="goToOrder" mnemonicParsing="false" onAction="#goToOrder" prefWidth="130.0" text=" Đơn hàng">
+                <HBox.margin>
+                    <Insets/>
+                </HBox.margin>
+                <font>
+                    <Font size="16.0"/>
+                </font>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#goToTop5" prefWidth="130.0" text="Thống kê">
+                <HBox.margin>
+                    <Insets/>
+                </HBox.margin>
+                <font>
+                    <Font size="16.0"/>
+                </font>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#goToHistory" prefWidth="185.0" text="Lịch sử mua hàng">
+                <HBox.margin>
+                    <Insets/>
+                </HBox.margin>
+                <font>
+                    <Font size="16.0"/>
+                </font>
+            </Button>
+            <HBox alignment="CENTER" prefHeight="100.0" spacing="10.0">
+                <children>
+                    <TextField prefHeight="25.0" prefWidth="220.0" promptText="Nhập từ khoá tìm kiếm">
+                        <HBox.margin>
+                            <Insets/>
+                        </HBox.margin>
+                        <font>
+                            <Font size="16.0"/>
+                        </font>
+                    </TextField>
+                    <Button prefHeight="25.0" prefWidth="123.0" text="Tìm kiếm">
+                        <HBox.margin>
+                            <Insets/>
+                        </HBox.margin>
+                        <font>
+                            <Font size="16.0"/>
+                        </font>
+                    </Button>
+                </children>
+            </HBox>
+            <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" prefWidth="100.0" text="Cài đặt">
+                <items>
+                    <MenuItem mnemonicParsing="false" onAction="#updateUserInformation"
+                              text="Chỉnh sửa thông tin cá nhân"/>
+                    <MenuItem mnemonicParsing="false" onAction="#updateUserPassword" text="Đổi mật khẩu"/>
+                    <MenuItem mnemonicParsing="false" onAction="#deactivationUser" text="Xóa tài khoản"/>
+                    <MenuItem mnemonicParsing="false" onAction="#logout" text="Đăng xuất"/>
+                </items>
+                <HBox.margin>
+                    <Insets/>
+                </HBox.margin>
+                <font>
+                    <Font size="16.0"/>
+                </font>
+            </MenuButton>
+            <padding>
+                <Insets left="25.0" right="25.0"/>
+            </padding>
+        </HBox>
+    </top>
+    <center>
+        <TableView fx:id="bestsellingBooksTable" prefHeight="576.0" prefWidth="1280.0" BorderPane.alignment="CENTER">
+            <columns>
+                <TableColumn fx:id="top" prefWidth="65.0" text="Top"/>
+                <TableColumn fx:id="idColumn" prefWidth="90.0" text="Mã sách"/>
+                <TableColumn fx:id="imageColumn" prefWidth="120.0" text="Hình ảnh"/>
+                <TableColumn fx:id="titleColumn" prefWidth="150.0" text="Tên sách"/>
+                <TableColumn fx:id="authorColumn" prefWidth="100.0" text="Tên tác giả"/>
+                <TableColumn fx:id="publishedYearColumn" prefWidth="95.0" text="Năm xuất bản"/>
+                <TableColumn fx:id="editionColumn" prefWidth="95.0" text="Lần xuất bản"/>
+                <TableColumn fx:id="priceColumn" prefWidth="95.0" text="Giá bán"/>
+                <TableColumn fx:id="amountColumn" prefWidth="95.0" text="Số lượng"/>
+                <TableColumn fx:id="bookTypeColumn" prefWidth="95.0" text="Mã loại sách"/>
+                <TableColumn fx:id="publisherColumn" prefWidth="120.0" text="Mã nhà xuất bản"/>
+                <TableColumn fx:id="statusColumn" prefWidth="157.0" text="Trạng thái"/>
+            </columns>
+            <BorderPane.margin>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+            </BorderPane.margin>
+        </TableView>
+    </center>
 </BorderPane>
