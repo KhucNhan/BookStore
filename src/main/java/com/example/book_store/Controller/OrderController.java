@@ -378,7 +378,11 @@ public class OrderController implements Initializable {
 
     @FXML
     public void goToHome(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/home.fxml");
+        if (currentUser.getRole().equalsIgnoreCase("admin")) {
+            goToScene(event, "/com/example/book_store/view/home.fxml");
+        } else {
+            goToScene(event, "/com/example/book_store/view/homeUser.fxml");
+        }
     }
 
     @FXML

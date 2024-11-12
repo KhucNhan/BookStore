@@ -482,7 +482,7 @@ public class UserController {
     }
     @FXML
     public void goToHome(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/homeUser.fxml");
+        goToScene(event, "/com/example/book_store/view/home.fxml");
     }
 
     @FXML
