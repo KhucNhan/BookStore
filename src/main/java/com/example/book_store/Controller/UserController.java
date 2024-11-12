@@ -186,6 +186,35 @@ public class UserController {
             throw new RuntimeException(e);
         }
     }
+    boolean add(String name, String username, String password, Date dateOfBirth, String gender, String phone, String address, String email) {
+        String query = "insert into users (Name, Username, Password, DateOfBirth, Gender, Phone, Address, Email)" +
+                "values (?, ?, ?, ?, ?, ?, ?, ?)";
+        try {
+            if (!phoneValidator(phone)) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right phone number!");
+                return false;
+            }
+            if (!emailValidator(email)) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right email address!");
+                return false;
+            }
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, name);
+            preparedStatement.setString(2, username);
+            preparedStatement.setString(3, password);
+            preparedStatement.setDate(4, dateOfBirth);
+            preparedStatement.setString(5, gender);
+            preparedStatement.setString(6, phone);
+            preparedStatement.setString(7, address);
+            preparedStatement.setString(8, email);
+
+            int row = preparedStatement.executeUpdate();
+            return row != 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     private boolean deactivationUser(int userID) {
         String query = "update users set Status = false where UserID = ?";
