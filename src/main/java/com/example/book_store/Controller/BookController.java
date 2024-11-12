@@ -231,23 +231,23 @@ public class BookController implements Initializable {
     @FXML
     private void showAddBookDialog() {
         TextField img = new TextField();
-        img.setPromptText("Url");
+        img.setPromptText("https://.....");
         TextField title = new TextField();
-        title.setPromptText("Title");
+        title.setPromptText("Tên sách");
         TextField author = new TextField();
-        author.setPromptText("Author");
+        author.setPromptText("Tên tác giả");
         TextField publishedYear = new TextField();
-        publishedYear.setPromptText("Public year");
+        publishedYear.setPromptText("Năm xuất bản");
         TextField edition = new TextField();
-        edition.setPromptText("Edition");
+        edition.setPromptText("Lần xuất bản");
         TextField price = new TextField();
-        price.setPromptText("Price");
+        price.setPromptText("Giá");
         TextField amount = new TextField();
-        amount.setPromptText("Amount");
+        amount.setPromptText("Số lượng");
         TextField bookType = new TextField();
-        bookType.setPromptText("Book type");
+        bookType.setPromptText("Loại sách");
         TextField publisher = new TextField();
-        publisher.setPromptText("Publisher");
+        publisher.setPromptText("Nhà xuất bản");
 
         Button saveButton = new Button("Thêm");
 
