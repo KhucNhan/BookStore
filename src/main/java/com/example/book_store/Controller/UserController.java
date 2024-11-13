@@ -186,7 +186,8 @@ public class UserController {
             throw new RuntimeException(e);
         }
     }
-    boolean add(String name, String username, String password, Date dateOfBirth, String gender, String phone, String address, String email) {
+
+    protected boolean add(String name, String username, String password, Date dateOfBirth, String gender, String phone, String address, String email) {
         String query = "insert into users (Name, Username, Password, DateOfBirth, Gender, Phone, Address, Email)" +
                 "values (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
@@ -495,7 +496,7 @@ public class UserController {
         if (event.getSource() instanceof Node) {
             // Nếu nguồn sự kiện là một Node (ví dụ như Button), thì lấy Stage từ Node
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root,1280,800);
+            Scene scene = new Scene(root, 1280, 800);
             stage.setScene(scene);
 //            stage.setFullScreen(true);
             stage.show();
@@ -503,12 +504,13 @@ public class UserController {
             // Ép kiểu nguồn sự kiện từ MenuItem (không thuộc về root) về Node
             Node node = ((MenuItem) event.getSource()).getParentPopup().getOwnerNode();
             Stage stage = (Stage) node.getScene().getWindow();
-            Scene scene = new Scene(root,1280,800);
+            Scene scene = new Scene(root, 1280, 800);
             stage.setScene(scene);
 //            stage.setFullScreen(true);
             stage.show();
         }
     }
+
     @FXML
     public void goToHome(ActionEvent event) throws IOException {
         goToScene(event, "/com/example/book_store/view/home.fxml");
@@ -543,5 +545,39 @@ public class UserController {
     @FXML
     public void goToTop5(ActionEvent actionEvent) throws IOException {
         goToScene(actionEvent, "/com/example/book_store/view/statistical.fxml");
+    }
+
+    @FXML
+    public void add(ActionEvent actionEvent) {
+        TextField name = new TextField();
+        name.setPromptText("Nhập họ tên");
+        TextField username = new TextField();
+        username.setPromptText("Tên đăng nhập");
+        TextField password = new TextField();
+        password.setPromptText("Mật khẩu");
+        TextField email = new TextField();
+        email.setPromptText("Email");
+        DatePicker dateOfBirth = new DatePicker();
+        dateOfBirth.setPromptText("Ngày sinh");
+        TextField gender = new TextField();
+        gender.setPromptText("Giới tính");
+        TextField phone = new TextField();
+        phone.setPromptText("Số điện thoại");
+        TextField address = new TextField();
+        address.setPromptText("Địa chỉ");
+        Button saveButton = new Button("Thêm");
+
+        VBox vbox = new VBox(name, username, password, email, dateOfBirth, gender, phone, address, saveButton);
+        vbox.setSpacing(10);
+        Scene scene = new Scene(vbox, 240, 480);
+        Stage stage = new Stage();
+        stage.setScene(scene);
+        stage.setTitle("Thêm user");
+        stage.show();
+
+        saveButton.setOnAction(e -> {
+            add(name.getText(), username.getText(), password.getText(), Date.valueOf(dateOfBirth.getValue()), gender.getText(), phone.getText(), address.getText(), email.getText());
+            stage.close(); // Đóng cửa sổ thêm sách
+        });
     }
 }

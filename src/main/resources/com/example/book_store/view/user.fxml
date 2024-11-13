@@ -82,6 +82,14 @@
             <padding>
                 <Insets left="25.0" right="25.0" />
             </padding>
+            <Button contentDisplay="CENTER" onAction="#add" prefHeight="25.0" prefWidth="119.0" text=" Thêm sách ">
+                <opaqueInsets>
+                    <Insets />
+                </opaqueInsets>
+                <font>
+                    <Font size="15.0" />
+                </font>
+            </Button>
         </HBox>
     </top>
     <center>
