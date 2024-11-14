@@ -12,8 +12,9 @@
 
 
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.control.DatePicker?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0"
-            prefWidth="1280.0"  xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+            prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="com.example.book_store.Controller.BillController">
     <top>
         <HBox fx:id="menuBar" alignment="CENTER" prefHeight="55.0" prefWidth="1513.0" spacing="20.0"
@@ -68,15 +69,17 @@
             </Button>
             <HBox alignment="CENTER" prefHeight="100.0" spacing="10.0">
                 <children>
-                    <TextField prefHeight="25.0" prefWidth="220.0" promptText="Nhập từ khoá tìm kiếm">
+                    <DatePicker fx:id="first" prefHeight="25.0" prefWidth="100.0">
                         <HBox.margin>
                             <Insets/>
                         </HBox.margin>
-                        <font>
-                            <Font size="16.0"/>
-                        </font>
-                    </TextField>
-                    <Button prefHeight="25.0" prefWidth="123.0" text="Tìm kiếm">
+                    </DatePicker>
+                    <DatePicker fx:id="second" prefHeight="25.0" prefWidth="100.0">
+                        <HBox.margin>
+                            <Insets/>
+                        </HBox.margin>
+                    </DatePicker>
+                    <Button onAction="#search" prefHeight="25.0" prefWidth="123.0" text="Lọc">
                         <HBox.margin>
                             <Insets/>
                         </HBox.margin>
