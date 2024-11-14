@@ -162,7 +162,7 @@ public class Authentication {
             return false;
         }
 
-        return name.matches("[a-zA-Z\\s]+");
+        return Pattern.matches("[\\p{L}\\s]+", name);
     }
 
     public static boolean validateBirthdate(LocalDate birthdate) {
