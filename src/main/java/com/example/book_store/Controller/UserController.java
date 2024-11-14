@@ -208,8 +208,12 @@ public class UserController {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Enter right email address!");
                 return false;
             }
-            if (validateAddress(address)) {
+            if (!validateAddress(address)) {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Address can not filled just with number");
+                return false;
+            }
+            if (!validateName(name)) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Text only");
                 return false;
             }
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -302,7 +306,7 @@ public class UserController {
                     showAlert(Alert.AlertType.ERROR, "Failed", "Enter right value");
                     return;
                 }
-                if (validateAddress(addressField.getText())) {
+                if (!validateAddress(addressField.getText())) {
                     showAlert(Alert.AlertType.ERROR, "Failed", "Enter address again");
                     return;
                 }

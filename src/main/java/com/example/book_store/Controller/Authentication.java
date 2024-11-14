@@ -194,7 +194,7 @@ public class Authentication {
             showAlert(Alert.AlertType.ERROR, "Failed", "Password incorrect");
             return false;
         }
-        if (validateAddress(uAddress)) {
+        if (!validateAddress(uAddress)) {
             showAlert(Alert.AlertType.ERROR, "Failed", "Address can not filled just with number");
             return false;
         }
