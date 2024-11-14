@@ -148,6 +148,14 @@ public class Authentication {
     @FXML
     public TextField email;
 
+    public static boolean validateAddress(String address) {
+        if (address == null || address.isEmpty()) {
+            return false;
+        }
+
+        return address.matches(".*[a-zA-Z]+.*");
+    }
+
     @FXML
     private boolean signUp(ActionEvent event) throws IOException {
         String uName = name.getText();
@@ -165,6 +173,10 @@ public class Authentication {
         }
         if (!uPassword.equals(uReEnter)) {
             showAlert(Alert.AlertType.ERROR, "Failed", "Password incorrect");
+            return false;
+        }
+        if (validateAddress(uAddress)) {
+            showAlert(Alert.AlertType.ERROR, "Failed", "Address can not filled just with number");
             return false;
         }
         if (userController.add(uName, uUsername, uPassword, uDateOfBirth, uGender, uPhone, uAddress, uEmail)) {
