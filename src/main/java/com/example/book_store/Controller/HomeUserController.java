@@ -90,13 +90,12 @@ public class HomeUserController {
         bookImage.setFitWidth(160);
         Label title = new Label(book.getTitle());
         title.setStyle("-fx-font-weight: bold;");
-        Label price = new Label("Price: " + book.getPrice());
+        Label price = new Label("Giá: " + book.getPrice()+"$");
 
-
-        Button detailsButton = new Button("Detail");
+        Button detailsButton = new Button("Chi tiết");
         detailsButton.setOnAction(event -> showBookDetails(book));
 
-        Button addToCartButton = new Button("Add");
+        Button addToCartButton = new Button("Thêm");
         addToCartButton.setOnAction(event -> {
             showAmountDialog(book);
         });
@@ -107,11 +106,11 @@ public class HomeUserController {
 
     public void showAmountDialog(Book book) {
         TextField amount = new TextField("1");
-        Button saveButton = new Button("Save");
+        Button saveButton = new Button("Thêm");
 
         VBox vbox = new VBox(amount, saveButton);
         vbox.setSpacing(10);
-        Scene scene = new Scene(vbox, 240, 480);
+        Scene scene = new Scene(vbox, 240, 200);
         Stage stage = new Stage();
         stage.setScene(scene);
         stage.setTitle("Enter amount");
@@ -224,7 +223,7 @@ public class HomeUserController {
 
         Label titleLabel = new Label("Tên sách: " + book.getTitle());
         Label authorLabel = new Label("Tác giả: " + book.getAuthor());
-        Label priceLabel = new Label("Giá: " + book.getPrice() + " VND");
+        Label priceLabel = new Label("Giá: " + book.getPrice() + "$");
         Label quantityLabel = new Label("Số lượng: " + book.getAmount());
         Label publicationYearLabel = new Label("Năm xuất bản: " + book.getPublishedYear());
 
@@ -307,15 +306,17 @@ public class HomeUserController {
         if (event.getSource() instanceof Node) {
             // Nếu nguồn sự kiện là một Node (ví dụ như Button), thì lấy Stage từ Node
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root,1280,800);
             stage.setScene(scene);
+//            stage.setFullScreen(true);
             stage.show();
         } else {
             // Ép kiểu nguồn sự kiện từ MenuItem (không thuộc về root) về Node
             Node node = ((MenuItem) event.getSource()).getParentPopup().getOwnerNode();
             Stage stage = (Stage) node.getScene().getWindow();
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root,1280,800);
             stage.setScene(scene);
+//            stage.setFullScreen(true);
             stage.show();
         }
     }

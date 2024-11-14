@@ -3,103 +3,112 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<GridPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="800.0" prefWidth="1280.0"
-          xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="com.example.book_store.Controller.UserController">
-
-    <HBox alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
-        <Button mnemonicParsing="false" onAction="#goToHome" text="Trang chủ">
-            <HBox.margin>
-                <Insets right="10.0"/>
-            </HBox.margin>
-        </Button>
-        <Button onAction="#goToUser" fx:id="goToUser" mnemonicParsing="false" text="Người dùng">
-            <HBox.margin>
-                <Insets left="10.0" right="10.0" />
-            </HBox.margin>
-        </Button>
-        <Button fx:id="goToOrder" onAction="#goToOrder" mnemonicParsing="false" text="Đơn hàng">
-            <HBox.margin>
-                <Insets left="10.0" right="10.0" />
-            </HBox.margin></Button>
-        <Button onAction="#goToTop5" mnemonicParsing="false" text="Thống kê">
-            <HBox.margin>
-                <Insets left="10.0" right="10.0" />
-            </HBox.margin></Button>
-        <Button onAction="#goToHistory" mnemonicParsing="false" text="Lịch sử mua hàng">
-            <HBox.margin>
-                <Insets right="10.0"/>
-            </HBox.margin>
-        </Button>
-    </HBox>
-
-    <HBox alignment="CENTER" prefHeight="25.0" prefWidth="500.0" GridPane.columnIndex="1" GridPane.rowIndex="0">
-        <TextField prefHeight="25.0" prefWidth="552.0"/>
-        <Button prefHeight="25.0" prefWidth="123.0" text="Search">
-            <HBox.margin>
-                <Insets left="10.0"/>
-            </HBox.margin>
-        </Button>
-        <padding>
-            <Insets left="25.0" right="25.0"/>
-        </padding>
-    </HBox>
-
-    <HBox alignment="CENTER" prefHeight="25.0" prefWidth="253.0" GridPane.columnIndex="2" GridPane.rowIndex="0">
-        <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" prefWidth="100.0" text="Setting">
-            <items>
-                <MenuItem mnemonicParsing="false" onAction="#updateUserInformation" text="Chỉnh sửa thông tin cá nhân"/>
-                <MenuItem mnemonicParsing="false" onAction="#updateUserPassword" text="Đổi mật khẩu"/>
-                <MenuItem mnemonicParsing="false" onAction="#deactivationUser" text="Xóa tài khoản"/>
-                <MenuItem mnemonicParsing="false" onAction="#logout" text="Đăng xuất"/>
-            </items>
-            <HBox.margin>
-                <Insets bottom="10.0" left="100.0" right="10.0" top="5.0"/>
-            </HBox.margin>
-        </MenuButton>
-    </HBox>
-
-    <TableView fx:id="userTable" layoutX="50.0" layoutY="100.0" prefHeight="635.0" prefWidth="1175.0"
-               GridPane.columnSpan="3" GridPane.rowIndex="2">
-        <columns>
-            <TableColumn fx:id="userID" prefWidth="100" text="Mã người dùng"/>
-            <TableColumn fx:id="name" prefWidth="120" text="Họ tên"/>
-            <TableColumn fx:id="username" prefWidth="120" text="Tên đăng nhập"/>
-            <TableColumn fx:id="email" prefWidth="160" text="Email"/>
-            <TableColumn fx:id="dateOfBirth" prefWidth="100" text="Ngày sinh"/>
-            <TableColumn fx:id="gender" prefWidth="80" text="Giới tính"/>
-            <TableColumn fx:id="phone" prefWidth="120" text="Số điện thoại"/>
-            <TableColumn fx:id="address" prefWidth="180" text="Địa chỉ"/>
-            <TableColumn fx:id="status" prefWidth="80" text="Trạng thái"/>
-            <TableColumn fx:id="action" prefWidth="114.6666259765625" text="Hành động"/>
-        </columns>
-        <GridPane.margin>
-            <Insets bottom="10.0" left="50.0" top="10.0"/>
-        </GridPane.margin>
-    </TableView>
-    <HBox alignment="CENTER" prefHeight="50.0" prefWidth="200.0" spacing="10.0" GridPane.columnSpan="3"
-          GridPane.rowIndex="4"/>
-    <!--    <Button contentDisplay="CENTER" onAction="#showAddUserDialog" prefHeight="25.0" prefWidth="119.0" text=" Thêm  " GridPane.columnIndex="2" GridPane.rowIndex="1">-->
-    <!--        <opaqueInsets>-->
-    <!--            <Insets />-->
-    <!--        </opaqueInsets>-->
-    <!--        <GridPane.margin>-->
-    <!--            <Insets />-->
-    <!--        </GridPane.margin>-->
-    <!--    </Button>-->
-
-
-    <columnConstraints>
-        <ColumnConstraints/>
-        <ColumnConstraints maxWidth="749.0" minWidth="505.99999999999994" prefWidth="656.0"/>
-        <ColumnConstraints maxWidth="304.33333333333326" minWidth="61.66666666666674" prefWidth="154.66666666666674"/>
-    </columnConstraints>
-    <rowConstraints>
-        <RowConstraints/>
-        <RowConstraints maxHeight="87.00000381469727" minHeight="5.0" prefHeight="57.99999618530273"/>
-        <RowConstraints maxHeight="650.3333333333334" minHeight="568.3333295186361" prefHeight="597.3333371480306"/>
-        <RowConstraints/>
-        <RowConstraints/>
-    </rowConstraints>
-</GridPane>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.UserController">
+    <top>
+        <HBox alignment="CENTER_LEFT" prefHeight="55.0" prefWidth="1400.0" spacing="20.0" BorderPane.alignment="CENTER">
+            <Button fx:id="goToHome" mnemonicParsing="false" onAction="#goToHome" prefHeight="25.0" prefWidth="130.0" text="Trang chủ">
+                <HBox.margin>
+                    <Insets />
+                </HBox.margin>
+                <font>
+                    <Font size="16.0" />
+                </font>
+            </Button>
+            <Button fx:id="goToUser" mnemonicParsing="false" onAction="#goToCart" prefWidth="130.0" text="Người dùng">
+                <HBox.margin>
+                    <Insets />
+                </HBox.margin>
+                <font>
+                    <Font size="16.0" />
+                </font>
+            </Button>
+            <Button fx:id="goToOrder" mnemonicParsing="false" onAction="#goToOrder" prefWidth="130.0" text=" Đơn hàng">
+                <HBox.margin>
+                    <Insets />
+                </HBox.margin>
+                <font>
+                    <Font size="16.0" />
+                </font>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#goToTop5" prefWidth="130.0" text="Thống kê">
+                <HBox.margin>
+                    <Insets />
+                </HBox.margin>
+                <font>
+                    <Font size="16.0" />
+                </font>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#goToHistory" prefWidth="180.0" text="Lịch sử mua hàng">
+                <HBox.margin>
+                    <Insets />
+                </HBox.margin>
+                <font>
+                    <Font size="16.0" />
+                </font>
+            </Button>
+            <HBox alignment="CENTER" prefHeight="25.0" spacing="10.0">
+                <children>
+                    <TextField fx:id="searchField" prefHeight="35.0" prefWidth="220.0" promptText="Nhập từ khóa tìm kiếm">
+                        <font>
+                            <Font size="14.0" />
+                        </font>
+                    </TextField>
+                    <Button fx:id="searchButton" prefHeight="25.0" prefWidth="130.0" text="Tìm kiếm">
+                        <HBox.margin>
+                            <Insets />
+                        </HBox.margin>
+                        <font>
+                            <Font size="16.0" />
+                        </font>
+                    </Button>
+                </children>
+            </HBox>
+            <MenuButton contentDisplay="RIGHT" mnemonicParsing="false" prefHeight="36.0" prefWidth="111.0" text="Cài đặt">
+                <items>
+                    <MenuItem mnemonicParsing="false" onAction="#updateUserInformation" text="Chỉnh sửa thông tin cá nhân" />
+                    <MenuItem mnemonicParsing="false" onAction="#updateUserPassword" text="Đổi mật khẩu" />
+                    <MenuItem mnemonicParsing="false" onAction="#deactivationUser" text="Xóa tài khoản" />
+                    <MenuItem mnemonicParsing="false" onAction="#logout" text="Đăng xuất" />
+                </items>
+                <HBox.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                </HBox.margin>
+                <font>
+                    <Font size="16.0" />
+                </font>
+            </MenuButton>
+            <padding>
+                <Insets left="25.0" right="25.0" />
+            </padding>
+            <Button contentDisplay="CENTER" onAction="#add" prefHeight="25.0" prefWidth="119.0" text=" Thêm sách ">
+                <opaqueInsets>
+                    <Insets />
+                </opaqueInsets>
+                <font>
+                    <Font size="15.0" />
+                </font>
+            </Button>
+        </HBox>
+    </top>
+    <center>
+        <TableView fx:id="userTable" prefHeight="635.0" prefWidth="1175.0" BorderPane.alignment="CENTER">
+            <columns>
+                <TableColumn fx:id="userID" prefWidth="100" text="Mã người dùng" />
+                <TableColumn fx:id="name" prefWidth="120" text="Họ tên" />
+                <TableColumn fx:id="username" prefWidth="120" text="Tên đăng nhập" />
+                <TableColumn fx:id="email" prefWidth="160" text="Email" />
+                <TableColumn fx:id="dateOfBirth" prefWidth="100" text="Ngày sinh" />
+                <TableColumn fx:id="gender" prefWidth="80" text="Giới tính" />
+                <TableColumn fx:id="phone" prefWidth="120" text="Số điện thoại" />
+                <TableColumn fx:id="address" prefWidth="180" text="Địa chỉ" />
+                <TableColumn fx:id="status" prefWidth="80" text="Trạng thái" />
+                <TableColumn fx:id="action" prefWidth="114.6666259765625" text="Hành động" />
+            </columns>
+            <BorderPane.margin>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </BorderPane.margin>
+        </TableView>
+    </center>
+</BorderPane>

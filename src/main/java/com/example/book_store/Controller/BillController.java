@@ -2,6 +2,7 @@ package com.example.book_store.Controller;
 
 import com.example.book_store.ConnectDB;
 import com.example.book_store.Entity.Bill;
+import com.example.book_store.Entity.Order;
 import com.example.book_store.Entity.OrderItem;
 import com.example.book_store.Entity.User;
 import javafx.beans.property.SimpleObjectProperty;
@@ -21,6 +22,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 
 public class BillController {
     @FXML
@@ -56,6 +60,8 @@ public class BillController {
     private final Connection connection = connectDB.connectionDB();
     private final User currentUser = Authentication.currentUser;
 
+    private ObservableList<Bill> bills = FXCollections.observableArrayList();
+
     @FXML
 
     public void initialize() {
@@ -70,7 +76,7 @@ public class BillController {
         date.setCellValueFactory(new PropertyValueFactory<>("date"));
         totalAmount.setCellValueFactory(new PropertyValueFactory<>("totalAmount"));
         act.setCellFactory(column -> new TableCell<>() {
-            private Button detail = new Button("Chi tiet");
+            private Button detail = new Button("Chi tiết");
 
             @Override
             protected void updateItem(Void act, boolean empty) {
@@ -150,7 +156,6 @@ public class BillController {
     }
 
     private void loadBills() {
-        ObservableList<Bill> bills = FXCollections.observableArrayList();
         try {
             String query;
             PreparedStatement preparedStatement;
@@ -168,7 +173,7 @@ public class BillController {
 
                 bills.add(new Bill(
                         resultSet.getInt(1),
-                        resultSet.getString(5),
+                        resultSet.getDate(5).toString(),
                         resultSet.getDouble(4),
                         resultSet.getInt(2),
                         resultSet.getInt(3)
@@ -183,6 +188,22 @@ public class BillController {
             e.printStackTrace();
         }
     }
+    @FXML
+    public DatePicker first;
+    @FXML
+    public DatePicker second;
+
+    @FXML
+    public void search(ActionEvent event) {
+        ObservableList<Bill> filters = FXCollections.observableArrayList();
+        for (Bill bill : bills) {
+            LocalDate billDate = LocalDate.parse(bill.getDate());
+            if ((first.getValue().isEqual(billDate) || first.getValue().isBefore(billDate)) && (second.getValue().isEqual(billDate) || second.getValue().isAfter(billDate))) {
+                filters.add(bill);
+            }
+        }
+        billTable.setItems(filters);
+    }
 
     private Parent root;
 
@@ -195,15 +216,17 @@ public class BillController {
         if (event.getSource() instanceof Node) {
             // Nếu nguồn sự kiện là một Node (ví dụ như Button), thì lấy Stage từ Node
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root,1280,800);
             stage.setScene(scene);
+//            stage.setFullScreen(true);
             stage.show();
         } else {
             // Ép kiểu nguồn sự kiện từ MenuItem (không thuộc về root) về Node
             Node node = ((MenuItem) event.getSource()).getParentPopup().getOwnerNode();
             Stage stage = (Stage) node.getScene().getWindow();
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root,1280,800);
             stage.setScene(scene);
+//            stage.setFullScreen(true);
             stage.show();
         }
     }
@@ -248,13 +271,8 @@ public class BillController {
     }
 
     @FXML
-    public void goToOrderConfirm(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/order.fxml");
-    }
-
-    @FXML
     public void goToOrder(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/cart.fxml");
+        goToScene(event, "/com/example/book_store/view/order.fxml");
     }
 
     @FXML

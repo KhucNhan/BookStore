@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<GridPane alignment="CENTER" prefHeight="800.0" prefWidth="1280.0" style="-fx-background-image: url('https://thaitrien.com/wp-content/uploads/2021/08/sach-store-size.jpg'); -fx-background-size: cover; -fx-background-position: center;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.Authentication">
+<GridPane alignment="CENTER"  style="-fx-background-image: url('https://thaitrien.com/wp-content/uploads/2021/08/sach-store-size.jpg'); -fx-background-size: cover; -fx-background-position: center;" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.Authentication">
     <children>
         <VBox alignment="CENTER_LEFT" layoutX="442.0" layoutY="248.0" prefHeight="334.0" prefWidth="396.0" spacing="10" style="-fx-background-color: #e3ecff; -fx-background-radius: 15; -fx-border-radius: 15; -fx-border-color: #003399;">
             <Label contentDisplay="CENTER" prefHeight="27.0" prefWidth="368.0" style="-fx-font-size: 18px; -fx-text-fill: #003399;" text="ĐĂNG NHẬP VÀO TÀI KHOẢN">
