@@ -154,12 +154,20 @@ public class Authentication {
         String uUsername = username.getText();
         String uPassword = password.getText();
         String uReEnter = reEnterPassword.getText();
-        Date uDateOfBirth = Date.valueOf(dateOfBirth.toString());
+        Date uDateOfBirth = Date.valueOf(dateOfBirth.getValue());
         String uGender = gender.getText();
         String uPhone = phone.getText();
         String uAddress = address.getText();
         String uEmail = email.getText();
-        if (userController.add(uName, uPassword, uReEnter, uDateOfBirth, uGender, uPhone, uAddress, uEmail)) {
+        if (!validateUAndP(uUsername) || !validateUAndP(uPassword)) {
+            showAlert(Alert.AlertType.ERROR, "Failed", "Username and Password length must equal 8 or more");
+            return false;
+        }
+        if (!uPassword.equals(uReEnter)) {
+            showAlert(Alert.AlertType.ERROR, "Failed", "Password incorrect");
+            return false;
+        }
+        if (userController.add(uName, uUsername, uPassword, uDateOfBirth, uGender, uPhone, uAddress, uEmail)) {
             showAlert(Alert.AlertType.INFORMATION, "Successful", "Sign up successful");
             createCart();
             goToScene(event, "/com/example/book_store/view/login.fxml");
@@ -186,24 +194,16 @@ public class Authentication {
         gender.setText(selectedGender.getText());
     }
 
-    public boolean emailValidator(String email) {
-        String EMAIL_REGEX = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
-        return Pattern.matches(EMAIL_REGEX, email);
-    }
-
-    public boolean phoneValidator(String phone) {
-
-        String PHONE_REGEX = "^(03|05|07|08|09)([0-9]{8})$";
-        return Pattern.matches(PHONE_REGEX, phone);
-
-    }
-
     public void goToSignUp(ActionEvent event) throws IOException {
         goToScene(event, "/com/example/book_store/view/register.fxml");
     }
 
     public void goToLogin(ActionEvent event) throws IOException {
         goToScene(event, "/com/example/book_store/view/login.fxml");
+    }
+
+    private boolean validateUAndP(String value) {
+        return value.length() >= 8;
     }
 
     @FXML
