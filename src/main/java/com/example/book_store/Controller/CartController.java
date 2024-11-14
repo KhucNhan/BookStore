@@ -157,15 +157,23 @@ public class CartController {
                     CartItem cartItem = getTableView().getItems().get(getIndex());
                     currentAmount.setText(cartItem.getAmount() + "");
                     minus.setOnAction(e -> {
-                        minusAmount(cartItem);
-                        loadCart();
-                        updateTotalCartLabel();
+                        if (!isOutOfStock(cartItem, 1)) {
+                            minusAmount(cartItem);
+                            loadCart();
+                            updateTotalCartLabel();
+                        } else {
+                            showAlert(Alert.AlertType.ERROR, "Failed", "This book is out of stock");
+                        }
                     });
 
                     plus.setOnAction(e -> {
-                        plusAmount(cartItem);
-                        loadCart();
-                        updateTotalCartLabel();
+                        if (!isOutOfStock(cartItem, 1)) {
+                            plusAmount(cartItem);
+                            loadCart();
+                            updateTotalCartLabel();
+                        } else {
+                            showAlert(Alert.AlertType.ERROR, "Failed", "This book is out of stock");
+                        }
                     });
 
                     HBox hBox = new HBox(minus, currentAmount, plus);
@@ -227,6 +235,23 @@ public class CartController {
             preparedStatement.setInt(1, cartItemID);
             int rowsAffected = preparedStatement.executeUpdate();
             return rowsAffected > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private boolean isOutOfStock(CartItem cartItem, int amount) {
+        String query = "select Amount from books where BookID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, cartItem.getbookID());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            int bookAmount = 0;
+            while (resultSet.next()) {
+                bookAmount = resultSet.getInt(1);
+            }
+            return amount > bookAmount;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
