@@ -24,6 +24,7 @@ import javafx.scene.control.ButtonType;
 import java.io.IOException;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -171,7 +172,7 @@ public class UserController {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setInt(1, currentUser.getUserID());
                 int row = preparedStatement.executeUpdate();
-                connection.close();
+                ;
                 showAlert(Alert.AlertType.INFORMATION, "Successful", "Delete account successful, you'll move to login scene");
                 goToScene(event, "/com/example/book_store/view/login.fxml");
                 return row != 0;
@@ -207,6 +208,14 @@ public class UserController {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Enter right email address!");
                 return false;
             }
+            if (!validateAddress(address)) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Address can not filled just with number");
+                return false;
+            }
+            if (!validateName(name)) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Text only");
+                return false;
+            }
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, username);
@@ -232,7 +241,7 @@ public class UserController {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setInt(1, userID);
                 int row = preparedStatement.executeUpdate();
-                connection.close();
+                ;
                 showAlert(Alert.AlertType.INFORMATION, "Successful", "Delete account successful, you'll move to login scene");
                 return row != 0;
             } else {
@@ -254,6 +263,25 @@ public class UserController {
         alert.setContentText(message);
         Optional<ButtonType> option = alert.showAndWait();
         return option.get() == ButtonType.OK;
+    }
+
+    private void loadUserAfterUpdate(int userID) {
+        String query = "select Name, DateOfBirth, Gender, Phone, Address, Email from users where UserID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, userID);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                currentUser.setName(resultSet.getString(1));
+                currentUser.setDateOfBirth(resultSet.getDate(2));
+                currentUser.setGender(resultSet.getString(3));
+                currentUser.setPhone(resultSet.getString(4));
+                currentUser.setAddress(resultSet.getString(5));
+                currentUser.setEmail(resultSet.getString(6));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private boolean updateUserInformation(int userID) {
@@ -293,14 +321,24 @@ public class UserController {
                     showAlert(Alert.AlertType.ERROR, "Error", "All fields must be filled!");
                     return;
                 }
-
+                if (!validateBirthdate(dateOfBirthPicker.getValue())) {
+                    showAlert(Alert.AlertType.ERROR, "Failed", "Enter right value");
+                    return;
+                }
+                if (!validateAddress(addressField.getText())) {
+                    showAlert(Alert.AlertType.ERROR, "Failed", "Enter address again");
+                    return;
+                }
                 if (!phoneValidator(phoneField.getText())) {
                     showAlert(Alert.AlertType.ERROR, "Failed", "Enter a valid phone number!");
                     return;
                 }
-
                 if (!emailValidator(emailField.getText())) {
                     showAlert(Alert.AlertType.ERROR, "Failed", "Enter a valid email address!");
+                    return;
+                }
+                if (!validateName(nameField.getText())) {
+                    showAlert(Alert.AlertType.ERROR, "Failed", "Text only");
                     return;
                 }
 
@@ -315,10 +353,11 @@ public class UserController {
                 preparedStatement.setInt(7, userID);
 
                 int row = preparedStatement.executeUpdate();
-                connection.close();
+                ;
 
                 if (row != 0) {
                     showAlert(Alert.AlertType.INFORMATION, "Successful", "Update information successful");
+                    loadUserAfterUpdate(currentUser.getUserID());
                 } else {
                     showAlert(Alert.AlertType.INFORMATION, "Failed", "Update information failed");
                 }
@@ -332,81 +371,27 @@ public class UserController {
         return true;
     }
 
+    public static boolean validateName(String name) {
+        if (name == null || name.isEmpty()) {
+            return false;
+        }
+
+        return Pattern.matches("[\\p{L}\\s]+", name);
+    }
+
+    public static boolean validateBirthdate(LocalDate birthdate) {
+        if (birthdate == null) {
+            return false;
+        }
+
+        LocalDate currentDate = LocalDate.now();
+
+        return !birthdate.isAfter(currentDate);
+    }
+
     @FXML
     public boolean updateUserInformation(ActionEvent event) {
-        // Tạo các trường nhập liệu
-        TextField nameField = new TextField(currentUser.getName());
-        nameField.setPromptText("Enter new name");
-
-        DatePicker dateOfBirthPicker = new DatePicker();
-        dateOfBirthPicker.setPromptText(String.valueOf(currentUser.getDateOfBirth()));
-
-        TextField genderField = new TextField(currentUser.getGender());
-        genderField.setPromptText("Enter new gender");
-
-        TextField phoneField = new TextField(currentUser.getPhone());
-        phoneField.setPromptText("Enter new phone number");
-
-        TextField addressField = new TextField(currentUser.getAddress());
-        addressField.setPromptText("Enter new address");
-
-        TextField emailField = new TextField(currentUser.getEmail());
-        emailField.setPromptText("Enter new email");
-
-        Button saveButton = new Button("Save");
-
-        VBox vbox = new VBox(nameField, dateOfBirthPicker, genderField, phoneField, addressField, emailField, saveButton);
-        vbox.setSpacing(10);
-        Scene scene = new Scene(vbox, 300, 400);
-        Stage stage = new Stage();
-        stage.setScene(scene);
-        stage.setTitle("Update User Information");
-        stage.show();
-
-        saveButton.setOnAction(e -> {
-            try {
-                if (nameField.getText().isEmpty() || dateOfBirthPicker.getValue() == null ||
-                        genderField.getText().isEmpty() || phoneField.getText().isEmpty() ||
-                        addressField.getText().isEmpty() || emailField.getText().isEmpty()) {
-                    showAlert(Alert.AlertType.ERROR, "Error", "All fields must be filled!");
-                    return;
-                }
-
-                if (!phoneValidator(phoneField.getText())) {
-                    showAlert(Alert.AlertType.ERROR, "Failed", "Enter a valid phone number!");
-                    return;
-                }
-
-                if (!emailValidator(emailField.getText())) {
-                    showAlert(Alert.AlertType.ERROR, "Failed", "Enter a valid email address!");
-                    return;
-                }
-
-                String query = "UPDATE users SET Name = ?, DateOfBirth = ?, Gender = ?, Phone = ?, Address = ?, Email = ? WHERE UserID = ?";
-                PreparedStatement preparedStatement = connection.prepareStatement(query);
-                preparedStatement.setString(1, nameField.getText());
-                preparedStatement.setDate(2, Date.valueOf(dateOfBirthPicker.getValue()));
-                preparedStatement.setString(3, genderField.getText());
-                preparedStatement.setString(4, phoneField.getText());
-                preparedStatement.setString(5, addressField.getText());
-                preparedStatement.setString(6, emailField.getText());
-                preparedStatement.setInt(7, currentUser.getUserID());
-
-                int row = preparedStatement.executeUpdate();
-                connection.close();
-
-                if (row != 0) {
-                    showAlert(Alert.AlertType.INFORMATION, "Successful", "Update information successful");
-                } else {
-                    showAlert(Alert.AlertType.INFORMATION, "Failed", "Update information failed");
-                }
-
-                stage.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        });
-
+        updateUserInformation(currentUser.getUserID());
         return true;
     }
 
@@ -451,7 +436,7 @@ public class UserController {
                 preparedStatement.setString(1, newPassword.getText());
                 preparedStatement.setInt(2, currentUser.getUserID());
                 row.set(preparedStatement.executeUpdate());
-                connection.close();
+                ;
                 if (row.get() != 0) {
                     showAlert(Alert.AlertType.INFORMATION, "Successful", "Change password successful, please login again");
                     goToScene(event, "/com/example/book_store/view/login.fxml");
@@ -587,5 +572,13 @@ public class UserController {
             add(name.getText(), username.getText(), password.getText(), Date.valueOf(dateOfBirth.getValue()), gender.getText(), phone.getText(), address.getText(), email.getText());
             stage.close(); // Đóng cửa sổ thêm sách
         });
+    }
+
+    public static boolean validateAddress(String address) {
+        if (address == null || address.isEmpty()) {
+            return false;
+        }
+
+        return address.matches(".*[a-zA-Z]+.*");
     }
 }
