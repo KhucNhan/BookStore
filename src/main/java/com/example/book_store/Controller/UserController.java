@@ -24,6 +24,7 @@ import javafx.scene.control.ButtonType;
 import java.io.IOException;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
@@ -297,14 +298,24 @@ public class UserController {
                     showAlert(Alert.AlertType.ERROR, "Error", "All fields must be filled!");
                     return;
                 }
-
+                if (!validateBirthdate(dateOfBirthPicker.getValue())) {
+                    showAlert(Alert.AlertType.ERROR, "Failed", "Enter right value");
+                    return;
+                }
+                if (!validateAddress(addressField.getText())) {
+                    showAlert(Alert.AlertType.ERROR, "Failed", "Enter address again");
+                    return;
+                }
                 if (!phoneValidator(phoneField.getText())) {
                     showAlert(Alert.AlertType.ERROR, "Failed", "Enter a valid phone number!");
                     return;
                 }
-
                 if (!emailValidator(emailField.getText())) {
                     showAlert(Alert.AlertType.ERROR, "Failed", "Enter a valid email address!");
+                    return;
+                }
+                if (!validateName(nameField.getText())) {
+                    showAlert(Alert.AlertType.ERROR, "Failed", "Text only");
                     return;
                 }
 
@@ -334,6 +345,24 @@ public class UserController {
         });
 
         return true;
+    }
+
+    public static boolean validateName(String name) {
+        if (name == null || name.isEmpty()) {
+            return false;
+        }
+
+        return name.matches("[a-zA-Z\\s]+");
+    }
+
+    public static boolean validateBirthdate(LocalDate birthdate) {
+        if (birthdate == null) {
+            return false;
+        }
+
+        LocalDate currentDate = LocalDate.now();
+
+        return !birthdate.isAfter(currentDate);
     }
 
     @FXML

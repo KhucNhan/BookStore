@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.regex.Pattern;
 
 public class Authentication {
@@ -156,6 +157,24 @@ public class Authentication {
         return address.matches(".*[a-zA-Z]+.*");
     }
 
+    public static boolean validateName(String name) {
+        if (name == null || name.isEmpty()) {
+            return false;
+        }
+
+        return name.matches("[a-zA-Z\\s]+");
+    }
+
+    public static boolean validateBirthdate(LocalDate birthdate) {
+        if (birthdate == null) {
+            return false;
+        }
+
+        LocalDate currentDate = LocalDate.now();
+
+        return !birthdate.isAfter(currentDate);
+    }
+
     @FXML
     private boolean signUp(ActionEvent event) throws IOException {
         String uName = name.getText();
@@ -175,8 +194,16 @@ public class Authentication {
             showAlert(Alert.AlertType.ERROR, "Failed", "Password incorrect");
             return false;
         }
-        if (validateAddress(uAddress)) {
+        if (!validateAddress(uAddress)) {
             showAlert(Alert.AlertType.ERROR, "Failed", "Address can not filled just with number");
+            return false;
+        }
+        if (!validateName(name.getText())) {
+            showAlert(Alert.AlertType.ERROR, "Failed", "Text only");
+            return false;
+        }
+        if (!validateBirthdate(uDateOfBirth.toLocalDate())) {
+            showAlert(Alert.AlertType.ERROR, "Failed", "Enter right date of birth");
             return false;
         }
         if (userController.add(uName, uUsername, uPassword, uDateOfBirth, uGender, uPhone, uAddress, uEmail)) {
