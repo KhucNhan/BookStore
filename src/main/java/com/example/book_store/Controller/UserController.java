@@ -302,7 +302,7 @@ public class UserController {
                     showAlert(Alert.AlertType.ERROR, "Failed", "Enter right value");
                     return;
                 }
-                if (!validateAddress(addressField.getText())) {
+                if (validateAddress(addressField.getText())) {
                     showAlert(Alert.AlertType.ERROR, "Failed", "Enter address again");
                     return;
                 }
@@ -367,84 +367,7 @@ public class UserController {
 
     @FXML
     public boolean updateUserInformation(ActionEvent event) {
-        // Tạo các trường nhập liệu
-        TextField nameField = new TextField(currentUser.getName());
-        nameField.setPromptText("Enter new name");
-
-        DatePicker dateOfBirthPicker = new DatePicker();
-        dateOfBirthPicker.setPromptText(String.valueOf(currentUser.getDateOfBirth()));
-
-        TextField genderField = new TextField(currentUser.getGender());
-        genderField.setPromptText("Enter new gender");
-
-        TextField phoneField = new TextField(currentUser.getPhone());
-        phoneField.setPromptText("Enter new phone number");
-
-        TextField addressField = new TextField(currentUser.getAddress());
-        addressField.setPromptText("Enter new address");
-
-        TextField emailField = new TextField(currentUser.getEmail());
-        emailField.setPromptText("Enter new email");
-
-        Button saveButton = new Button("Save");
-
-        VBox vbox = new VBox(nameField, dateOfBirthPicker, genderField, phoneField, addressField, emailField, saveButton);
-        vbox.setSpacing(10);
-        Scene scene = new Scene(vbox, 300, 400);
-        Stage stage = new Stage();
-        stage.setScene(scene);
-        stage.setTitle("Update User Information");
-        stage.show();
-
-        saveButton.setOnAction(e -> {
-            try {
-                if (nameField.getText().isEmpty() || dateOfBirthPicker.getValue() == null ||
-                        genderField.getText().isEmpty() || phoneField.getText().isEmpty() ||
-                        addressField.getText().isEmpty() || emailField.getText().isEmpty()) {
-                    showAlert(Alert.AlertType.ERROR, "Error", "All fields must be filled!");
-                    return;
-                }
-
-                if (!phoneValidator(phoneField.getText())) {
-                    showAlert(Alert.AlertType.ERROR, "Failed", "Enter a valid phone number!");
-                    return;
-                }
-
-                if (!emailValidator(emailField.getText())) {
-                    showAlert(Alert.AlertType.ERROR, "Failed", "Enter a valid email address!");
-                    return;
-                }
-
-                if (validateAddress(addressField.getText())) {
-                    showAlert(Alert.AlertType.ERROR, "Failed", "Address can not filled just with number");
-                    return;
-                }
-
-                String query = "UPDATE users SET Name = ?, DateOfBirth = ?, Gender = ?, Phone = ?, Address = ?, Email = ? WHERE UserID = ?";
-                PreparedStatement preparedStatement = connection.prepareStatement(query);
-                preparedStatement.setString(1, nameField.getText());
-                preparedStatement.setDate(2, Date.valueOf(dateOfBirthPicker.getValue()));
-                preparedStatement.setString(3, genderField.getText());
-                preparedStatement.setString(4, phoneField.getText());
-                preparedStatement.setString(5, addressField.getText());
-                preparedStatement.setString(6, emailField.getText());
-                preparedStatement.setInt(7, currentUser.getUserID());
-
-                int row = preparedStatement.executeUpdate();
-                connection.close();
-
-                if (row != 0) {
-                    showAlert(Alert.AlertType.INFORMATION, "Successful", "Update information successful");
-                } else {
-                    showAlert(Alert.AlertType.INFORMATION, "Failed", "Update information failed");
-                }
-
-                stage.close();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        });
-
+        updateUserInformation(currentUser.getUserID());
         return true;
     }
 
