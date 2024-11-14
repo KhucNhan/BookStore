@@ -154,7 +154,7 @@ public class Authentication {
         String uUsername = username.getText();
         String uPassword = password.getText();
         String uReEnter = reEnterPassword.getText();
-        Date uDateOfBirth = Date.valueOf(dateOfBirth.toString());
+        Date uDateOfBirth = Date.valueOf(dateOfBirth.getValue());
         String uGender = gender.getText();
         String uPhone = phone.getText();
         String uAddress = address.getText();
