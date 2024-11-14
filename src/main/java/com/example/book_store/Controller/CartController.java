@@ -495,13 +495,8 @@ public class CartController {
     }
 
     @FXML
-    public void goToOrderConfirm(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/order.fxml");
-    }
-
-    @FXML
     public void goToOrder(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/cart.fxml");
+        goToScene(event, "/com/example/book_store/view/order.fxml");
     }
 
     @FXML

@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 import static com.example.book_store.Controller.Authentication.currentUser;
@@ -29,6 +30,10 @@ import static com.example.book_store.Controller.Authentication.currentUser;
 public class OrderController implements Initializable {
     @FXML
     public HBox menuBar;
+    @FXML
+    public DatePicker first;
+    @FXML
+    public DatePicker second;
     @FXML
     private TableView<Order> orderTable;
     @FXML
@@ -56,7 +61,7 @@ public class OrderController implements Initializable {
     @FXML
     private MenuButton settingsMenuButton;
 
-    private ObservableList<Order> orders;
+    private ObservableList<Order> orders = FXCollections.observableArrayList();
     private UserController userController = new UserController();
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
@@ -161,7 +166,6 @@ public class OrderController implements Initializable {
 
 
     private void loadOrders() {
-        ObservableList<Order> orders = FXCollections.observableArrayList();
         String query;
 
         try {
@@ -347,6 +351,8 @@ public class OrderController implements Initializable {
         alert.showAndWait();
     }
 
+
+
     private Stage stage;
     private Scene scene;
     private Parent root;
@@ -428,5 +434,18 @@ public class OrderController implements Initializable {
     @FXML
     public void goToTop5(ActionEvent actionEvent) throws IOException {
         goToScene(actionEvent, "/com/example/book_store/view/statistical.fxml");
+    }
+
+    @FXML
+    public void search(ActionEvent event) {
+        ObservableList<Order> filters = FXCollections.observableArrayList();
+        for (Order order : orders) {
+            LocalDate orderDate = LocalDate.parse(order.getDate());
+            System.out.println(orderDate);
+            if ((first.getValue().isEqual(orderDate) || first.getValue().isBefore(orderDate)) && (second.getValue().isEqual(orderDate) || second.getValue().isAfter(orderDate))) {
+                filters.add(order);
+            }
+        }
+        orderTable.setItems(filters);
     }
 }
