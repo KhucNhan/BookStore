@@ -207,6 +207,10 @@ public class UserController {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Enter right email address!");
                 return false;
             }
+            if (validateAddress(address)) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Address can not filled just with number");
+                return false;
+            }
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, name);
             preparedStatement.setString(2, username);
@@ -379,6 +383,11 @@ public class UserController {
 
                 if (!emailValidator(emailField.getText())) {
                     showAlert(Alert.AlertType.ERROR, "Failed", "Enter a valid email address!");
+                    return;
+                }
+
+                if (validateAddress(addressField.getText())) {
+                    showAlert(Alert.AlertType.ERROR, "Failed", "Address can not filled just with number");
                     return;
                 }
 
@@ -587,5 +596,13 @@ public class UserController {
             add(name.getText(), username.getText(), password.getText(), Date.valueOf(dateOfBirth.getValue()), gender.getText(), phone.getText(), address.getText(), email.getText());
             stage.close(); // Đóng cửa sổ thêm sách
         });
+    }
+
+    public static boolean validateAddress(String address) {
+        if (address == null || address.isEmpty()) {
+            return false;
+        }
+
+        return address.matches(".*[a-zA-Z]+.*");
     }
 }
