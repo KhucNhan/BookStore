@@ -2,6 +2,8 @@ package com.example.book_store.Controller;
 
 import com.example.book_store.Entity.Book;
 import com.example.book_store.ConnectDB;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,7 +26,10 @@ import java.util.List;
 import static com.example.book_store.Controller.Authentication.currentUser;
 
 public class HomeUserController {
-
+    @FXML
+    public TextField searchField;
+    @FXML
+    public Button searchButton;
     @FXML
     private FlowPane booksContainer;
 
@@ -35,11 +40,14 @@ public class HomeUserController {
     @FXML
     public Button addBook;
     public Button goToHome;
+    @FXML
     public Button goToCart;
+    @FXML
+    public Button goToOrder;
     private UserController userController = new UserController();
     private BillController billController = new BillController();
     private OrderController orderController = new OrderController();
-    private BookOrderController bookOrderController = new BookOrderController();
+    private CartController cartController = new CartController();
     private BookController bookController = new BookController();
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
@@ -51,7 +59,7 @@ public class HomeUserController {
 
     private void loadBooksFromDatabase() {
         try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery("SELECT * FROM books")) {
+             ResultSet rs = stmt.executeQuery("SELECT * FROM books where Status = true And Amount > 0")) {
 
             booksList.clear();
             while (rs.next()) {
@@ -82,13 +90,12 @@ public class HomeUserController {
         bookImage.setFitWidth(160);
         Label title = new Label(book.getTitle());
         title.setStyle("-fx-font-weight: bold;");
-        Label price = new Label("Giá: " + book.getPrice());
-
+        Label price = new Label("Giá: " + book.getPrice()+"$");
 
         Button detailsButton = new Button("Chi tiết");
         detailsButton.setOnAction(event -> showBookDetails(book));
 
-        Button addToCartButton = new Button("Thêm vào giỏ hàng");
+        Button addToCartButton = new Button("Thêm");
         addToCartButton.setOnAction(event -> {
             showAmountDialog(book);
         });
@@ -99,123 +106,115 @@ public class HomeUserController {
 
     public void showAmountDialog(Book book) {
         TextField amount = new TextField("1");
-        Button saveButton = new Button("Save");
+        Button saveButton = new Button("Thêm");
 
         VBox vbox = new VBox(amount, saveButton);
         vbox.setSpacing(10);
-        Scene scene = new Scene(vbox, 240, 480);
+        Scene scene = new Scene(vbox, 240, 200);
         Stage stage = new Stage();
         stage.setScene(scene);
         stage.setTitle("Enter amount");
         stage.show();
 
         saveButton.setOnAction(e -> {
+            if (Integer.parseInt(amount.getText()) < 1) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right amount");
+                return;
+            }
             stage.close();
-            try {
-                addToCart(currentUser.getUserID(), book.getBookID(), Integer.parseInt(amount.getText()), book.getPrice());
+            if (isOutOfStock(book, Integer.parseInt(amount.getText()))) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "We don't have that much, enter again");
+                return;
+            }
+            if (addToCart(currentUser.getUserID(), book.getBookID(), Integer.parseInt(amount.getText()))) {
                 showAlert(Alert.AlertType.INFORMATION, "Successful", "Add to cart successful");
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
             }
         });
     }
 
-    public void addToCart(int userId, int bookId, int quantity, double price) throws SQLException {
-        // 1. Kiểm tra hóa đơn hiện có hay chưa
-        PreparedStatement stmt = connection.prepareStatement("SELECT BillID FROM Bills WHERE UserID = ? AND Status = 'pending'");
-        stmt.setInt(1, userId);
-        ResultSet rs = stmt.executeQuery();
 
-        int billId;
-        if (rs.next()) {
-            billId = rs.getInt("BillID");
-        } else {
-            // Tạo hóa đơn mới
-            stmt = connection.prepareStatement("INSERT INTO Bills (Date, TotalAmount, UserID, Status) VALUES (CURRENT_DATE, 0, ?, 'pending')", Statement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, userId);
-            stmt.executeUpdate();
-            rs = stmt.getGeneratedKeys();
-            if (rs.next()) {
-                billId = rs.getInt(1);
-            } else {
-                throw new SQLException("Failed to create bill");
+    private boolean isOutOfStock(Book book, int amount) {
+        String query = "select Amount from books where BookID = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setInt(1, book.getBookID());
+            ResultSet resultSet = preparedStatement.executeQuery();
+            int bookAmount = 0;
+            while (resultSet.next()) {
+                bookAmount = resultSet.getInt(1);
             }
-        }
-
-        // 2. Kiểm tra xem có order nào với BillID và BookID đã tồn tại hay chưa
-        stmt = connection.prepareStatement("SELECT OrderID, Amount FROM Orders WHERE BillID = ? AND BookID = ?");
-        stmt.setInt(1, billId);
-        stmt.setInt(2, bookId);
-        rs = stmt.executeQuery();
-
-        if (rs.next()) {
-            // Nếu đã tồn tại order, cập nhật số lượng và tổng tiền
-            int orderId = rs.getInt("OrderID");
-            int existingAmount = rs.getInt("Amount");
-            int newAmount = existingAmount + quantity;
-
-            // Cập nhật số lượng trong bảng Orders
-            stmt = connection.prepareStatement("UPDATE Orders SET Amount = ?, Price = ? WHERE OrderID = ?");
-            stmt.setInt(1, newAmount);
-            stmt.setDouble(2, price);
-            stmt.setInt(3, orderId);
-            stmt.executeUpdate();
-
-            // Cập nhật số lượng trong bảng Books_Orders
-            stmt = connection.prepareStatement("UPDATE Books_Orders SET Amount = ? WHERE OrderID = ? AND BookID = ?");
-            stmt.setInt(1, newAmount);
-            stmt.setInt(2, orderId);
-            stmt.setInt(3, bookId);
-            stmt.executeUpdate();
-
-            // Cập nhật tổng tiền hóa đơn
-            updateTotalAmount(stmt, billId);
-        } else {
-            // 3. Thêm sản phẩm vào Orders
-            stmt = connection.prepareStatement("INSERT INTO Orders (BillID, BookID, Amount, Price) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
-            stmt.setInt(1, billId);
-            stmt.setInt(2, bookId);
-            stmt.setInt(3, quantity);
-            stmt.setDouble(4, price);
-            stmt.executeUpdate();
-            rs = stmt.getGeneratedKeys();
-            int orderId;
-            if (rs.next()) {
-                orderId = rs.getInt(1);
-            } else {
-                throw new SQLException("Failed to add order");
-            }
-
-            // 4. Cập nhật số lượng sách trong kho
-            stmt = connection.prepareStatement("UPDATE Books SET Amount = Amount - ? WHERE BookID = ?");
-            stmt.setInt(1, quantity);
-            stmt.setInt(2, bookId);
-            stmt.executeUpdate();
-
-            // Cập nhật số lượng trong bảng Books_Orders
-            stmt = connection.prepareStatement("INSERT INTO Books_Orders (OrderID, BookID, Amount) VALUES (?, ?, ?)");
-            stmt.setInt(1, orderId);
-            stmt.setInt(2, bookId);
-            stmt.setInt(3, quantity);
-            stmt.executeUpdate();
-
-            // 5. Cập nhật tổng tiền hóa đơn
-            updateTotalAmount(stmt, billId);
+            return amount > bookAmount;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
-    private void updateTotalAmount(PreparedStatement stmt, int billId) throws SQLException {
-        // Cập nhật tổng tiền hóa đơn
-        stmt = connection.prepareStatement("UPDATE Bills SET TotalAmount = (SELECT SUM(Price * Amount) FROM Orders WHERE BillID = ?) WHERE BillID = ?");
-        stmt.setInt(1, billId);
-        stmt.setInt(2, billId);
-        stmt.executeUpdate();
+    private boolean addToCart(int userID, int bookID, int amount) {
+        String checkQuery = "SELECT CartItemID, Amount FROM CartItems " +
+                "JOIN Cart ON CartItems.CartID = Cart.CartID " +
+                "WHERE Cart.UserID = ? AND CartItems.BookID = ? and CartItems.OrderItemID is null ";
+
+        String updateQuery = "UPDATE CartItems SET Amount = Amount + ? " +
+                "WHERE CartItemID = ?";
+
+        String insertQuery = "INSERT INTO CartItems (CartID, BookID, Amount, Price) " +
+                "VALUES (" +
+                "(SELECT CartID FROM Cart WHERE UserID = ?), " +
+                "?, " +
+                "?, " +
+                "(SELECT Price FROM Books WHERE BookID = ?) )";
+
+        String updateBookStockQuery = "UPDATE Books SET Amount = Amount - ? WHERE BookID = ?";
+
+        try {
+            // Bước 1: Kiểm tra nếu mục đã có trong giỏ hàng
+            PreparedStatement checkStmt = connection.prepareStatement(checkQuery);
+            checkStmt.setInt(1, userID);
+            checkStmt.setInt(2, bookID);
+
+            ResultSet resultSet = checkStmt.executeQuery();
+            int row = 0;
+
+            if (resultSet.next()) {
+                // Bước 2: Nếu mục đã tồn tại, cập nhật số lượng
+                int cartItemID = resultSet.getInt("CartItemID");
+                PreparedStatement updateStmt = connection.prepareStatement(updateQuery);
+                updateStmt.setInt(1, amount);
+                updateStmt.setInt(2, cartItemID);
+                row = updateStmt.executeUpdate();
+                System.out.println("Updated quantity for existing item in cart.");
+            } else {
+                // Bước 3: Nếu mục chưa tồn tại, thêm mục mới
+                PreparedStatement insertStmt = connection.prepareStatement(insertQuery);
+                insertStmt.setInt(1, userID);
+                insertStmt.setInt(2, bookID);
+                insertStmt.setInt(3, amount);
+                insertStmt.setInt(4, bookID);
+                row = insertStmt.executeUpdate();
+                System.out.println("Added new item to cart.");
+            }
+
+            // Bước 4: Cập nhật lại số lượng sách trong kho
+            if (row > 0) {
+                PreparedStatement updateBookStockStmt = connection.prepareStatement(updateBookStockQuery);
+                updateBookStockStmt.setInt(1, amount);
+                updateBookStockStmt.setInt(2, bookID);
+                updateBookStockStmt.executeUpdate();
+                System.out.println("Updated book stock in inventory.");
+            }
+
+            return row > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private void showBookDetails(Book book) {
 
         Dialog<Void> dialog = new Dialog<>();
-        dialog.setTitle("Thông tin chi tiết sách");
+        dialog.setTitle("Detail book");
 
 
         ImageView bookImage = new ImageView(new Image(book.getImage()));
@@ -224,7 +223,7 @@ public class HomeUserController {
 
         Label titleLabel = new Label("Tên sách: " + book.getTitle());
         Label authorLabel = new Label("Tác giả: " + book.getAuthor());
-        Label priceLabel = new Label("Giá: " + book.getPrice() + " VND");
+        Label priceLabel = new Label("Giá: " + book.getPrice() + "$");
         Label quantityLabel = new Label("Số lượng: " + book.getAmount());
         Label publicationYearLabel = new Label("Năm xuất bản: " + book.getPublishedYear());
 
@@ -240,11 +239,58 @@ public class HomeUserController {
     }
 
     private void showAlert(Alert.AlertType information, String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
+        Alert alert = new Alert(information);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    public void search() {
+
+        String keyword = searchField.getText();
+        if (keyword.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Warning", "Enter something");
+            return;
+        }
+
+        booksList.clear();
+        String query = "SELECT * FROM Books WHERE Title LIKE ? OR Author LIKE ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            String searchKeyword = "%" + keyword + "%";
+            preparedStatement.setString(1, searchKeyword);
+            preparedStatement.setString(2, searchKeyword);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                Book book = new Book(
+                        resultSet.getInt("BookID"),
+                        resultSet.getString("Image"),
+                        resultSet.getString("Title"),
+                        resultSet.getString("Author"),
+                        resultSet.getInt("PublishedYear"),
+                        resultSet.getInt("Edition"),
+                        resultSet.getDouble("Price"),
+                        resultSet.getInt("Amount"),
+                        resultSet.getString("BookType"),
+                        resultSet.getString("Publisher"),
+                        resultSet.getBoolean("Status")
+                );
+                booksList.add(book);
+            }
+            if (booksList.isEmpty()){
+                showAlert(Alert.AlertType.ERROR, "Failed", "Not found");
+            }
+            displayAllBooks();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not search book data");
+        }
+
     }
 
     private Stage stage;
@@ -260,22 +306,29 @@ public class HomeUserController {
         if (event.getSource() instanceof Node) {
             // Nếu nguồn sự kiện là một Node (ví dụ như Button), thì lấy Stage từ Node
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root,1280,800);
             stage.setScene(scene);
+//            stage.setFullScreen(true);
             stage.show();
         } else {
             // Ép kiểu nguồn sự kiện từ MenuItem (không thuộc về root) về Node
             Node node = ((MenuItem) event.getSource()).getParentPopup().getOwnerNode();
             Stage stage = (Stage) node.getScene().getWindow();
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root,1280,800);
             stage.setScene(scene);
+//            stage.setFullScreen(true);
             stage.show();
         }
     }
 
     @FXML
-    public void logout(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/login.fxml");
+    public void goToHome(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/homeUser.fxml");
+    }
+
+    @FXML
+    public void goToCart(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/cart.fxml");
     }
 
     @FXML
@@ -294,16 +347,27 @@ public class HomeUserController {
     }
 
     @FXML
-    public void goToHome(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/homeUser.fxml");
+    public void logout(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/login.fxml");
     }
 
     @FXML
-    public void goToCart(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/cart.fxml");
+    public void goToUser(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/user.fxml");
     }
 
-    public void goToAddBookScene(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/addBook.fxml");
+    @FXML
+    public void goToOrder(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/order.fxml");
+    }
+
+    @FXML
+    public void goToHistory(ActionEvent actionEvent) throws IOException {
+        goToScene(actionEvent, "/com/example/book_store/view/bill.fxml");
+    }
+
+    @FXML
+    public void goToTop5(ActionEvent actionEvent) throws IOException {
+        goToScene(actionEvent, "/com/example/book_store/view/statistical.fxml");
     }
 }

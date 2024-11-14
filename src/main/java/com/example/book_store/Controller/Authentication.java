@@ -18,6 +18,7 @@ import java.util.regex.Pattern;
 public class Authentication {
     private final ConnectDB connectDB = new ConnectDB();
     Connection connection = connectDB.connectionDB();
+    private UserController userController = new UserController();
 
     @FXML
     private TextField usernameField;
@@ -148,62 +149,61 @@ public class Authentication {
     public TextField email;
 
     @FXML
-    private boolean signUp(ActionEvent event) {
-        String query = "insert into users (Name, Username, Password, DateOfBirth, Gender, Phone, Address, Email)" +
-                "values (?, ?, ?, ?, ?, ?, ?, ?)";
-        try {
-            if (!password.getText().equals(reEnterPassword.getText())) {
-                showAlert(Alert.AlertType.ERROR, "Failed", "Incorrect password");
-                return false;
-            }
-            if (!phoneValidator(phone.getText())) {
-                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right phone number!");
-                return false;
-            }
-            if (!emailValidator(email.getText())) {
-                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right email address!");
-                return false;
-            }
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, name.getText());
-            preparedStatement.setString(2, username.getText());
-            preparedStatement.setString(3, password.getText());
-            preparedStatement.setDate(4, Date.valueOf(dateOfBirth.getValue()));
-            preparedStatement.setString(5, gender.getText());
-            preparedStatement.setString(6, phone.getText());
-            preparedStatement.setString(7, address.getText());
-            preparedStatement.setString(8, email.getText());
-
-            int row = preparedStatement.executeUpdate();
-            if (row != 0) showAlert(Alert.AlertType.INFORMATION, "Successful", "Sign up successful");
+    private boolean signUp(ActionEvent event) throws IOException {
+        String uName = name.getText();
+        String uUsername = username.getText();
+        String uPassword = password.getText();
+        String uReEnter = reEnterPassword.getText();
+        Date uDateOfBirth = Date.valueOf(dateOfBirth.getValue());
+        String uGender = gender.getText();
+        String uPhone = phone.getText();
+        String uAddress = address.getText();
+        String uEmail = email.getText();
+        if (!validateUAndP(uUsername) || !validateUAndP(uPassword)) {
+            showAlert(Alert.AlertType.ERROR, "Failed", "Username and Password length must equal 8 or more");
+            return false;
+        }
+        if (!uPassword.equals(uReEnter)) {
+            showAlert(Alert.AlertType.ERROR, "Failed", "Password incorrect");
+            return false;
+        }
+        if (userController.add(uName, uUsername, uPassword, uDateOfBirth, uGender, uPhone, uAddress, uEmail)) {
+            showAlert(Alert.AlertType.INFORMATION, "Successful", "Sign up successful");
+            createCart();
             goToScene(event, "/com/example/book_store/view/login.fxml");
-            return row != 0;
+            return true;
+        }
+        return false;
+    }
+
+    private boolean createCart() {
+        String query = "insert into cart (UserID) values ((select UserID from users group by UserID order by UserID desc limit 1 ));";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            int row = preparedStatement.executeUpdate();
+            return row > 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    public boolean emailValidator(String email) {
-        String EMAIL_REGEX = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
-        return Pattern.matches(EMAIL_REGEX, email);
-    }
-
-    public boolean phoneValidator(String phone) {
-
-        String PHONE_REGEX = "^(03|05|07|08|09)([0-9]{8})$";
-        return Pattern.matches(PHONE_REGEX, phone);
-
+    @FXML
+    private void selectGender(javafx.event.ActionEvent event) {
+        MenuItem selectedGender = (MenuItem) event.getSource();
+        gender.setText(selectedGender.getText());
     }
 
     public void goToSignUp(ActionEvent event) throws IOException {
         goToScene(event, "/com/example/book_store/view/register.fxml");
     }
 
-public void goToLogin(ActionEvent event) throws IOException {
+    public void goToLogin(ActionEvent event) throws IOException {
         goToScene(event, "/com/example/book_store/view/login.fxml");
+    }
+
+    private boolean validateUAndP(String value) {
+        return value.length() >= 8;
     }
 
     @FXML
@@ -215,15 +215,17 @@ public void goToLogin(ActionEvent event) throws IOException {
         if (event.getSource() instanceof Node) {
             // Nếu nguồn sự kiện là một Node (ví dụ như Button), thì lấy Stage từ Node
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root, 1280, 800);
             stage.setScene(scene);
+//            stage.setFullScreen(true);
             stage.show();
         } else {
             // Ép kiểu nguồn sự kiện từ MenuItem (không thuộc về root) về Node
             Node node = ((MenuItem) event.getSource()).getParentPopup().getOwnerNode();
             Stage stage = (Stage) node.getScene().getWindow();
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root, 1280, 800);
             stage.setScene(scene);
+//            stage.setFullScreen(true);
             stage.show();
         }
     }

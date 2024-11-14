@@ -23,19 +23,27 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class BookController implements Initializable {
     private final User currentUser = Authentication.currentUser;
     @FXML
     public Button addBook;
+    @FXML
     public Button goToHome;
+    @FXML
+    public Button goToUser;
+    @FXML
+    public Button goToOrder;
+    @FXML
+    public Button goToCart;
+    @FXML
+    public TextField searchField;
+    @FXML
+    public Button searchButton;
     private UserController userController = new UserController();
-    private BillController billController = new BillController();
-    private OrderController orderController = new OrderController();
-    private BookOrderController bookOrderController = new BookOrderController();
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
 
@@ -58,9 +66,9 @@ public class BookController implements Initializable {
     @FXML
     public TableColumn amountColumn;
     @FXML
-    public TableColumn bookTypeIDColumn;
+    public TableColumn bookTypeColumn;
     @FXML
-    public TableColumn publisherIDColumn;
+    public TableColumn publisherColumn;
     @FXML
     public TableColumn statusColumn;
     @FXML
@@ -68,6 +76,7 @@ public class BookController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        searchButton.setOnAction(e -> search());
         idColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookID"));
         imageColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("image"));
         imageColumn.setCellFactory(column -> new TableCell<Book, String>() {
@@ -81,8 +90,8 @@ public class BookController implements Initializable {
                     setGraphic(null);
                 } else {
                     imageView.setImage(new Image(imagePath));
-                    imageView.setFitHeight(50);
-                    imageView.setFitWidth(50);
+                    imageView.setFitHeight(100);
+                    imageView.setFitWidth(80);
                     setGraphic(imageView);
                 }
             }
@@ -93,14 +102,14 @@ public class BookController implements Initializable {
         editionColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("edition"));
         priceColumn.setCellValueFactory(new PropertyValueFactory<Book, Double>("price"));
         amountColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("amount"));
-        bookTypeIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("bookTypeID"));
-        publisherIDColumn.setCellValueFactory(new PropertyValueFactory<Book, Integer>("publisherID"));
+        bookTypeColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("bookType"));
+        publisherColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("publisher"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<Book, Boolean>("status"));
 
 
         actionColumn.setCellFactory(column -> new TableCell<Book, Void>() {
-            private final Button editBook = new Button("Edit");
-            private final Button deleteBook = new Button("Delete");
+            private final Button editBook = new Button("Sửa");
+            private final Button deleteBook = new Button("Xóa");
 
             @Override
             protected void updateItem(Void item, boolean empty) {
@@ -128,6 +137,7 @@ public class BookController implements Initializable {
         });
 
         loadBooks();
+
     }
 
     private void showEditDialog(Book book) {
@@ -138,27 +148,27 @@ public class BookController implements Initializable {
         TextField edition = new TextField(String.valueOf(book.getEdition()));
         TextField price = new TextField(String.valueOf(book.getPrice()));
         TextField amount = new TextField(String.valueOf(book.getAmount()));
-        TextField bookTypeID = new TextField(String.valueOf(book.getBookTypeID()));
-        TextField publisherID = new TextField(String.valueOf(book.getPublisherID()));
+        TextField bookType = new TextField(String.valueOf(book.getBookType()));
+        TextField publisher = new TextField(String.valueOf(book.getPublisher()));
         TextField status = new TextField(String.valueOf(book.isStatus()));
 
-        Button saveButton = new Button("Save");
+        Button saveButton = new Button("Lưu");
 
-        VBox vbox = new VBox(title, img, author, publishedYear, edition, price, amount, bookTypeID, publisherID, status, saveButton);
+        VBox vbox = new VBox(title, img, author, publishedYear, edition, price, amount, bookType, publisher, status, saveButton);
         vbox.setSpacing(10);
         Scene scene = new Scene(vbox, 240, 480);
         Stage stage = new Stage();
         stage.setScene(scene);
-        stage.setTitle("Edit");
+        stage.setTitle("Sửa");
         stage.show();
 
         saveButton.setOnAction(e -> {
-            if (title.getText().isEmpty() || author.getText().isEmpty() || publishedYear.getText().isEmpty() || img.getText().isEmpty() || status.getText().isEmpty() || price.getText().isEmpty() || edition.getText().isEmpty() || amount.getText().isEmpty() || bookTypeID.getText().isEmpty() || publisherID.getText().isEmpty()) {
+            if (title.getText().isEmpty() || author.getText().isEmpty() || publishedYear.getText().isEmpty() || img.getText().isEmpty() || status.getText().isEmpty() || price.getText().isEmpty() || edition.getText().isEmpty() || amount.getText().isEmpty() || bookType.getText().isEmpty() || publisher.getText().isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, "Error", "No blank!");
                 return;
             }
 
-            String query = "update books set Title = ?, Image = ?, Author = ?, PublishedYear = ?, Edition = ?, Price = ?, Amount = ?, BookTypeID = ?, PublisherID = ?, Status = ? where BookID = ?";
+            String query = "update books set Title = ?, Image = ?, Author = ?, PublishedYear = ?, Edition = ?, Price = ?, Amount = ?, BookType = ?, Publisher = ?, Status = ? where BookID = ?";
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, title.getText());
@@ -168,8 +178,8 @@ public class BookController implements Initializable {
                 preparedStatement.setInt(5, Integer.parseInt(edition.getText()));
                 preparedStatement.setDouble(6, Double.parseDouble(price.getText()));
                 preparedStatement.setInt(7, Integer.parseInt(amount.getText()));
-                preparedStatement.setInt(8, Integer.parseInt(bookTypeID.getText()));
-                preparedStatement.setInt(9, Integer.parseInt(publisherID.getText()));
+                preparedStatement.setString(8, bookType.getText());
+                preparedStatement.setString(9, publisher.getText());
                 preparedStatement.setBoolean(10, Boolean.parseBoolean(status.getText()));
                 preparedStatement.setInt(11, book.getBookID());
                 int row = preparedStatement.executeUpdate();
@@ -203,8 +213,8 @@ public class BookController implements Initializable {
                         resultSet.getInt("Edition"),
                         resultSet.getDouble("Price"),
                         resultSet.getInt("Amount"),
-                        resultSet.getInt("BookTypeID"),
-                        resultSet.getInt("PublisherID"),
+                        resultSet.getString("BookType"),
+                        resultSet.getString("Publisher"),
                         resultSet.getBoolean("Status")
                 );
                 bookList.add(book);
@@ -221,36 +231,36 @@ public class BookController implements Initializable {
     @FXML
     private void showAddBookDialog() {
         TextField img = new TextField();
-        img.setPromptText("Url");
+        img.setPromptText("https://.....");
         TextField title = new TextField();
-        title.setPromptText("Title");
+        title.setPromptText("Tên sách");
         TextField author = new TextField();
-        author.setPromptText("Author");
+        author.setPromptText("Tên tác giả");
         TextField publishedYear = new TextField();
-        publishedYear.setPromptText("Public year");
+        publishedYear.setPromptText("Năm xuất bản");
         TextField edition = new TextField();
-        edition.setPromptText("Edition");
+        edition.setPromptText("Lần xuất bản");
         TextField price = new TextField();
-        price.setPromptText("Price");
+        price.setPromptText("Giá");
         TextField amount = new TextField();
-        amount.setPromptText("Amount");
-        TextField bookTypeID = new TextField();
-        bookTypeID.setPromptText("Book type ID");
-        TextField publisherID = new TextField();
-        publisherID.setPromptText("Publisher ID");
+        amount.setPromptText("Số lượng");
+        TextField bookType = new TextField();
+        bookType.setPromptText("Loại sách");
+        TextField publisher = new TextField();
+        publisher.setPromptText("Nhà xuất bản");
 
-        Button saveButton = new Button("Add Book");
+        Button saveButton = new Button("Thêm");
 
-        VBox vbox = new VBox(img, title, author, publishedYear, edition, price, amount, bookTypeID, publisherID, saveButton);
+        VBox vbox = new VBox(img, title, author, publishedYear, edition, price, amount, bookType, publisher, saveButton);
         vbox.setSpacing(10);
         Scene scene = new Scene(vbox, 240, 480);
         Stage stage = new Stage();
         stage.setScene(scene);
-        stage.setTitle("Add Book");
+        stage.setTitle("Thêm sách");
         stage.show();
 
         saveButton.setOnAction(e -> {
-            if (title.getText().isEmpty() || amount.getText().isEmpty() || publishedYear.getText().isEmpty() || img.getText().isEmpty() || price.getText().isEmpty() || edition.getText().isEmpty() || amount.getText().isEmpty() || bookTypeID.getText().isEmpty() || publisherID.getText().isEmpty()) {
+            if (title.getText().isEmpty() || amount.getText().isEmpty() || publishedYear.getText().isEmpty() || img.getText().isEmpty() || price.getText().isEmpty() || edition.getText().isEmpty() || amount.getText().isEmpty() || bookType.getText().isEmpty() || publisher.getText().isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, "Error", "No blank!");
                 return;
             }
@@ -278,7 +288,9 @@ public class BookController implements Initializable {
                         showAlert(Alert.AlertType.ERROR, "Failed", "Book amount updated failed");
                     }
                 } else { // Nếu sách chưa tồn tại, thêm mới
-                    String insertQuery = "INSERT INTO books (Title, Image, Author, PublishedYear, Edition, Price, Amount, BookTypeID, PublisherID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                    String insertQuery = "INSERT INTO books ( Image, Title, Author, PublishedYear, Edition, Price, Amount, BookType, Publisher) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
                     PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
                     preparedStatement.setString(1, img.getText());
                     preparedStatement.setString(2, title.getText());
@@ -287,8 +299,8 @@ public class BookController implements Initializable {
                     preparedStatement.setInt(5, Integer.parseInt(edition.getText()));
                     preparedStatement.setDouble(6, Double.parseDouble(price.getText()));
                     preparedStatement.setInt(7, Integer.parseInt(amount.getText()));
-                    preparedStatement.setInt(8, Integer.parseInt(bookTypeID.getText()));
-                    preparedStatement.setInt(9, Integer.parseInt(publisherID.getText()));
+                    preparedStatement.setString(8, bookType.getText());
+                    preparedStatement.setString(9, publisher.getText());
                     preparedStatement.executeUpdate();
 
                     showAlert(Alert.AlertType.INFORMATION, "Successful", "Book added successfully.");
@@ -304,17 +316,15 @@ public class BookController implements Initializable {
     private boolean deactivationBook(int bookID) {
         String query = "update books set Status = false where BookID = ?";
         try {
+            int row = 0;
             if (showConfirmation("Delete book", "Are you sure want to delete this book ?")) {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setInt(1, bookID);
-                int row = preparedStatement.executeUpdate();
+                row = preparedStatement.executeUpdate();
 
                 showAlert(Alert.AlertType.INFORMATION, "Successful", "Delete book successful");
-                return row != 0;
-            } else {
-                showAlert(Alert.AlertType.INFORMATION, "Failed", "Cancel");
-                return false;
             }
+            return row != 0;
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
@@ -351,22 +361,29 @@ public class BookController implements Initializable {
         if (event.getSource() instanceof Node) {
             // Nếu nguồn sự kiện là một Node (ví dụ như Button), thì lấy Stage từ Node
             Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root,1280,800);
             stage.setScene(scene);
+//            stage.setFullScreen(true);
             stage.show();
         } else {
             // Ép kiểu nguồn sự kiện từ MenuItem (không thuộc về root) về Node
             Node node = ((MenuItem) event.getSource()).getParentPopup().getOwnerNode();
             Stage stage = (Stage) node.getScene().getWindow();
-            Scene scene = new Scene(root);
+            Scene scene = new Scene(root,1280,800);
             stage.setScene(scene);
+//            stage.setFullScreen(true);
             stage.show();
         }
     }
 
     @FXML
-    public void logout(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/login.fxml");
+    public void goToHome(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/home.fxml");
+    }
+
+    @FXML
+    public void goToCart(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/cart.fxml");
     }
 
     @FXML
@@ -385,16 +402,71 @@ public class BookController implements Initializable {
     }
 
     @FXML
-    public void goToHome(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/home.fxml");
+    public void logout(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/login.fxml");
     }
 
     @FXML
-    public void goToCart(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/cart.fxml");
+    public void goToUser(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/user.fxml");
     }
 
-    public void goToAddBookScene(ActionEvent event) throws IOException {
-        goToScene(event, "/com/example/book_store/view/addBook.fxml");
+    @FXML
+    public void goToOrder(ActionEvent event) throws IOException {
+        goToScene(event, "/com/example/book_store/view/order.fxml");
+    }
+
+    @FXML
+    public void goToHistory(ActionEvent actionEvent) throws IOException {
+        goToScene(actionEvent, "/com/example/book_store/view/bill.fxml");
+    }
+
+    @FXML
+    public void goToTop5(ActionEvent actionEvent) throws IOException {
+        goToScene(actionEvent, "/com/example/book_store/view/statistical.fxml");
+    }
+
+    @FXML
+    public void search() {
+
+        String keyword = searchField.getText();
+        if (keyword.isEmpty()) {
+            showAlert(Alert.AlertType.WARNING, "Warning", "Please enter a search keyword.");
+            return;
+        }
+
+        ObservableList<Book> bookList = FXCollections.observableArrayList();
+        String query = "SELECT * FROM Books WHERE Title LIKE ? OR Author LIKE ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            String searchKeyword = "%" + keyword + "%";
+            preparedStatement.setString(1, searchKeyword);
+            preparedStatement.setString(2, searchKeyword);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                Book book = new Book(
+                        resultSet.getInt("BookID"),
+                        resultSet.getString("Image"),
+                        resultSet.getString("Title"),
+                        resultSet.getString("Author"),
+                        resultSet.getInt("PublishedYear"),
+                        resultSet.getInt("Edition"),
+                        resultSet.getDouble("Price"),
+                        resultSet.getInt("Amount"),
+                        resultSet.getString("BookType"),
+                        resultSet.getString("Publisher"),
+                        resultSet.getBoolean("Status")
+                );
+                bookList.add(book);
+            }
+
+            bookTable.setItems(bookList);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not search book data");
+        }
+
     }
 }

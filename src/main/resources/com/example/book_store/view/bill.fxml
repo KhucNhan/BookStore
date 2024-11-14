@@ -9,11 +9,13 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.text.Font?>
 
+
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.control.DatePicker?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0"
-            prefWidth="1280.0"  xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.book_store.Controller.StatisticalController">
+            prefWidth="1280.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.book_store.Controller.BillController">
     <top>
         <HBox fx:id="menuBar" alignment="CENTER" prefHeight="55.0" prefWidth="1513.0" spacing="20.0"
               BorderPane.alignment="CENTER">
@@ -67,15 +69,17 @@
             </Button>
             <HBox alignment="CENTER" prefHeight="100.0" spacing="10.0">
                 <children>
-                    <TextField prefHeight="25.0" prefWidth="220.0" promptText="Nhập từ khoá tìm kiếm">
+                    <DatePicker fx:id="first" prefHeight="25.0" prefWidth="100.0">
                         <HBox.margin>
                             <Insets/>
                         </HBox.margin>
-                        <font>
-                            <Font size="16.0"/>
-                        </font>
-                    </TextField>
-                    <Button prefHeight="25.0" prefWidth="123.0" text="Tìm kiếm">
+                    </DatePicker>
+                    <DatePicker fx:id="second" prefHeight="25.0" prefWidth="100.0">
+                        <HBox.margin>
+                            <Insets/>
+                        </HBox.margin>
+                    </DatePicker>
+                    <Button onAction="#search" prefHeight="25.0" prefWidth="123.0" text="Lọc">
                         <HBox.margin>
                             <Insets/>
                         </HBox.margin>
@@ -106,20 +110,14 @@
         </HBox>
     </top>
     <center>
-        <TableView fx:id="bestsellingBooksTable" prefHeight="576.0" prefWidth="1280.0" BorderPane.alignment="CENTER">
+        <TableView fx:id="billTable" prefHeight="685.0" prefWidth="998.0" BorderPane.alignment="CENTER">
             <columns>
-                <TableColumn fx:id="top" prefWidth="65.0" text="Top"/>
-                <TableColumn fx:id="idColumn" prefWidth="90.0" text="Mã sách"/>
-                <TableColumn fx:id="imageColumn" prefWidth="120.0" text="Hình ảnh"/>
-                <TableColumn fx:id="titleColumn" prefWidth="150.0" text="Tên sách"/>
-                <TableColumn fx:id="authorColumn" prefWidth="100.0" text="Tên tác giả"/>
-                <TableColumn fx:id="publishedYearColumn" prefWidth="95.0" text="Năm xuất bản"/>
-                <TableColumn fx:id="editionColumn" prefWidth="95.0" text="Lần xuất bản"/>
-                <TableColumn fx:id="priceColumn" prefWidth="95.0" text="Giá bán"/>
-                <TableColumn fx:id="amountColumn" prefWidth="95.0" text="Số lượng"/>
-                <TableColumn fx:id="bookTypeColumn" prefWidth="95.0" text="Mã loại sách"/>
-                <TableColumn fx:id="publisherColumn" prefWidth="120.0" text="Mã nhà xuất bản"/>
-                <TableColumn fx:id="statusColumn" prefWidth="157.0" text="Trạng thái"/>
+                <TableColumn fx:id="billID" prefWidth="203.6666717529297" text="Mã Bill"/>
+                <TableColumn fx:id="userID" prefWidth="203.6666717529297" text="Mã khách hàng"/>
+                <TableColumn fx:id="orderId" prefWidth="203.6666717529297" text="Mã đơn hàng"/>
+                <TableColumn fx:id="date" prefWidth="185.33334350585938" text="Ngày đặt "/>
+                <TableColumn fx:id="totalAmount" prefWidth="195.99996948242188" text="Tổng tiền"/>
+                <TableColumn fx:id="act" prefWidth="186.0" text="Hành động"/>
             </columns>
             <BorderPane.margin>
                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>

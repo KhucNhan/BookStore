@@ -5,7 +5,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConnectDB {
-    private static final String urlConnection = "jdbc:mysql://127.0.0.1:3306/book_store";
+    private static final String urlConnection = "jdbc:mysql://127.0.0.1:3306/bookstore";
 
     public Connection connectionDB() {
         Connection connection = null;

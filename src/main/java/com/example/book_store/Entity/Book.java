@@ -1,5 +1,7 @@
 package com.example.book_store.Entity;
 
+import com.example.book_store.Controller.BookController;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -12,11 +14,11 @@ public class Book {
     private int edition;
     private double price;
     private int amount;
-    private int bookTypeID;
-    private int publisherID;
+    private String bookType;
+    private String publisher;
     private boolean status;
 
-    public Book(int bookID, String image, String title, String author, int publishedYear, int edition, double price, int amount, int bookTypeID, int publisherID, boolean status) {
+    public Book(int bookID, String image, String title, String author, int publishedYear, int edition, double price, int amount, String bookType, String publisher, boolean status) {
         this.bookID = bookID;
         this.image = image;
         this.title = title;
@@ -25,8 +27,8 @@ public class Book {
         this.edition = edition;
         this.price = price;
         this.amount = amount;
-        this.bookTypeID = bookTypeID;
-        this.publisherID = publisherID;
+        this.bookType = bookType;
+        this.publisher = publisher;
         this.status = status;
     }
 
@@ -123,20 +125,20 @@ public class Book {
         this.amount = amount;
     }
 
-    public int getBookTypeID() {
-        return bookTypeID;
+    public String getBookType() {
+        return bookType;
     }
 
-    public void setBookTypeID(int bookTypeID) {
-        this.bookTypeID = bookTypeID;
+    public void setBookType(String bookType) {
+        this.bookType = bookType;
     }
 
-    public int getPublisherID() {
-        return publisherID;
+    public String getPublisher() {
+        return publisher;
     }
 
-    public void setPublisherID(int publisherID) {
-        this.publisherID = publisherID;
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
     }
 
     @Override
@@ -150,8 +152,8 @@ public class Book {
                 ", edition=" + edition +
                 ", price=" + price +
                 ", amount=" + amount +
-                ", bookTypeID=" + bookTypeID +
-                ", publisherID=" + publisherID +
+                ", bookType=" + bookType +
+                ", publisher=" + publisher +
                 ", status=" + status +
                 '}';
     }
