@@ -172,7 +172,7 @@ public class UserController {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setInt(1, currentUser.getUserID());
                 int row = preparedStatement.executeUpdate();
-                connection.close();
+                ;
                 showAlert(Alert.AlertType.INFORMATION, "Successful", "Delete account successful, you'll move to login scene");
                 goToScene(event, "/com/example/book_store/view/login.fxml");
                 return row != 0;
@@ -241,7 +241,7 @@ public class UserController {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setInt(1, userID);
                 int row = preparedStatement.executeUpdate();
-                connection.close();
+                ;
                 showAlert(Alert.AlertType.INFORMATION, "Successful", "Delete account successful, you'll move to login scene");
                 return row != 0;
             } else {
@@ -353,7 +353,7 @@ public class UserController {
                 preparedStatement.setInt(7, userID);
 
                 int row = preparedStatement.executeUpdate();
-                connection.close();
+                ;
 
                 if (row != 0) {
                     showAlert(Alert.AlertType.INFORMATION, "Successful", "Update information successful");
@@ -436,7 +436,7 @@ public class UserController {
                 preparedStatement.setString(1, newPassword.getText());
                 preparedStatement.setInt(2, currentUser.getUserID());
                 row.set(preparedStatement.executeUpdate());
-                connection.close();
+                ;
                 if (row.get() != 0) {
                     showAlert(Alert.AlertType.INFORMATION, "Successful", "Change password successful, please login again");
                     goToScene(event, "/com/example/book_store/view/login.fxml");
