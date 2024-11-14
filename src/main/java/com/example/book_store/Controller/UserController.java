@@ -187,10 +187,18 @@ public class UserController {
         }
     }
 
+    private boolean validateUAndP(String value) {
+        return value.length() >= 8;
+    }
+
     protected boolean add(String name, String username, String password, Date dateOfBirth, String gender, String phone, String address, String email) {
         String query = "insert into users (Name, Username, Password, DateOfBirth, Gender, Phone, Address, Email)" +
                 "values (?, ?, ?, ?, ?, ?, ?, ?)";
         try {
+            if (!validateUAndP(username) || !validateUAndP(password)) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Username and Password length must equal 8 or more");
+                return false;
+            }
             if (!phoneValidator(phone)) {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Enter right phone number!");
                 return false;
