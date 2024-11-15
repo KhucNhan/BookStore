@@ -153,7 +153,7 @@ public class HomeUserController {
     private boolean addToCart(int userID, int bookID, int amount) {
         String checkQuery = "SELECT CartItemID, Amount FROM CartItems " +
                 "JOIN Cart ON CartItems.CartID = Cart.CartID " +
-                "WHERE Cart.UserID = ? AND CartItems.BookID = ? and CartItems.OrderItemID is null ";
+                "WHERE Cart.UserID = ? AND CartItems.BookID = ? and CartItems.Status = false ";
 
         String updateQuery = "UPDATE CartItems SET Amount = Amount + ? " +
                 "WHERE CartItemID = ?";
