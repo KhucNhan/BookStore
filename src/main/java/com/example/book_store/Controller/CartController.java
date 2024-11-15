@@ -19,6 +19,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
@@ -30,6 +31,8 @@ import java.util.List;
 
 public class CartController {
     public TableColumn<CartItem, Void> act;
+    @FXML
+    public BorderPane main;
     private UserController userController = new UserController();
     private final ConnectDB connectDB = new ConnectDB();
     private final Connection connection = connectDB.connectionDB();
@@ -341,11 +344,13 @@ public class CartController {
         ObservableList<CartItem> cart = FXCollections.observableArrayList();
         String query = """
                     SELECT ci.CartItemID, ci.Selected, ci.CartID, ci.BookID, b.Image, b.Title, 
-                           ci.Price, ci.Amount AS Amount, ci.TotalPrice, ci.Status
-                    FROM CartItems ci
-                    JOIN Cart c ON ci.CartID = c.CartID
-                    JOIN Books b ON ci.BookID = b.BookID
-                    WHERE c.UserID = ? and ci.Status = false
+                                               ci.Price, ci.Amount AS Amount, ci.TotalPrice, ci.Status 
+                                        FROM CartItems ci 
+                                        JOIN Cart c ON ci.CartID = c.CartID 
+                                        JOIN Books b ON ci.BookID = b.BookID 
+                                        WHERE c.UserID = ? and ci.Status = false 
+                                        group by ci.CartItemID 
+                                        order by ci.CartItemID desc 
                 """;
 
         try {
@@ -369,8 +374,12 @@ public class CartController {
 
                 cart.add(cartItem);
             }
-
-            cartTableView.setItems(cart);
+            if (cart.isEmpty()) {
+                main.setCenter(new Label("Nothing in cart"));
+                main.setBottom(null);
+            } else {
+                cartTableView.setItems(cart);
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();

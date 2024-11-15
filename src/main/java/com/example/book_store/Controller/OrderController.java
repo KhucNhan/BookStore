@@ -7,6 +7,7 @@ import com.example.book_store.Entity.OrderItem;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -132,6 +133,7 @@ public class OrderController implements Initializable {
                         hBox = new HBox(detail);
                     }
                     hBox.setSpacing(10);
+                    hBox.setAlignment(Pos.CENTER_LEFT);
                     setGraphic(hBox);
                 }
             }

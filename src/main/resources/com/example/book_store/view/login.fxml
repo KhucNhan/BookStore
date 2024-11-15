@@ -22,7 +22,6 @@
                <Font size="15.0" />
             </font></Label>
             <PasswordField fx:id="passwordField" maxWidth="374.0" prefHeight="25.0" prefWidth="374.0" promptText="Mật khẩu" />
-            <Hyperlink fx:id="forgotPasswordLink" text="Quên mật khẩu?" />
             <HBox alignment="CENTER">
                 <Button fx:id="loginButton" onAction="#handleLogin" prefHeight="25.0" prefWidth="100.0" style="-fx-background-color: #003399; -fx-text-fill: white;" text="ĐĂNG NHẬP">
                     <HBox.margin>
