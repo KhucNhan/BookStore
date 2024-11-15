@@ -91,8 +91,8 @@ public class StatisticalController {
                     setGraphic(null);
                 } else {
                     imageView.setImage(new Image(imagePath));
-                    imageView.setFitHeight(50);
-                    imageView.setFitWidth(50);
+                    imageView.setFitHeight(100);
+                    imageView.setFitWidth(80);
                     setGraphic(imageView);
                 }
             }
