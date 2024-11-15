@@ -128,7 +128,7 @@ public class HomeUserController {
                 showAlert(Alert.AlertType.ERROR, "Failed", "We don't have that much, enter again");
                 return;
             }
-            if (addToCart(currentUser.getUserID(), book.getBookID(), Integer.parseInt(amount.getText()))) {
+            if (addToCart(currentUser.getUserID(), book, Integer.parseInt(amount.getText()))) {
                 showAlert(Alert.AlertType.INFORMATION, "Successful", "Add to cart successful");
             }
         });
@@ -152,7 +152,7 @@ public class HomeUserController {
         }
     }
 
-    private boolean addToCart(int userID, int bookID, int amount) {
+    private boolean addToCart(int userID, Book bookID, int amount) {
         String checkQuery = "SELECT CartItemID, Amount FROM CartItems " +
                 "JOIN Cart ON CartItems.CartID = Cart.CartID " +
                 "WHERE Cart.UserID = ? AND CartItems.BookID = ? and CartItems.Status = false ";
@@ -160,9 +160,10 @@ public class HomeUserController {
         String updateQuery = "UPDATE CartItems SET Amount = Amount + ? " +
                 "WHERE CartItemID = ?";
 
-        String insertQuery = "INSERT INTO CartItems (CartID, BookID, Amount, Price) " +
+        String insertQuery = "INSERT INTO CartItems (CartID, Image, BookID, Amount, Price) " +
                 "VALUES (" +
                 "(SELECT CartID FROM Cart WHERE UserID = ?), " +
+                "?, " +
                 "?, " +
                 "?, " +
                 "(SELECT Price FROM Books WHERE BookID = ?) )";
@@ -173,7 +174,7 @@ public class HomeUserController {
             // Bước 1: Kiểm tra nếu mục đã có trong giỏ hàng
             PreparedStatement checkStmt = connection.prepareStatement(checkQuery);
             checkStmt.setInt(1, userID);
-            checkStmt.setInt(2, bookID);
+            checkStmt.setInt(2, bookID.getBookID());
 
             ResultSet resultSet = checkStmt.executeQuery();
             int row = 0;
@@ -190,9 +191,10 @@ public class HomeUserController {
                 // Bước 3: Nếu mục chưa tồn tại, thêm mục mới
                 PreparedStatement insertStmt = connection.prepareStatement(insertQuery);
                 insertStmt.setInt(1, userID);
-                insertStmt.setInt(2, bookID);
-                insertStmt.setInt(3, amount);
-                insertStmt.setInt(4, bookID);
+                insertStmt.setString(2, bookID.getImage());
+                insertStmt.setInt(3, bookID.getBookID());
+                insertStmt.setInt(4, amount);
+                insertStmt.setInt(5, bookID.getBookID());
                 row = insertStmt.executeUpdate();
                 System.out.println("Added new item to cart.");
             }
@@ -201,7 +203,7 @@ public class HomeUserController {
             if (row > 0) {
                 PreparedStatement updateBookStockStmt = connection.prepareStatement(updateBookStockQuery);
                 updateBookStockStmt.setInt(1, amount);
-                updateBookStockStmt.setInt(2, bookID);
+                updateBookStockStmt.setInt(2, bookID.getBookID());
                 updateBookStockStmt.executeUpdate();
                 System.out.println("Updated book stock in inventory.");
             }
