@@ -108,6 +108,7 @@ public class UserController {
 
     private void loadUserData() {
         String query = "SELECT * FROM users ";
+        userList.clear();
 
         try (PreparedStatement stmt = connection.prepareStatement(query);
              ResultSet rs = stmt.executeQuery()) {
