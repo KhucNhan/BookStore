@@ -105,21 +105,20 @@
    </top>
    <center>
 
-                <TableView fx:id="bookTable" prefHeight="662.0" prefWidth="1391.0" BorderPane.alignment="CENTER">
+                <TableView fx:id="bookTable" maxHeight="664.0" maxWidth="1230.0" prefHeight="664.0" BorderPane.alignment="CENTER">
            <columns>
-
-                        <TableColumn fx:id="idColumn" prefWidth="61.0" style="-fx-alignment: CENTER" text="Mã sách" />
-               <TableColumn fx:id="imageColumn" prefWidth="131.0" style="-fx-alignment: CENTER" text="Hình ảnh" />
-               <TableColumn fx:id="titleColumn" prefWidth="157.5" style="-fx-alignment: CENTER-LEFT" text="Tên sách" />
-               <TableColumn fx:id="authorColumn" prefWidth="143.5" style="-fx-alignment: CENTER-LEFT" text="Tên tác giả" />
-               <TableColumn fx:id="publishedYearColumn" prefWidth="97.0" style="-fx-alignment: CENTER" text="Năm xuất bản" />
-               <TableColumn fx:id="editionColumn" prefWidth="83.5" style="-fx-alignment: CENTER" text="Lần xuất bản" />
-               <TableColumn fx:id="priceColumn" prefWidth="66.5" style="-fx-alignment: CENTER" text="Giá bán" />
-               <TableColumn fx:id="amountColumn" prefWidth="63.5" style="-fx-alignment: CENTER" text="Số lượng" />
-               <TableColumn fx:id="bookTypeColumn" prefWidth="108.5" style="-fx-alignment: CENTER" text="Loại sách" />
-               <TableColumn fx:id="publisherColumn" prefWidth="125.5" style="-fx-alignment: CENTER" text="Nhà xuất bản" />
-               <TableColumn fx:id="statusColumn" prefWidth="100.5" style="-fx-alignment: CENTER" text="Trạng thái" />
-               <TableColumn fx:id="actionColumn" prefWidth="139.0" style="-fx-alignment: CENTER" text="Hành động">
+                        <TableColumn fx:id="idColumn" prefWidth="56.5" style="-fx-alignment: CENTER" text="Mã sách" />
+               <TableColumn fx:id="imageColumn" prefWidth="130.5" style="-fx-alignment: CENTER" text="Hình ảnh" />
+               <TableColumn fx:id="titleColumn" prefWidth="130.0" style="-fx-alignment: CENTER-LEFT" text="Tên sách" />
+               <TableColumn fx:id="authorColumn" prefWidth="125.0" style="-fx-alignment: CENTER-LEFT" text="Tên tác giả" />
+               <TableColumn fx:id="publishedYearColumn" prefWidth="85.5" style="-fx-alignment: CENTER" text="Năm xuất bản" />
+               <TableColumn fx:id="editionColumn" prefWidth="92.0" style="-fx-alignment: CENTER" text="Lần xuất bản" />
+               <TableColumn fx:id="priceColumn" prefWidth="67.0" style="-fx-alignment: CENTER" text="Giá bán" />
+               <TableColumn fx:id="amountColumn" prefWidth="78.0" style="-fx-alignment: CENTER" text="Số lượng" />
+               <TableColumn fx:id="bookTypeColumn" prefWidth="90.0" style="-fx-alignment: CENTER" text="Loại sách" />
+               <TableColumn fx:id="publisherColumn" prefWidth="126.0" style="-fx-alignment: CENTER" text="Nhà xuất bản" />
+               <TableColumn fx:id="statusColumn" prefWidth="105.0" style="-fx-alignment: CENTER" text="Trạng thái" />
+               <TableColumn fx:id="actionColumn" prefWidth="128.5" style="-fx-alignment: CENTER" text="Hành động">
             </TableColumn>
            </columns>
          <BorderPane.margin>
