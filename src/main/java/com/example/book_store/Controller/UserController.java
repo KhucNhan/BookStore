@@ -90,7 +90,7 @@ public class UserController {
                 } else {
                     User user = getTableView().getItems().get(getIndex());
                     edit.setOnAction(e -> {
-                        updateUserInformation(user.getUserID());
+                        updateUserInformation(user);
                     });
 
                     delete.setOnAction(e -> {
@@ -285,23 +285,23 @@ public class UserController {
         }
     }
 
-    private boolean updateUserInformation(int userID) {
-        TextField nameField = new TextField(currentUser.getName());
+    private boolean updateUserInformation(User user) {
+        TextField nameField = new TextField(user.getName());
         nameField.setPromptText("Enter new name");
 
         DatePicker dateOfBirthPicker = new DatePicker();
-        dateOfBirthPicker.setPromptText(String.valueOf(currentUser.getDateOfBirth()));
+        dateOfBirthPicker.setValue(LocalDate.parse(String.valueOf(user.getDateOfBirth())));
 
-        TextField genderField = new TextField(currentUser.getGender());
+        TextField genderField = new TextField(user.getGender());
         genderField.setPromptText("Enter new gender");
 
-        TextField phoneField = new TextField(currentUser.getPhone());
+        TextField phoneField = new TextField(user.getPhone());
         phoneField.setPromptText("Enter new phone number");
 
-        TextField addressField = new TextField(currentUser.getAddress());
+        TextField addressField = new TextField(user.getAddress());
         addressField.setPromptText("Enter new address");
 
-        TextField emailField = new TextField(currentUser.getEmail());
+        TextField emailField = new TextField(user.getEmail());
         emailField.setPromptText("Enter new email");
 
         Button saveButton = new Button("Lưu");
@@ -351,10 +351,9 @@ public class UserController {
                 preparedStatement.setString(4, phoneField.getText());
                 preparedStatement.setString(5, addressField.getText());
                 preparedStatement.setString(6, emailField.getText());
-                preparedStatement.setInt(7, userID);
+                preparedStatement.setInt(7, user.getUserID());
 
                 int row = preparedStatement.executeUpdate();
-                ;
 
                 if (row != 0) {
                     showAlert(Alert.AlertType.INFORMATION, "Successful", "Update information successful");
@@ -392,7 +391,7 @@ public class UserController {
 
     @FXML
     public boolean updateUserInformation(ActionEvent event) {
-        updateUserInformation(currentUser.getUserID());
+        updateUserInformation(currentUser);
         return true;
     }
 
