@@ -106,6 +106,17 @@ public class StatisticalController {
         bookTypeColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("bookType"));
         publisherColumn.setCellValueFactory(new PropertyValueFactory<Book, String>("publisher"));
         statusColumn.setCellValueFactory(new PropertyValueFactory<Book, Boolean>("status"));
+        statusColumn.setCellFactory(column -> new TableCell<Book, Boolean>() {
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item ? "Còn hàng" : "Hết hàng");
+                }
+            }
+        });
 
         top.setCellFactory(column -> new TableCell<Book, Void>() {
             private final Label label = new Label();

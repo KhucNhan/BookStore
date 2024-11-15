@@ -206,6 +206,14 @@ public class Authentication {
             showAlert(Alert.AlertType.ERROR, "Failed", "Enter right date of birth");
             return false;
         }
+        if (isExistEmail(uEmail)) {
+            showAlert(Alert.AlertType.ERROR,"Failed", "This email has been existed");
+            return false;
+        }
+        if (isExistPhone(uPhone)) {
+            showAlert(Alert.AlertType.ERROR, "Failed", "This phone has been existed");
+            return false;
+        }
         if (userController.add(uName, uUsername, uPassword, uDateOfBirth, uGender, uPhone, uAddress, uEmail)) {
             showAlert(Alert.AlertType.INFORMATION, "Successful", "Sign up successful");
             createCart();
@@ -213,6 +221,40 @@ public class Authentication {
             return true;
         }
         return false;
+    }
+
+    private boolean isExistPhone(String phone) {
+        String query = "select Phone from users where Phone = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, phone);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                if (resultSet.getString(1).equals(phone)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean isExistEmail(String email) {
+        String query = "select Email from users where Email = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, email);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                if (resultSet.getString(1).equals(email)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private boolean createCart() {

@@ -1,6 +1,7 @@
 package com.example.book_store.Controller;
 
 import com.example.book_store.ConnectDB;
+import com.example.book_store.Entity.Book;
 import com.example.book_store.Entity.Order;
 import com.example.book_store.Entity.OrderItem;
 import javafx.fxml.FXML;
@@ -77,6 +78,23 @@ public class OrderController implements Initializable {
         userID.setCellValueFactory(new PropertyValueFactory<>("userID"));
         date.setCellValueFactory(new PropertyValueFactory<>("date"));
         status.setCellValueFactory(new PropertyValueFactory<>("status"));
+        status.setCellFactory(column -> new TableCell<Order, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    if (item.equalsIgnoreCase("Pending")) {
+                        setText("Chờ thanh toán");
+                    } else if (item.equalsIgnoreCase("Paid")) {
+                        setText("Đã thanh toán");
+                    } else {
+                        setText("Hủy đơn");
+                    }
+                }
+            }
+        });
         action.setCellFactory(column -> new TableCell<>() {
             private final Button detail = new Button("Chi tiết");
             private final Button confirm = new Button("Xác nhận");
