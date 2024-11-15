@@ -127,10 +127,10 @@ public class BillController {
             itemIDCol.setCellValueFactory(new PropertyValueFactory<>("orderItemID"));
 
             TableColumn<OrderItem, Integer> orderIDCol = new TableColumn<>("Order ID");
-            itemIDCol.setCellValueFactory(new PropertyValueFactory<>("orderID"));
+            orderIDCol.setCellValueFactory(new PropertyValueFactory<>("orderID"));
 
             TableColumn<OrderItem, Integer> bookIDCol = new TableColumn<>("Book ID");
-            itemIDCol.setCellValueFactory(new PropertyValueFactory<>("bookID"));
+            bookIDCol.setCellValueFactory(new PropertyValueFactory<>("bookID"));
 
             TableColumn<OrderItem, Integer> quantityCol = new TableColumn<>("Amount");
             quantityCol.setCellValueFactory(new PropertyValueFactory<>("amount"));
