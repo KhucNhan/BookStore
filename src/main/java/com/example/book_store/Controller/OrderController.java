@@ -167,7 +167,7 @@ public class OrderController implements Initializable {
 
     private void loadOrders() {
         String query;
-
+        orders.clear();
         try {
             PreparedStatement preparedStatement;
             if (currentUser.getRole().equalsIgnoreCase("user")) {
