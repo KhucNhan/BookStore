@@ -16,6 +16,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -35,6 +36,8 @@ public class BillController {
     public Button goToOrder;
     @FXML
     public HBox menuBar;
+    @FXML
+    public BorderPane main;
     private UserController userController = new UserController();
     @FXML
     private TableView<Bill> billTable;
@@ -180,7 +183,9 @@ public class BillController {
 
                 ));
             }
-
+            if (bills.isEmpty()) {
+                main.setCenter(new Label("You don't have any bill"));
+            }
             billTable.setItems(bills);
 
 
