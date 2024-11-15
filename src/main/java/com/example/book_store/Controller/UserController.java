@@ -173,12 +173,11 @@ public class UserController {
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setInt(1, currentUser.getUserID());
                 int row = preparedStatement.executeUpdate();
-                ;
+
                 showAlert(Alert.AlertType.INFORMATION, "Successful", "Delete account successful, you'll move to login scene");
                 goToScene(event, "/com/example/book_store/view/login.fxml");
                 return row != 0;
             } else {
-                showAlert(Alert.AlertType.INFORMATION, "Delete Account", "Cancel");
                 return false;
             }
         } catch (SQLException e) {
