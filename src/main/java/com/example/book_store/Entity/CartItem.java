@@ -14,9 +14,9 @@ public class CartItem {
     private double price;
     private int amount;
     private double total;
-    private int orderItemID;
+    private boolean status;
 
-    public CartItem(int cartItemID, boolean selected, int cartID, int bookID, String image, String title, double price, int amount, double total, int orderItemID) {
+    public CartItem(int cartItemID, boolean selected, int cartID, int bookID, String image, String title, double price, int amount, double total, boolean status) {
         this.cartItemID = cartItemID;
         this.cartID = cartID;
         this.bookID = bookID;
@@ -25,7 +25,7 @@ public class CartItem {
         this.price = price;
         this.amount = amount;
         this.total = total;
-        this.orderItemID = orderItemID;
+        this.status = status;
         this.selected = selected;
     }
 
@@ -101,12 +101,11 @@ public class CartItem {
         this.total = total;
     }
 
-    public int getOrderItemID() {
-        return orderItemID;
+    public boolean isStatus() {
+        return status;
     }
 
-    public void setOrderItemID(int orderItemID) {
-        this.orderItemID = orderItemID;
+    public void setStatus(boolean status) {
+        this.status = status;
     }
-
 }

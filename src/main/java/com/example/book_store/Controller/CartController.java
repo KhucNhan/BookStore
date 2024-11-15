@@ -63,7 +63,7 @@ public class CartController {
     private TableColumn<CartItem, Double> total;
 
     @FXML
-    private TableColumn<CartItem, Integer> orderItemID;
+    private TableColumn<CartItem, Boolean> status;
 
     @FXML
     private Label totalCartLabel;
@@ -93,8 +93,8 @@ public class CartController {
         bookID.setCellValueFactory(new PropertyValueFactory<>("bookID"));
         bookID.setVisible(false);
 
-        orderItemID.setCellValueFactory(new PropertyValueFactory<>("orderItemID"));
-        orderItemID.setVisible(false);
+        status.setCellValueFactory(new PropertyValueFactory<>("status"));
+        status.setVisible(false);
 
         selected.setCellValueFactory(cellData -> new SimpleBooleanProperty(cellData.getValue().isSelected()));
         selected.setCellFactory(column -> new TableCell<>() {
@@ -340,11 +340,11 @@ public class CartController {
         ObservableList<CartItem> cart = FXCollections.observableArrayList();
         String query = """
                     SELECT ci.CartItemID, ci.Selected, ci.CartID, ci.BookID, b.Image, b.Title, 
-                           ci.Price, ci.Amount AS Amount, ci.TotalPrice, ci.OrderItemID 
+                           ci.Price, ci.Amount AS Amount, ci.TotalPrice, ci.Status
                     FROM CartItems ci
                     JOIN Cart c ON ci.CartID = c.CartID
                     JOIN Books b ON ci.BookID = b.BookID
-                    WHERE c.UserID = ? and ci.OrderItemID is null 
+                    WHERE c.UserID = ? and ci.Status = false
                 """;
 
         try {
@@ -363,7 +363,7 @@ public class CartController {
                         resultSet.getDouble("Price"),
                         resultSet.getInt("Amount"),
                         resultSet.getDouble("TotalPrice"),
-                        resultSet.getInt("OrderItemID")
+                        resultSet.getBoolean("Status")
                 );
 
                 cart.add(cartItem);
@@ -428,7 +428,7 @@ public class CartController {
             PreparedStatement orderItemStmt = connection.prepareStatement(orderItemQuery, Statement.RETURN_GENERATED_KEYS);
 
             // 3. Cập nhật OrderItemID trong CartItems cho mỗi sản phẩm
-            String updateCartItemQuery = "UPDATE CartItems SET OrderItemID = ? WHERE CartItemID = ?";
+            String updateCartItemQuery = "UPDATE CartItems SET Status = true WHERE CartItemID = ?";
             PreparedStatement updateCartItemStmt = connection.prepareStatement(updateCartItemQuery);
 
             for (CartItem item : selectedItems) {
@@ -437,16 +437,11 @@ public class CartController {
                 orderItemStmt.setInt(2, item.getbookID());
                 orderItemStmt.setInt(3, item.getAmount());
                 orderItemStmt.setDouble(4, item.getPrice());
-                orderItemStmt.executeUpdate();
+                int row = orderItemStmt.executeUpdate();
 
-                // Lấy OrderItemID vừa tạo
-                ResultSet orderItemKeys = orderItemStmt.getGeneratedKeys();
-                if (orderItemKeys.next()) {
-                    int orderItemID = orderItemKeys.getInt(1);
-
-                    // Cập nhật OrderItemID vào CartItems
-                    updateCartItemStmt.setInt(1, orderItemID);
-                    updateCartItemStmt.setInt(2, item.getCartItemID());
+                if (row > 0) {
+                    // Cập nhật
+                    updateCartItemStmt.setInt(1, item.getCartItemID());
                     updateCartItemStmt.executeUpdate();
                 }
             }
