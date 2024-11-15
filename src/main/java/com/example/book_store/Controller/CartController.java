@@ -217,6 +217,7 @@ public class CartController {
             preparedStatement.setBoolean(1, value);
             preparedStatement.setInt(2, cartItemID);
             preparedStatement.executeUpdate();
+            loadCart();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
