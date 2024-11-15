@@ -266,25 +266,6 @@ public class UserController {
         return option.get() == ButtonType.OK;
     }
 
-    private void loadUserAfterUpdate(int userID) {
-        String query = "select Name, DateOfBirth, Gender, Phone, Address, Email from users where UserID = ?";
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setInt(1, userID);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                currentUser.setName(resultSet.getString(1));
-                currentUser.setDateOfBirth(resultSet.getDate(2));
-                currentUser.setGender(resultSet.getString(3));
-                currentUser.setPhone(resultSet.getString(4));
-                currentUser.setAddress(resultSet.getString(5));
-                currentUser.setEmail(resultSet.getString(6));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private boolean updateUserInformation(User user) {
         TextField nameField = new TextField(user.getName());
         nameField.setPromptText("Enter new name");
@@ -357,7 +338,7 @@ public class UserController {
 
                 if (row != 0) {
                     showAlert(Alert.AlertType.INFORMATION, "Successful", "Update information successful");
-                    loadUserAfterUpdate(currentUser.getUserID());
+                    loadUserData();
                 } else {
                     showAlert(Alert.AlertType.INFORMATION, "Failed", "Update information failed");
                 }
