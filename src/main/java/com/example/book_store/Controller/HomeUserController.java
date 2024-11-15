@@ -120,7 +120,7 @@ public class HomeUserController {
 
         saveButton.setOnAction(e -> {
             if (Integer.parseInt(amount.getText()) < 1) {
-                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right amount");
+                showAlert(Alert.AlertType.ERROR, "Failed", "Enter right amount (equal 1 or larger");
                 return;
             }
             stage.close();

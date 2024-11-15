@@ -9,6 +9,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -143,6 +144,7 @@ public class BookController implements Initializable {
 
                     HBox hBox = new HBox(editBook, deleteBook);
                     hBox.setSpacing(10);
+                    hBox.setAlignment(Pos.valueOf("CENTER"));
                     setGraphic(hBox);
                 }
             }
@@ -162,11 +164,10 @@ public class BookController implements Initializable {
         TextField amount = new TextField(String.valueOf(book.getAmount()));
         TextField bookType = new TextField(String.valueOf(book.getBookType()));
         TextField publisher = new TextField(String.valueOf(book.getPublisher()));
-        TextField status = new TextField(String.valueOf(book.isStatus()));
 
         Button saveButton = new Button("Lưu");
 
-        VBox vbox = new VBox(title, img, author, publishedYear, edition, price, amount, bookType, publisher, status, saveButton);
+        VBox vbox = new VBox(title, img, author, publishedYear, edition, price, amount, bookType, publisher, saveButton);
         vbox.setSpacing(10);
         Scene scene = new Scene(vbox, 240, 480);
         Stage stage = new Stage();
@@ -175,9 +176,18 @@ public class BookController implements Initializable {
         stage.show();
 
         saveButton.setOnAction(e -> {
-            if (title.getText().isEmpty() || author.getText().isEmpty() || publishedYear.getText().isEmpty() || img.getText().isEmpty() || status.getText().isEmpty() || price.getText().isEmpty() || edition.getText().isEmpty() || amount.getText().isEmpty() || bookType.getText().isEmpty() || publisher.getText().isEmpty()) {
+            if (title.getText().isEmpty() || author.getText().isEmpty() || publishedYear.getText().isEmpty() || img.getText().isEmpty() || price.getText().isEmpty() || edition.getText().isEmpty() || amount.getText().isEmpty() || bookType.getText().isEmpty() || publisher.getText().isEmpty()) {
                 showAlert(Alert.AlertType.ERROR, "Error", "No blank!");
                 return;
+            }
+
+            if (Integer.parseInt(amount.getText()) < 0) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "Enter number from 0 or larger");
+                return;
+            }
+            if (Integer.parseInt(amount.getText()) == 0) {
+                deactivationBook(book.getBookID());
+                loadBooks();
             }
 
             String query = "update books set Title = ?, Image = ?, Author = ?, PublishedYear = ?, Edition = ?, Price = ?, Amount = ?, BookType = ?, Publisher = ?, Status = ? where BookID = ?";
@@ -192,8 +202,7 @@ public class BookController implements Initializable {
                 preparedStatement.setInt(7, Integer.parseInt(amount.getText()));
                 preparedStatement.setString(8, bookType.getText());
                 preparedStatement.setString(9, publisher.getText());
-                preparedStatement.setBoolean(10, Boolean.parseBoolean(status.getText()));
-                preparedStatement.setInt(11, book.getBookID());
+                preparedStatement.setInt(10, book.getBookID());
                 int row = preparedStatement.executeUpdate();
                 if (row != 0) {
                     showAlert(Alert.AlertType.INFORMATION, "Successful", "Chang applied.");

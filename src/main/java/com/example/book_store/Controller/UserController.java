@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -108,7 +109,10 @@ public class UserController {
                     delete.setOnAction(e -> {
                         deactivationUser(user.getUserID());
                     });
-                    setGraphic(new HBox(10, edit, delete));
+
+                    HBox hBox = new HBox(10, edit, delete);
+                    hBox.setAlignment(Pos.valueOf("CENTER"));
+                    setGraphic(hBox);
                 }
             }
         });
@@ -235,8 +239,19 @@ public class UserController {
     }
 
     private boolean validateUAndP(String value) {
-        return value.length() >= 8;
+        if (value.length() >= 8 && validateSpace(value)) {
+            return true;
+        } else {
+            showAlert(Alert.AlertType.ERROR, "Failed", "No space allowed");
+            return false;
+        }
     }
+
+    public boolean validateSpace(String value) {
+        String usernameRegex = "^\\S+$";
+        return value.matches(usernameRegex);
+    }
+
 
     protected boolean add(String name, String username, String password, Date dateOfBirth, String gender, String phone, String address, String email) {
         String query = "insert into users (Name, Username, Password, DateOfBirth, Gender, Phone, Address, Email)" +
