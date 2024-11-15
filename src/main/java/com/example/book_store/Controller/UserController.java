@@ -669,9 +669,23 @@ public class UserController {
         stage.show();
 
         saveButton.setOnAction(e -> {
-            add(name.getText(), username.getText(), password.getText(), Date.valueOf(dateOfBirth.getValue()), gender.getText(), phone.getText(), address.getText(), email.getText());
+            if (add(name.getText(), username.getText(), password.getText(), Date.valueOf(dateOfBirth.getValue()), gender.getText(), phone.getText(), address.getText(), email.getText())) {
+                createCart();
+            }
             stage.close(); // Đóng cửa sổ thêm sách
         });
+    }
+
+    private boolean createCart() {
+        String query = "insert into cart (UserID) values ((select UserID from users group by UserID order by UserID desc limit 1 ));";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            int row = preparedStatement.executeUpdate();
+            return row > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public static boolean validateAddress(String address) {
