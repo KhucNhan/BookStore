@@ -326,8 +326,35 @@ public class UserController {
         DatePicker dateOfBirthPicker = new DatePicker();
         dateOfBirthPicker.setValue(LocalDate.parse(String.valueOf(user.getDateOfBirth())));
 
-        TextField genderField = new TextField(user.getGender());
-        genderField.setPromptText("Enter new gender");
+        MenuButton genderField = new MenuButton("Chọn giới tính");
+
+        MenuItem maleOption = new MenuItem("Nam");
+        MenuItem femaleOption = new MenuItem("Nữ");
+        MenuItem otherOption = new MenuItem("Khác");
+
+        maleOption.setOnAction(e -> {
+            genderField.setText("Nam");
+        });
+
+        femaleOption.setOnAction(e -> {
+            genderField.setText("Nữ");
+        });
+
+        otherOption.setOnAction(e -> {
+            genderField.setText("Khác");
+        });
+
+        if ("Nam".equals(user.getGender())) {
+            genderField.setText("Nam");
+        } else if ("Nữ".equals(user.getGender())) {
+            genderField.setText("Nữ");
+        } else if ("Khác".equalsIgnoreCase(user.getGender())){
+            genderField.setText("Khác");
+        } else {
+            genderField.setText("Chọn giới tính");
+        }
+
+        genderField.getItems().addAll(maleOption, femaleOption, otherOption);
 
         TextField phoneField = new TextField(user.getPhone());
         phoneField.setPromptText("Enter new phone number");
@@ -593,8 +620,25 @@ public class UserController {
         email.setPromptText("Email");
         DatePicker dateOfBirth = new DatePicker();
         dateOfBirth.setPromptText("Ngày sinh");
-        TextField gender = new TextField();
-        gender.setPromptText("Giới tính");
+        MenuButton gender = new MenuButton("Chọn giới tính");
+
+        MenuItem maleOption = new MenuItem("Nam");
+        MenuItem femaleOption = new MenuItem("Nữ");
+        MenuItem otherOption = new MenuItem("Khác");
+
+        maleOption.setOnAction(e -> {
+            gender.setText("Nam");
+        });
+
+        femaleOption.setOnAction(e -> {
+            gender.setText("Nữ");
+        });
+
+        otherOption.setOnAction(e -> {
+            gender.setText("Khác");
+        });
+
+        gender.getItems().addAll(maleOption, femaleOption, otherOption);
         TextField phone = new TextField();
         phone.setPromptText("Số điện thoại");
         TextField address = new TextField();

@@ -18,7 +18,7 @@
                             <Font size="16.0" />
                         </font>
                     </Button>
-                    <Button fx:id="goToUser" mnemonicParsing="false" onAction="#goToCart" prefWidth="130.0" text="Người dùng">
+                    <Button fx:id="goToUser" mnemonicParsing="false" onAction="#goToUser" prefWidth="130.0" text="Người dùng">
                         <HBox.margin>
                             <Insets />
                         </HBox.margin>
