@@ -157,7 +157,7 @@ public class CartController {
                     CartItem cartItem = getTableView().getItems().get(getIndex());
                     currentAmount.setText(cartItem.getAmount() + "");
                     minus.setOnAction(e -> {
-                        if (cartItem.getAmount() == 0) {
+                        if (cartItem.getAmount() == 1) {
                             deleteFromCart(cartItem.getCartItemID());
                             getTableView().getItems().remove(cartItem);
                         } else {
