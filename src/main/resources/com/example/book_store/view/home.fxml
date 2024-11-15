@@ -1,13 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0"
-            xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.example.book_store.Controller.BookController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.book_store.Controller.BookController">
    <top>
       <VBox alignment="CENTER" BorderPane.alignment="CENTER">
          <children>
@@ -54,18 +59,17 @@
                  </Button>
                  <HBox alignment="CENTER" prefHeight="100.0" spacing="10.0">
                      <children>
-                         <TextField fx:id="searchField" prefHeight="35.0" prefWidth="220.0"
-                                    promptText="Nhập từ khóa tìm kiếm">
+                         <TextField fx:id="searchField" prefHeight="35.0" prefWidth="220.0" promptText="Nhập từ khóa tìm kiếm">
                              <font>
-                                 <Font size="14.0"/>
+                                 <Font size="14.0" />
                              </font>
                          </TextField>
                          <Button fx:id="searchButton" onAction="#search" prefHeight="25.0" prefWidth="130.0" text="Tìm kiếm">
                              <HBox.margin>
-                                 <Insets/>
+                                 <Insets />
                              </HBox.margin>
                              <font>
-                                 <Font size="16.0"/>
+                                 <Font size="16.0" />
                              </font>
                          </Button>
                      </children>
@@ -104,18 +108,18 @@
                 <TableView fx:id="bookTable" prefHeight="662.0" prefWidth="1391.0" BorderPane.alignment="CENTER">
            <columns>
 
-                        <TableColumn fx:id="idColumn" style="-fx-alignment: CENTER" text="Mã sách" />
-               <TableColumn fx:id="imageColumn" prefWidth="132.0" style="-fx-alignment: CENTER" text="Hình ảnh" />
-               <TableColumn fx:id="titleColumn" prefWidth="100.0" style="-fx-alignment: CENTER-LEFT" text="Tên sách" />
-               <TableColumn fx:id="authorColumn" prefWidth="120.0" style="-fx-alignment: CENTER-LEFT" text="Tên tác giả" />
-               <TableColumn fx:id="publishedYearColumn" prefWidth="90.0" style="-fx-alignment: CENTER" text="Năm xuất bản" />
-               <TableColumn fx:id="editionColumn" prefWidth="90.0" style="-fx-alignment: CENTER" text="Lần xuất bản" />
-               <TableColumn fx:id="priceColumn" style="-fx-alignment: CENTER" text="Giá bán" />
-               <TableColumn fx:id="amountColumn" style="-fx-alignment: CENTER" text="Số lượng" />
-               <TableColumn fx:id="bookTypeColumn" prefWidth="100.0" style="-fx-alignment: CENTER" text="Loại sách" />
-               <TableColumn fx:id="publisherColumn" prefWidth="100.0" style="-fx-alignment: CENTER" text="Nhà xuất bản" />
-               <TableColumn fx:id="statusColumn" prefWidth="100.0" style="-fx-alignment: CENTER" text="Trạng thái" />
-               <TableColumn fx:id="actionColumn" prefWidth="205.0" style="-fx-alignment: CENTER" text="Hành động">
+                        <TableColumn fx:id="idColumn" prefWidth="61.0" style="-fx-alignment: CENTER" text="Mã sách" />
+               <TableColumn fx:id="imageColumn" prefWidth="131.0" style="-fx-alignment: CENTER" text="Hình ảnh" />
+               <TableColumn fx:id="titleColumn" prefWidth="157.5" style="-fx-alignment: CENTER-LEFT" text="Tên sách" />
+               <TableColumn fx:id="authorColumn" prefWidth="143.5" style="-fx-alignment: CENTER-LEFT" text="Tên tác giả" />
+               <TableColumn fx:id="publishedYearColumn" prefWidth="97.0" style="-fx-alignment: CENTER" text="Năm xuất bản" />
+               <TableColumn fx:id="editionColumn" prefWidth="83.5" style="-fx-alignment: CENTER" text="Lần xuất bản" />
+               <TableColumn fx:id="priceColumn" prefWidth="66.5" style="-fx-alignment: CENTER" text="Giá bán" />
+               <TableColumn fx:id="amountColumn" prefWidth="63.5" style="-fx-alignment: CENTER" text="Số lượng" />
+               <TableColumn fx:id="bookTypeColumn" prefWidth="108.5" style="-fx-alignment: CENTER" text="Loại sách" />
+               <TableColumn fx:id="publisherColumn" prefWidth="125.5" style="-fx-alignment: CENTER" text="Nhà xuất bản" />
+               <TableColumn fx:id="statusColumn" prefWidth="100.5" style="-fx-alignment: CENTER" text="Trạng thái" />
+               <TableColumn fx:id="actionColumn" prefWidth="139.0" style="-fx-alignment: CENTER" text="Hành động">
             </TableColumn>
            </columns>
          <BorderPane.margin>
