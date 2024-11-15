@@ -157,12 +157,13 @@ public class CartController {
                     CartItem cartItem = getTableView().getItems().get(getIndex());
                     currentAmount.setText(cartItem.getAmount() + "");
                     minus.setOnAction(e -> {
-                        if (!isOutOfStock(cartItem, 1)) {
+                        if (cartItem.getAmount() == 0) {
+                            deleteFromCart(cartItem.getCartItemID());
+                            getTableView().getItems().remove(cartItem);
+                        } else {
                             minusAmount(cartItem);
                             loadCart();
                             updateTotalCartLabel();
-                        } else {
-                            showAlert(Alert.AlertType.ERROR, "Failed", "This book is out of stock");
                         }
                     });
 
