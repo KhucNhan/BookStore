@@ -17,6 +17,7 @@ import javafx.event.ActionEvent;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -30,6 +31,8 @@ import java.util.ResourceBundle;
 import static com.example.book_store.Controller.Authentication.currentUser;
 
 public class OrderController implements Initializable {
+    @FXML
+    public BorderPane main;
     @FXML
     public HBox menuBar;
     @FXML
@@ -223,6 +226,9 @@ public class OrderController implements Initializable {
                     );
                     orders.add(order);
                 }
+            }
+            if (orders.isEmpty()) {
+                main.setCenter(new Label("You don't have any order"));
             }
             orderTable.setItems(orders);
 
