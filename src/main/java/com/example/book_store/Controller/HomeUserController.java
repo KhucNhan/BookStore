@@ -2,6 +2,7 @@ package com.example.book_store.Controller;
 
 import com.example.book_store.Entity.Book;
 import com.example.book_store.ConnectDB;
+import com.example.book_store.Entity.CartItem;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -109,7 +110,8 @@ public class HomeUserController {
         Button saveButton = new Button("Thêm");
 
         VBox vbox = new VBox(amount, saveButton);
-        vbox.setSpacing(10);
+        vbox.setSpacing(20);
+        vbox.setAlignment(Pos.valueOf("CENTER"));
         Scene scene = new Scene(vbox, 240, 200);
         Stage stage = new Stage();
         stage.setScene(scene);
