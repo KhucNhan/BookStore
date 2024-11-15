@@ -3,6 +3,7 @@ package com.example.book_store.Controller;
 import com.example.book_store.ConnectDB;
 
 import com.example.book_store.Entity.Bill;
+import com.example.book_store.Entity.Book;
 import com.example.book_store.Entity.User;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -60,7 +61,7 @@ public class UserController {
     @FXML
     private TableColumn<User, String> address;
     @FXML
-    private TableColumn<User, String> status;
+    private TableColumn<User, Boolean> status;
     @FXML
     public TableColumn<User, Void> action;
 
@@ -78,6 +79,17 @@ public class UserController {
         phone.setCellValueFactory(new PropertyValueFactory<>("phone"));
         address.setCellValueFactory(new PropertyValueFactory<>("address"));
         status.setCellValueFactory(new PropertyValueFactory<>("status"));
+        status.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(Boolean item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item ? "Đang hoạt động" : "Đã hủy");
+                }
+            }
+        });
         action.setCellFactory(column -> new TableCell<>() {
             private Button edit = new Button("Sửa");
             private Button delete = new Button("Xóa");
@@ -188,6 +200,40 @@ public class UserController {
         }
     }
 
+    private boolean isExistPhone(String phone) {
+        String query = "select Phone from users where Phone = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, phone);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                if (resultSet.getString(1).equals(phone)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean isExistEmail(String email) {
+        String query = "select Email from users where Email = ?";
+        try {
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, email);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                if (resultSet.getString(1).equals(email)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private boolean validateUAndP(String value) {
         return value.length() >= 8;
     }
@@ -214,6 +260,14 @@ public class UserController {
             }
             if (!validateName(name)) {
                 showAlert(Alert.AlertType.ERROR, "Failed", "Text only");
+                return false;
+            }
+            if (isExistEmail(email)) {
+                showAlert(Alert.AlertType.ERROR,"Failed", "This email has been existed");
+                return false;
+            }
+            if (isExistPhone(phone)) {
+                showAlert(Alert.AlertType.ERROR, "Failed", "This phone has been existed");
                 return false;
             }
             PreparedStatement preparedStatement = connection.prepareStatement(query);
@@ -322,7 +376,14 @@ public class UserController {
                     showAlert(Alert.AlertType.ERROR, "Failed", "Text only");
                     return;
                 }
-
+                if (isExistEmail(emailField.getText())) {
+                    showAlert(Alert.AlertType.ERROR,"Failed", "This email has been existed");
+                    return;
+                }
+                if (isExistPhone(phoneField.getText())) {
+                    showAlert(Alert.AlertType.ERROR, "Failed", "This phone has been existed");
+                    return;
+                }
                 String query = "UPDATE users SET Name = ?, DateOfBirth = ?, Gender = ?, Phone = ?, Address = ?, Email = ? WHERE UserID = ?";
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 preparedStatement.setString(1, nameField.getText());
